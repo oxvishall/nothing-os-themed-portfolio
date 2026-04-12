@@ -109,8 +109,9 @@ body {
 .stats-row strong { color: var(--text-primary); }
 
 .profile-tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
-.profile-tabs button { padding: 14px 20px; background: none; border: none; font-size: 15px; color: var(--text-secondary); border-bottom: 2px solid transparent; cursor: pointer; }
-.profile-tabs button[aria-selected="true"] { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+.profile-tabs button { padding: 14px 20px; background: none; border: none; font-size: 15px; color: var(--text-secondary); border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s; }
+.profile-tabs button:hover { background: var(--bg-surface); color: var(--text-primary); }
+.profile-tabs button[aria-selected="true"] { color: var(--text-primary); border-bottom-color: var(--text-primary); font-weight: 500; }
 .tab-panel { display: none; }
 .tab-panel--active { display: block; animation: fade 0.3s ease-out; }
 @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
@@ -119,7 +120,7 @@ body {
 .project-feed, .experience-thread { display: flex; flex-direction: column; }
 .post-wrapper, .experience-post { border-bottom: 1px solid var(--border); transition: background 0.2s; }
 .post-wrapper:hover, .experience-post:hover { background: var(--bg-surface); }
-.experience-post { display: flex; gap: 12px; padding: 12px 16px; }
+.experience-post, .project-post { display: flex; gap: 12px; padding: 12px 16px; }
 .sub-role { padding-left: 32px; }
 .sub-content { padding-top: 0; }
 

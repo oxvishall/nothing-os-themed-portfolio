@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { FaExternalLinkAlt, FaRegComment, FaRetweet, FaRegHeart, FaChartBar } from 'react-icons/fa';
+import { HiDotsHorizontal } from 'react-icons/hi';
 import type { Experience, Role } from '@/app/data/portfolio';
 
 interface ExperiencesPanelProps {
@@ -19,10 +21,8 @@ function CompanyAvatar({ name }: { name: string }) {
     const size = 48;
     canvas.width = size;
     canvas.height = size;
-
     ctx.fillStyle = '#111';
     ctx.fillRect(0, 0, size, size);
-    
     ctx.fillStyle = '#fff';
     ctx.font = `bold 22px "DM Serif Display"`;
     ctx.textAlign = 'center';
@@ -41,69 +41,41 @@ export default function ExperiencesPanel({ experiences }: ExperiencesPanelProps)
 
         return (
           <div key={expIdx} className="company-group">
-            {/* 1. Main Company Header / First Role */}
-            <article className="experience-post main-role">
-              <div className="thread-aside">
-                <div className={`thread-line-above ${expIdx === 0 ? 'thread-line--hidden' : ''}`} />
-                <div className="thread-avatar-wrap">
-                  <CompanyAvatar name={exp.company} />
-                </div>
-                <div className={`thread-line-below ${isLastExperience && exp.roles.length === 1 ? 'thread-line--hidden' : ''}`} />
-              </div>
-
-              <div className="thread-content">
-                <header className="post-header">
-                  <div className="post-user-info">
-                    <span className="post-name">{exp.company}</span>
-                    <span className="post-handle">@{exp.company.replace(/\s+/g, '').toLowerCase()}</span>
-                    <span className="post-sep">·</span>
-                    <span className="post-time">{exp.roles[0].dateRange.split(' – ')[0]}</span>
-                  </div>
-                  <button className="post-more">···</button>
-                </header>
-                
-                <p className="post-thread-title">{exp.roles[0].title}</p>
-                
-                <div className="post-body">
-                  <ul className="thread-bullets">
-                    {exp.roles[0].bullets.map((bullet, bi) => (
-                      <li key={bi} className="thread-bullet">
-                        <span className="bullet-text">{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="thread-actions">
-                  <div className="post-action-group"><span>🗨</span><span className="post-action-count">12</span></div>
-                  <div className="post-action-group"><span>⇄</span><span className="post-action-count">2</span></div>
-                  <div className="post-action-group"><span>♡</span><span className="post-action-count">24</span></div>
-                </div>
-              </div>
-            </article>
-
-            {/* 2. Sub-roles (Pushed right with nested thread) */}
-            {exp.roles.slice(1).map((role, roleIdx) => {
-              const isLastInCompany = roleIdx === exp.roles.length - 2;
-              const shouldShowLineBelow = !isLastInCompany || !isLastExperience;
+            {exp.roles.map((role, roleIdx) => {
+              const isFirstInCompany = roleIdx === 0;
+              const isLastInCompany = roleIdx === exp.roles.length - 1;
+              const isFirstOverall = expIdx === 0 && isFirstInCompany;
+              const isLastOverall = isLastExperience && isLastInCompany;
 
               return (
-                <article key={roleIdx} className="experience-post sub-role">
+                <article key={roleIdx} className={`experience-post ${!isFirstInCompany ? 'sub-role' : ''}`}>
                   <div className="thread-aside">
-                    <div className="thread-line-above" />
+                    <div className={`thread-line-above ${isFirstOverall ? 'thread-line--hidden' : ''}`} />
                     <div className="thread-avatar-wrap">
-                      <div className="thread-role-dot" />
+                      {isFirstInCompany ? (
+                        <CompanyAvatar name={exp.company} />
+                      ) : (
+                        <div className="thread-role-dot" />
+                      )}
                     </div>
-                    <div className={`thread-line-below ${shouldShowLineBelow ? '' : 'thread-line--hidden'}`} />
+                    <div className={`thread-line-below ${isLastOverall ? 'thread-line--hidden' : ''}`} />
                   </div>
 
-                  <div className="thread-content sub-content">
+                  <div className={`thread-content ${!isFirstInCompany ? 'sub-content' : ''}`}>
                     <header className="post-header">
                       <div className="post-user-info">
+                        {isFirstInCompany && <span className="post-name">{exp.company}</span>}
+                        {isFirstInCompany && <span className="post-handle">@{exp.company.replace(/\s+/g, '').toLowerCase()}</span>}
+                        <span className="post-sep">·</span>
                         <span className="post-time">{role.dateRange}</span>
                       </div>
+                      <button className="post-more" title="View options">
+                        <HiDotsHorizontal size={18} />
+                      </button>
                     </header>
+                    
                     <p className="post-thread-title">{role.title}</p>
+                    
                     <div className="post-body">
                       <ul className="thread-bullets">
                         {role.bullets.map((bullet, bi) => (
@@ -112,6 +84,24 @@ export default function ExperiencesPanel({ experiences }: ExperiencesPanelProps)
                           </li>
                         ))}
                       </ul>
+                    </div>
+                    
+                    <div className="thread-actions">
+                      <button className="post-action-group" title="Reply">
+                        <FaRegComment size={16} />
+                      </button>
+                      <button className="post-action-group" title="Repost">
+                        <FaRetweet size={16} />
+                      </button>
+                      <button className="post-action-group" title="Like">
+                        <FaRegHeart size={16} />
+                      </button>
+                      <button className="post-action-group" title="View Stats">
+                        <FaChartBar size={16} />
+                      </button>
+                      <a href="#" className="post-action-group" title="Visit Company Website">
+                        <FaExternalLinkAlt size={14} />
+                      </a>
                     </div>
                   </div>
                 </article>
