@@ -20,26 +20,20 @@ export default function Home() {
             <ProfileTabs data={portfolio} />
           </div>
 
-          {/* Mobile-only Sidebar Widgets (displayed below tabs) */}
-          <div className="mobile-sidebar-widgets">
-            <div className="sidebar-card">
-              <h3 className="sidebar-heading">About</h3>
-              <p className="sidebar-about-text">
-                Full-stack developer based in {portfolio.location}. I build performant web apps
-                at the intersection of design and engineering.
-              </p>
-            </div>
-            <ul className="link-list">
+          {/* Polished Site Footer */}
+          <footer className="mobile-footer">
+            <span className="footer-logo">NOTHING × X</span>
+            <div className="footer-links">
               {portfolio.links.map(link => (
-                <li key={link.label}>
-                  <a href={link.url} className="sidebar-link">
-                    <span className="sidebar-link-icon">{link.icon}</span>
-                    {link.label}
-                  </a>
-                </li>
+                <a key={link.label} href={link.url} className="footer-link">
+                  {link.label}
+                </a>
               ))}
-            </ul>
-          </div>
+            </div>
+            <p className="footer-copy">
+              © {new Date().getFullYear()} Vishal Aakash · Built with Nothing
+            </p>
+          </footer>
         </div>
 
         {/* Desktop Sidebar Column */}

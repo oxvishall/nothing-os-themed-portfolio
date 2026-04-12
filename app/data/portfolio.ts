@@ -8,11 +8,15 @@ export interface Project {
   seed: number; // for canvas thumbnail seeded random
 }
 
-export interface Experience {
-  company: string;
-  role: string;
+export interface Role {
+  title: string;
   dateRange: string;
   bullets: string[];
+}
+
+export interface Experience {
+  company: string;
+  roles: Role[];
 }
 
 export interface Contribution {
@@ -100,35 +104,107 @@ const portfolio: PortfolioData = {
 
   experiences: [
     {
-      company: "Freelance / Indie",
-      role: "Full-Stack Developer",
-      dateRange: "Jan 2024 – Present",
-      bullets: [
-        "Built and shipped 4+ production-grade web apps for DeFi protocols and startups.",
-        "Architected real-time trading UIs handling WebSocket streams at sub-100ms latency.",
-        "Designed end-to-end systems from Figma mockup to deployed container on DigitalOcean.",
-      ],
+      company: "Freelance",
+      roles: [
+        {
+          title: "Full-Stack Developer",
+          dateRange: "Jan 2024 – Present",
+          bullets: [
+            "Built and shipped 4+ production-grade web apps for DeFi protocols and startups.",
+            "Architected real-time trading UIs handling WebSocket streams at sub-100ms latency."
+          ]
+        },
+        {
+          title: "Frontend Engineer",
+          dateRange: "Jun 2023 – Dec 2023",
+          bullets: [
+            "Developed responsive dashboard interfaces for fintech clients.",
+            "Optimized React performance reducing TTI by 40%."
+          ]
+        }
+      ]
     },
     {
       company: "Open Source",
-      role: "Contributor",
-      dateRange: "2022 – Present",
-      bullets: [
-        "Regular contributor to developer tooling and UI component libraries.",
-        "Authored 12+ PRs merged across multiple repositories in the React ecosystem.",
-        "Maintained personal forks of perps protocol adapters and API proxy utilities.",
-      ],
+      roles: [
+        {
+          title: "Contributor",
+          dateRange: "2022 – Present",
+          bullets: [
+            "Regular contributor to developer tooling and UI component libraries.",
+            "Authored 12+ PRs merged across multiple repositories in the React ecosystem."
+          ]
+        }
+      ]
     },
     {
-      company: "Self-Directed Learning",
-      role: "Engineer / Student",
-      dateRange: "2021 – 2023",
-      bullets: [
-        "Taught myself TypeScript, Next.js, and systems design through building real projects.",
-        "Studied distributed systems, consensus algorithms, and smart contract architecture.",
-        "Built a WebSocket-based live price aggregator as a learning capstone project.",
-      ],
+      company: "X-Protocol",
+      roles: [
+        {
+          title: "Lead Systems Architect",
+          dateRange: "2023 – 2024",
+          bullets: [
+            "Designed and implemented a high-throughput consensus engine handling 50k+ TPS.",
+            "Led a team of 6 engineers to deliver the mainnet launch on schedule."
+          ]
+        },
+        {
+          title: "Senior Software Engineer",
+          dateRange: "2022 – 2023",
+          bullets: [
+            "Refactored core state-machine logic reducing memory footprint by 60%.",
+            "Implemented P2P networking layer with custom gossip protocol."
+          ]
+        },
+        {
+          title: "Core Contributor",
+          dateRange: "2021 – 2022",
+          bullets: [
+            "Contributed to early whitepaper and initial prototype implementation.",
+            "Built the first CLI tool for validator node orchestration."
+          ]
+        }
+      ]
     },
+    {
+      company: "Nothing Corp",
+      roles: [
+        {
+          title: "Product Engineer",
+          dateRange: "2020 – 2021",
+          bullets: [
+            "Crafted high-fidelity UI components following strict brutalist design guidelines.",
+            "Integrated real-time hardware telemetry into the web dashboard."
+          ]
+        }
+      ]
+    },
+    {
+      company: "MemeStream",
+      roles: [
+        {
+          title: "Full-Stack Intern",
+          dateRange: "2019 – 2020",
+          bullets: [
+            "Built a low-latency live streaming overlay using WebRTC and Socket.io.",
+            "Optimized image processing pipeline reducing AWS Lambda costs by 25%."
+          ]
+        }
+      ]
+    },
+    {
+      company: "The Early Days",
+      roles: [
+        {
+          title: "Junior Web Developer",
+          dateRange: "2018 – 2019",
+          bullets: [
+            "Shipped 10+ landing pages for local businesses using PHP and jQuery.",
+            "Learned the fundamentals of the modern web stack under tight deadlines."
+          ]
+        }
+      ]
+    }
   ],
 
   contributions: [
