@@ -40,6 +40,8 @@ export interface PortfolioData {
   location: string;
   website: string;
   joinedYear: number;
+  avatarUrl: string;
+  bannerUrl: string;
   projects: Project[];
   experiences: Experience[];
   contributions: Contribution[];
@@ -54,6 +56,8 @@ const portfolio: PortfolioData = {
   location: "Chennai, India",
   website: "vishalaakash.dev",
   joinedYear: 2021,
+  avatarUrl: "https://pbs.twimg.com/profile_images/2034316324445593600/hCVB-FsV_400x400.png",
+  bannerUrl: "https://pbs.twimg.com/profile_banners/1497779013007601666/1771683539/1500x500",
 
   projects: [
     {

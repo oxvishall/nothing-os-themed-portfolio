@@ -64,7 +64,7 @@ export default function ProfileTabs({ data }: ProfileTabsProps) {
           className={`tab-panel${active === 'projects' ? ' tab-panel--active' : ''}`}
           hidden={active !== 'projects'}
         >
-          <ProjectsPanel projects={data.projects} />
+          <ProjectsPanel projects={data.projects} data={data} />
         </div>
 
         <div

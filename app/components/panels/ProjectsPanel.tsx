@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Project } from '@/app/data/portfolio';
 
 interface ProjectsPanelProps {
   projects: Project[];
+  data: any; // Portfolio data
 }
 
 function drawProjectThumb(canvas: HTMLCanvasElement, seed: number, isDark: boolean) {
@@ -39,7 +40,7 @@ function drawProjectThumb(canvas: HTMLCanvasElement, seed: number, isDark: boole
   }
 }
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectPost({ project, data }: { project: Project; data: any }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ function ProjectCard({ project }: { project: Project }) {
       (!document.documentElement.classList.contains('light') && mq.matches);
 
     const draw = () => {
-      canvas.width = canvas.offsetWidth || 280;
+      canvas.width = canvas.offsetWidth || 500;
       canvas.height = Math.round((canvas.width * 9) / 16);
       drawProjectThumb(canvas, project.seed, isDark());
     };
@@ -72,45 +73,81 @@ function ProjectCard({ project }: { project: Project }) {
   }, [project.seed]);
 
   return (
-    <article className="project-card" aria-label={project.name}>
-      <canvas
-        ref={canvasRef}
-        className="project-thumb"
-        aria-hidden="true"
-      />
-      <div className="project-body">
-        <h2 className="project-name">{project.name}</h2>
-        <p className="project-desc">{project.description}</p>
-        <div className="tag-row" aria-label="Tech stack">
-          {project.tags.map(tag => (
-            <span key={tag} className="tag">{tag}</span>
-          ))}
+    <article className="project-post" aria-label={project.name}>
+      {/* Post-style Avatar */}
+      <div className="post-avatar-col">
+        <div className="post-avatar">
+          <img src={data.avatarUrl} alt="" className="post-avatar-img" />
         </div>
-        <div className="project-footer">
-          <span className="project-year">{project.year}</span>
-          {project.url && (
-            <a
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="project-link"
-              aria-label={`View ${project.name}`}
-            >
-              View ↗
-            </a>
-          )}
+      </div>
+
+      <div className="post-content">
+        {/* Post Metadata */}
+        <header className="post-header">
+          <div className="post-user-info">
+            <span className="post-name">{data.name}</span>
+            <span className="post-handle">{data.handle}</span>
+            <span className="post-sep">·</span>
+            <span className="post-time">{project.year}</span>
+          </div>
+          <button className="post-more" aria-label="More options">···</button>
+        </header>
+
+        {/* Post Body */}
+        <div className="post-body">
+          <p className="post-text">
+            <strong>{project.name}</strong> — {project.description}
+          </p>
+          
+          {/* Post Image (Canvas) */}
+          <div className="post-media">
+            <canvas
+              ref={canvasRef}
+              className="post-canvas"
+              aria-hidden="true"
+            />
+            {/* Tags as Hashtags inside/on the image */}
+            <div className="post-hashtags">
+              {project.tags.map(tag => (
+                <span key={tag} className="post-hashtag">#{tag.replace(/\s+/g, '')}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Post Actions (Simulation) */}
+        <div className="post-actions">
+          <div className="post-action-group">
+            <span className="post-action-icon">⬀</span>
+            {project.url && (
+              <a href={project.url} target="_blank" rel="noopener noreferrer" className="post-action-link">
+                View Project
+              </a>
+            )}
+          </div>
+          <div className="post-action-group">
+            <span className="post-action-icon">⌥</span>
+            <span className="post-action-count">GitHub</span>
+          </div>
+          <div className="post-action-group">
+            <span className="post-action-icon">✧</span>
+            <span className="post-action-count">Details</span>
+          </div>
+          <div className="post-action-group">
+            <span className="post-action-icon">□</span>
+          </div>
         </div>
       </div>
     </article>
   );
 }
 
-export default function ProjectsPanel({ projects }: ProjectsPanelProps) {
+export default function ProjectsPanel({ projects, data }: ProjectsPanelProps) {
   return (
-    <div className="project-grid" role="list" aria-label="Projects">
+    <div className="project-feed" role="list" aria-label="Projects Feed">
       {projects.map(p => (
-        <div key={p.id} role="listitem">
-          <ProjectCard project={p} />
+        <div key={p.id} role="listitem" className="post-wrapper">
+          <ProjectPost project={p} data={data} />
         </div>
       ))}
     </div>

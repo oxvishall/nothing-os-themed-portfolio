@@ -12,9 +12,11 @@ export default function BioSection({ data }: BioSectionProps) {
       {/* Avatar placeholder */}
       <div className="avatar-wrap">
         <div className="avatar" aria-label="Profile avatar">
-          <span className="avatar-initials">
-            {data.name.split(' ').map(w => w[0]).join('')}
-          </span>
+          <img
+            src={data.avatarUrl}
+            alt={data.name}
+            className="avatar-img"
+          />
         </div>
         <a
           href={data.links.find(l => l.label === 'GitHub')?.url ?? '#'}
