@@ -5,6 +5,8 @@ import Sidebar from "@/app/components/Sidebar";
 import ClientInteractions from "@/app/components/ClientInteractions";
 import portfolio from "@/app/data/portfolio";
 
+import { Suspense } from 'react';
+
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center bg-background min-h-screen">
@@ -17,7 +19,15 @@ export default function Home() {
 
           <div className="content-wrap">
             <BioSection data={portfolio} />
-            <ProfileTabs data={portfolio} />
+            <Suspense fallback={
+              <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
+                <div className="font-dot text-[10px] uppercase tracking-[0.2em] text-secondary">
+                  Booting Tabs...
+                </div>
+              </div>
+            }>
+              <ProfileTabs data={portfolio} />
+            </Suspense>
           </div>
 
           {/* Polished Site Footer */}
