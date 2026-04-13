@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutGrid, List } from 'lucide-react';
@@ -24,24 +24,44 @@ export default function ProfileTabs({ data }: { data: any }) {
   const initialTab = searchParams.get('tab') as TabId || 'projects';
   const [active, setActive] = useState<TabId>(initialTab);
   const [layout, setLayout] = useState<'list' | 'grid'>('list');
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const tabUrl = searchParams.get('tab') as TabId;
     if (tabUrl && tabUrl !== active) {
       setActive(tabUrl);
     }
-  }, [searchParams]);
+  }, [searchParams, active]);
 
   const handleTabClick = (id: TabId) => {
     setActive(id);
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', id);
     router.replace(`?${params.toString()}`, { scroll: false });
+    
+    // Scroll so the tabs are exactly at the top of the viewport
+    if (tabsContainerRef.current) {
+      // offsetTop gives position relative to document
+      const targetPos = tabsContainerRef.current.offsetTop;
+      window.scrollTo({
+        top: targetPos,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between border-b border-border pr-2">
+      <div className="px-6 py-4 flex gap-6 text-[11px] font-dot text-secondary uppercase tracking-widest border-b border-border/50">
+        <span className="flex gap-1.5"><strong className="text-primary">{data.projects.length}</strong> Projects</span>
+        <span className="flex gap-1.5"><strong className="text-primary">{data.experiences.length}</strong> Experiences</span>
+        <span className="flex gap-1.5"><strong className="text-primary">{data.contributions?.length || 0}</strong> Contributions</span>
+      </div>
+
+      <div 
+        ref={tabsContainerRef}
+        className="sticky top-0 z-40 bg-page/90 backdrop-blur-md flex items-center justify-between border-b border-border pr-2 pt-2 -mt-px"
+      >
         <nav 
           className="profile-tabs px-4 flex gap-4 pb-4 overflow-x-auto scrollbar-hide relative" 
           role="tablist"
