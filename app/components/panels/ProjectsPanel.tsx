@@ -20,7 +20,7 @@ interface Project {
 }
 
 interface ProjectsPanelProps {
-  projects: Project[];
+  projects?: Project[]; // Optional mock data
   data: any; // Portfolio data
 }
 
@@ -152,10 +152,12 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
   );
 }
 
-export default function ProjectsPanel({ projects: initialProjects, data }: ProjectsPanelProps) {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+export default function ProjectsPanel({ data }: ProjectsPanelProps) {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch(`${API_URL}/projects`)
       .then(res => res.json())
       .then(apiProjects => {
@@ -164,8 +166,19 @@ export default function ProjectsPanel({ projects: initialProjects, data }: Proje
           setProjects(apiProjects);
         }
       })
-      .catch(err => console.error("Failed to fetch API projects:", err));
+      .catch(err => console.error("Failed to fetch API projects:", err))
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[200px] animate-pulse">
+        <div className="font-dot text-[10px] uppercase tracking-[0.2em] text-secondary">
+          Booting System...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="project-feed" role="list">

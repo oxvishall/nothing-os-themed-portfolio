@@ -72,8 +72,8 @@ export default function ProfileTabs({ data }: { data: any }) {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
-            {active === 'projects' && <ProjectsPanel projects={data.projects} data={data} />}
-            {active === 'experiences' && <ExperiencesPanel experiences={data.experiences} data={data} />}
+            {active === 'projects' && <ProjectsPanel data={data} />}
+            {active === 'experiences' && <ExperiencesPanel data={data} />}
             {active === 'about' && <AboutMePanel />}
             {active === 'tools' && <ToolsPanel tools={data.tools} />}
           </motion.div>

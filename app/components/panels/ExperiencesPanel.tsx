@@ -26,11 +26,11 @@ interface Experience {
 }
 
 interface ExperiencesPanelProps {
-  experiences: Experience[];
+  experiences?: Experience[]; // Optional mock data
   data: any; // Portfolio data
 }
 
-const API_URL = "/api";
+ const API_URL = "/api";
 
 function CompanyAvatar({ name, logo }: { name: string; logo?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -150,10 +150,12 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
   );
 }
 
-export default function ExperiencesPanel({ experiences: initialExperiences, data }: ExperiencesPanelProps) {
-  const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
+export default function ExperiencesPanel({ data }: ExperiencesPanelProps) {
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch(`${API_URL}/experience`)
       .then(res => res.json())
       .then(apiExps => {
@@ -162,8 +164,19 @@ export default function ExperiencesPanel({ experiences: initialExperiences, data
           setExperiences(apiExps);
         }
       })
-      .catch(err => console.error("Failed to fetch API experiences:", err));
+      .catch(err => console.error("Failed to fetch API experiences:", err))
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[200px] animate-pulse">
+        <div className="font-dot text-[10px] uppercase tracking-[0.2em] text-secondary">
+          Booting System...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="experience-thread" role="list">
