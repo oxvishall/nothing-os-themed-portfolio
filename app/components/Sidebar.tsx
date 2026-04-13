@@ -1,113 +1,115 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { PortfolioData } from '@/app/data/portfolio';
 
 interface SidebarProps {
   data: PortfolioData;
 }
 
-function DotClock() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+function LocalTime() {
+  const [time, setTime] = useState<string>('');
 
   useEffect(() => {
-    const draw = () => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      const isDark = document.documentElement.classList.contains('dark') ||
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const updateTime = () => {
       const now = new Date();
-      const timeStr = now.toTimeString().slice(0, 8);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.font = `bold 36px 'Dot Gothic 16', monospace`;
-      ctx.fillStyle = isDark ? '#f0f0f0' : '#0f0f0f';
-      ctx.fillText(timeStr, 4, 42);
+      setTime(now.toLocaleTimeString('en-US', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      }));
     };
-
-    draw();
-    const id = setInterval(draw, 1000);
-    const mo = new MutationObserver(draw);
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    return () => {
-      clearInterval(id);
-      mo.disconnect();
-    };
+    updateTime();
+    const id = setInterval(updateTime, 1000);
+    return () => clearInterval(id);
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      id="dot-clock"
-      width={240}
-      height={52}
-      aria-label="Current time in dot matrix style"
-    />
+    <div className="local-time-wrapper select-none">
+      <span className="font-serif text-5xl tracking-tighter text-primary">{time}</span>
+    </div>
   );
 }
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     const stored = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    if (stored) setTheme(stored);
-    else setTheme('system');
-  }, []);
-
-  const toggle = () => {
     const html = document.documentElement;
-    const isDark = html.classList.contains('dark');
-    if (isDark) {
-      html.classList.remove('dark');
-      html.classList.add('light');
-      localStorage.setItem('theme', 'light');
-      setTheme('light');
-    } else {
-      html.classList.remove('light');
-      html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+    if (stored) {
+      setTheme(stored);
+    } else if (html.classList.contains('dark')) {
       setTheme('dark');
     }
+  }, []);
+
+  const setThemeMode = (mode: 'light' | 'dark') => {
+    const html = document.documentElement;
+    if (mode === 'dark') {
+      html.classList.add('dark');
+      html.classList.remove('light');
+    } else {
+      html.classList.add('light');
+      html.classList.remove('dark');
+    }
+    localStorage.setItem('theme', mode);
+    setTheme(mode);
   };
 
-  const icon = theme === 'dark' ? '◑' : theme === 'light' ? '◐' : '◐';
-
   return (
-    <button
-      id="theme-toggle"
-      className="theme-btn"
-      onClick={toggle}
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-    >
-      <span className="theme-btn-dot-label">· THEME ·</span>
-      <span className="theme-btn-icon" aria-hidden="true">{icon}</span>
-    </button>
+    <div className="sidebar-card border-strong p-5">
+      <span className="sidebar-heading !mb-4 block">· INTERFACE ·</span>
+      <div className="flex bg-surface border border-strong rounded-full p-1 relative">
+        <button 
+          onClick={() => setThemeMode('light')}
+          className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-all duration-300 z-10 ${
+            theme === 'light' ? 'text-background' : 'text-secondary hover:text-primary'
+          }`}
+        >
+          LIGHT
+        </button>
+        <button 
+          onClick={() => setThemeMode('dark')}
+          className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-all duration-300 z-10 ${
+            theme === 'dark' ? 'text-background' : 'text-secondary hover:text-primary'
+          }`}
+        >
+          DARK
+        </button>
+        {/* Active Indicator Slider */}
+        <div 
+          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-primary rounded-full transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${
+            theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-1'
+          }`}
+        />
+      </div>
+    </div>
   );
 }
 
 export default function Sidebar({ data }: SidebarProps) {
   return (
     <aside className="sidebar" aria-label="Profile sidebar">
+      {/* Time card - Enhanced Serif UI */}
+      <div className="sidebar-card border-strong group hover:bg-elevated transition-colors duration-300">
+        <span className="sidebar-heading !mb-4">· LOCAL TIME (UTC+5:30) ·</span>
+        <LocalTime />
+      </div>
+
       {/* About card */}
-      <div className="sidebar-card">
+      <div className="sidebar-card border-strong group hover:bg-elevated transition-colors duration-300">
         <h3 className="sidebar-heading">About</h3>
         <p className="sidebar-about-text">
           Full-stack developer based in {data.location}. I build performant, pixel-perfect web apps
-          with particular focus on trading UIs, DeFi protocols, and developer tooling.
+          with particular focus on high-fidelity UIs and Web3 interfaces.
           Obsessed with monochrome design and the 2% of polish that makes products feel premium.
         </p>
       </div>
 
-      {/* Dot-matrix clock */}
-      <div className="sidebar-card sidebar-clock">
-        <span className="sidebar-clock-label">· LOCAL TIME ·</span>
-        <DotClock />
-      </div>
-
       {/* Links */}
-      <div className="sidebar-card">
+      <div className="sidebar-card border-strong group hover:bg-elevated transition-colors duration-300">
         <h3 className="sidebar-heading">Links</h3>
         <ul className="link-list" aria-label="Social and external links">
           {data.links.map(link => (
@@ -116,10 +118,10 @@ export default function Sidebar({ data }: SidebarProps) {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="sidebar-link"
+                className="sidebar-link hover:translate-x-1 transition-all"
                 aria-label={link.label}
               >
-                <span className="sidebar-link-icon" aria-hidden="true">{link.icon}</span>
+                <span className="sidebar-link-icon opacity-60 group-hover:opacity-100 transition-opacity" aria-hidden="true">{link.icon}</span>
                 {link.label}
               </a>
             </li>

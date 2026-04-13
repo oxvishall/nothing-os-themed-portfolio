@@ -1,102 +1,173 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import ProjectsPanel from '@/app/components/panels/ProjectsPanel';
-import ExperiencesPanel from '@/app/components/panels/ExperiencesPanel';
-import ContribPanel from '@/app/components/panels/ContribPanel';
-import ToolsPanel from '@/app/components/panels/ToolsPanel';
-import type { PortfolioData } from '@/app/data/portfolio';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { LayoutGrid, List } from 'lucide-react';
+import ProjectsPanel from './panels/ProjectsPanel';
+import ExperiencesPanel from './panels/ExperiencesPanel';
+import AboutMePanel from './panels/AboutMePanel';
+import ToolsPanel from './panels/ToolsPanel';
 
-type TabId = 'projects' | 'experiences' | 'contributions' | 'tools';
-
-const TABS: { id: TabId; label: string }[] = [
+const TABS = [
   { id: 'projects', label: 'Projects' },
   { id: 'experiences', label: 'Experiences' },
-  { id: 'contributions', label: 'Contributions' },
+  { id: 'about', label: 'About' },
   { id: 'tools', label: 'Tools' },
-];
+] as const;
 
-interface ProfileTabsProps {
-  data: PortfolioData;
-}
+type TabId = typeof TABS[number]['id'];
 
-export default function ProfileTabs({ data }: ProfileTabsProps) {
-  const [active, setActive] = useState<TabId>('projects');
+export default function ProfileTabs({ data }: { data: any }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialTab = searchParams.get('tab') as TabId || 'projects';
+  
+  const [active, setActive] = useState<TabId>(initialTab);
+  const [layout, setLayout] = useState<'list' | 'grid'>('list');
+  const [projects, setProjects] = useState<any[]>([]);
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
 
-  // URL-based deep linking support (stretch goal §13.5)
+  // Fetch all data once on component mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get('tab') as TabId | null;
-    if (tab && TABS.some(t => t.id === tab)) {
-      setActive(tab);
-    }
+    const fetchAllData = async () => {
+      try {
+        setLoading(true);
+        const [projectsRes, experiencesRes] = await Promise.all([
+          fetch('/api/projects').then(res => res.json()),
+          fetch('/api/experience').then(res => res.json())
+        ]);
+        
+        if (Array.isArray(projectsRes)) setProjects(projectsRes);
+        if (Array.isArray(experiencesRes)) setExperiences(experiencesRes);
+      } catch (err) {
+        console.error("Critical fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchAllData();
   }, []);
+
+  useEffect(() => {
+    const tabUrl = searchParams.get('tab') as TabId;
+    if (tabUrl && tabUrl !== active) {
+      setActive(tabUrl);
+    }
+  }, [searchParams, active]);
 
   const handleTabClick = (id: TabId) => {
     setActive(id);
-    const url = new URL(window.location.href);
-    url.searchParams.set('tab', id);
-    window.history.replaceState({}, '', url.toString());
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', id);
+    router.replace(`?${params.toString()}`, { scroll: false });
+    
+    // Conditional scroll: Only scroll to the tabs if the user has already scrolled past them
+    if (tabsContainerRef.current) {
+      const rect = tabsContainerRef.current.getBoundingClientRect();
+      const absoluteTop = rect.top + window.scrollY - 5;
+      
+      // If we are currently scrolled past the tabs (sticky mode active or deep in content)
+      if (window.scrollY > absoluteTop) {
+        window.scrollTo({
+          top: absoluteTop,
+          behavior: 'smooth'
+        });
+      }
+    }
   };
 
   return (
-    <>
-      <nav className="profile-tabs" role="tablist" aria-label="Portfolio sections">
-        {TABS.map(tab => (
-          <button
-            key={tab.id}
-            role="tab"
-            id={`tab-${tab.id}`}
-            aria-selected={active === tab.id}
-            aria-controls={`panel-${tab.id}`}
-            onClick={() => handleTabClick(tab.id)}
+    <div className="w-full">
+      <div ref={tabsContainerRef} className="tabs-anchor" />
+      <div 
+        className="sticky top-0 z-40 bg-page/90 backdrop-blur-md flex items-center justify-between border-b border-border pr-2 pt-2 -mt-px"
+      >
+        <nav 
+          className="profile-tabs px-4 flex gap-4 pb-4 overflow-x-auto scrollbar-hide relative" 
+          role="tablist"
+        >
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabClick(tab.id)}
+              className={`relative font-dot text-[10px] uppercase tracking-widest px-6 py-2.5 transition-colors duration-300 z-10 ${
+                active === tab.id ? 'text-background' : 'text-secondary hover:text-primary'
+              }`}
+            >
+              {active === tab.id && (
+                <motion.div
+                  layoutId="active-pill"
+                  className="absolute inset-0 bg-primary rounded-full -z-10"
+                  transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                />
+              )}
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+
+        {active === 'projects' && (
+          <div className="flex items-center gap-1 pb-4">
+            <button 
+              onClick={() => setLayout('list')}
+              className={`p-1.5 rounded-full transition-all duration-300 ${
+                layout === 'list' 
+                  ? 'bg-primary text-background scale-110' 
+                  : 'text-secondary hover:text-primary hover:bg-surface'
+              }`}
+              title="List View"
+            >
+              <List size={14} />
+            </button>
+            <button 
+              onClick={() => setLayout('grid')}
+              className={`p-1.5 rounded-full transition-all duration-300 ${
+                layout === 'grid' 
+                  ? 'bg-primary text-background scale-110' 
+                  : 'text-secondary hover:text-primary hover:bg-surface'
+              }`}
+              title="Grid View"
+            >
+              <LayoutGrid size={14} />
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="tab-content min-h-[400px]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
           >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
-
-      <main className="tab-panels">
-        <div
-          id="panel-projects"
-          role="tabpanel"
-          aria-labelledby="tab-projects"
-          className={`tab-panel${active === 'projects' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'projects'}
-        >
-          <ProjectsPanel projects={data.projects} />
-        </div>
-
-        <div
-          id="panel-experiences"
-          role="tabpanel"
-          aria-labelledby="tab-experiences"
-          className={`tab-panel${active === 'experiences' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'experiences'}
-        >
-          <ExperiencesPanel experiences={data.experiences} />
-        </div>
-
-        <div
-          id="panel-contributions"
-          role="tabpanel"
-          aria-labelledby="tab-contributions"
-          className={`tab-panel${active === 'contributions' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'contributions'}
-        >
-          <ContribPanel contributions={data.contributions} />
-        </div>
-
-        <div
-          id="panel-tools"
-          role="tabpanel"
-          aria-labelledby="tab-tools"
-          className={`tab-panel${active === 'tools' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'tools'}
-        >
-          <ToolsPanel tools={data.tools} />
-        </div>
-      </main>
-    </>
+            {active === 'projects' && (
+              <ProjectsPanel 
+                data={data} 
+                layout={layout} 
+                projects={projects} 
+                loading={loading} 
+              />
+            )}
+            {active === 'experiences' && (
+              <ExperiencesPanel 
+                data={data} 
+                experiences={experiences} 
+                loading={loading} 
+              />
+            )}
+            {active === 'about' && <AboutMePanel />}
+            {active === 'tools' && <ToolsPanel tools={data.tools} />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }

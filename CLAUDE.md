@@ -112,7 +112,7 @@ All canvas operations must check dark mode and re-render on `prefers-color-schem
 
 ## 7. Content Data
 
-All portfolio content is stored in `app/data/portfolio.ts` as a typed constant — **never hardcoded inline in JSX**.
+All portfolio content is stored in `app/data/portfolio.tsx` as a typed constant — **never hardcoded inline in JSX**.
 
 ```ts
 // Shape
@@ -131,7 +131,7 @@ interface PortfolioData {
 }
 ```
 
-When adding/editing content, edit `app/data/portfolio.ts` only.
+When adding/editing content, edit `app/data/portfolio.tsx` only.
 
 ---
 

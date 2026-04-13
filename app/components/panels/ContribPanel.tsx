@@ -121,7 +121,7 @@ export default function ContribPanel({ contributions }: ContribPanelProps) {
             <div className="contrib-item-dot" aria-hidden="true" />
             <div className="contrib-item-content">
               <a
-                href={c.url ?? '#'}
+                href={c.link ?? '#'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="contrib-name"

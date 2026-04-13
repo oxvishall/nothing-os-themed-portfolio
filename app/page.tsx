@@ -5,6 +5,8 @@ import Sidebar from "@/app/components/Sidebar";
 import ClientInteractions from "@/app/components/ClientInteractions";
 import portfolio from "@/app/data/portfolio";
 
+import { Suspense } from 'react';
+
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center bg-background min-h-screen">
@@ -12,34 +14,36 @@ export default function Home() {
 
       <main className="layout">
         {/* Main Content Column */}
-        <div className="main-content border-x border-border min-h-screen bg-page">
+        <div className="main-content border-x border-strong min-h-screen">
           <CoverBanner name={portfolio.name} />
 
           <div className="content-wrap">
             <BioSection data={portfolio} />
-            <ProfileTabs data={portfolio} />
+            <Suspense fallback={
+              <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
+                <div className="font-dot text-[10px] uppercase tracking-[0.2em] text-secondary">
+                  Booting Tabs...
+                </div>
+              </div>
+            }>
+              <ProfileTabs data={portfolio} />
+            </Suspense>
           </div>
 
-          {/* Mobile-only Sidebar Widgets (displayed below tabs) */}
-          <div className="mobile-sidebar-widgets">
-            <div className="sidebar-card">
-              <h3 className="sidebar-heading">About</h3>
-              <p className="sidebar-about-text">
-                Full-stack developer based in {portfolio.location}. I build performant web apps
-                at the intersection of design and engineering.
-              </p>
-            </div>
-            <ul className="link-list">
+          {/* Polished Site Footer */}
+          <footer className="mobile-footer">
+            <span className="footer-logo">NOTHING × X</span>
+            <div className="footer-links">
               {portfolio.links.map(link => (
-                <li key={link.label}>
-                  <a href={link.url} className="sidebar-link">
-                    <span className="sidebar-link-icon">{link.icon}</span>
-                    {link.label}
-                  </a>
-                </li>
+                <a key={link.label} href={link.url} className="footer-link">
+                  {link.label}
+                </a>
               ))}
-            </ul>
-          </div>
+            </div>
+            <p className="">
+              Ideated, Designed & Developed by <span className="font-serif italic">Vishal</span>  
+            </p>
+          </footer>
         </div>
 
         {/* Desktop Sidebar Column */}
