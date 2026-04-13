@@ -3,16 +3,16 @@
 import { useState, useEffect } from 'react';
 import ProjectsPanel from '@/app/components/panels/ProjectsPanel';
 import ExperiencesPanel from '@/app/components/panels/ExperiencesPanel';
-import ContribPanel from '@/app/components/panels/ContribPanel';
+import AboutMePanel from '@/app/components/panels/AboutMePanel';
 import ToolsPanel from '@/app/components/panels/ToolsPanel';
 import type { PortfolioData } from '@/app/data/portfolio';
 
-type TabId = 'projects' | 'experiences' | 'contributions' | 'tools';
+type TabId = 'projects' | 'experiences' | 'about' | 'tools';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'projects', label: 'Projects' },
   { id: 'experiences', label: 'Experiences' },
-  { id: 'contributions', label: 'Contributions' },
+  { id: 'about', label: 'About' },
   { id: 'tools', label: 'Tools' },
 ];
 
@@ -78,13 +78,13 @@ export default function ProfileTabs({ data }: ProfileTabsProps) {
         </div>
 
         <div
-          id="panel-contributions"
+          id="panel-about"
           role="tabpanel"
-          aria-labelledby="tab-contributions"
-          className={`tab-panel${active === 'contributions' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'contributions'}
+          aria-labelledby="tab-about"
+          className={`tab-panel${active === 'about' ? ' tab-panel--active' : ''}`}
+          hidden={active !== 'about'}
         >
-          <ContribPanel contributions={data.contributions} />
+          <AboutMePanel />
         </div>
 
         <div

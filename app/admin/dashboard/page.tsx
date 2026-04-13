@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://localhost:5000/api";
+const API_URL = "/api";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<'Experience' | 'Projects'>('Projects');
@@ -38,9 +38,18 @@ export default function AdminDashboard() {
       const endpoint = tab === 'Projects' ? 'projects' : 'experience';
       const res = await fetch(`${API_URL}/${endpoint}`);
       const data = await res.json();
-      setItems(data);
+      console.log(`Admin Fetch ${endpoint}:`, data);
+      if (res.ok && Array.isArray(data)) {
+        setItems(data);
+        setError('');
+      } else {
+        setError(data.error || 'Failed to fetch data');
+        setItems([]);
+      }
     } catch (err) {
+      console.error("Admin fetchData error:", err);
       setError('Failed to fetch data');
+      setItems([]);
     } finally {
       setLoading(false);
     }

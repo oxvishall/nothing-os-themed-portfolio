@@ -38,11 +38,25 @@
   --color-background: var(--bg-page);
   --color-foreground: var(--text-primary);
   --color-page: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-elevated: var(--bg-elevated);
   --color-border: var(--border);
   --color-strong: var(--border-strong);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
   --font-dot: var(--font-dot);
+
+  --animate-spin-slow: spin 20s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delayed: float 6s ease-in-out 3s infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 /* 2. Global Resets */
@@ -101,6 +115,13 @@ body {
   background-color: var(--text-primary); border-radius: 50%;
   pointer-events: none; z-index: 10000;
   mix-blend-mode: difference; display: none;
+  transition: width 0.2s, height 0.2s, opacity 0.2s;
+}
+.cursor-hover {
+  width: 30px !important;
+  height: 30px !important;
+  opacity: 0.4;
+  background-color: var(--text-secondary);
 }
 @media (pointer: fine) { #cursor { display: block; } }
 

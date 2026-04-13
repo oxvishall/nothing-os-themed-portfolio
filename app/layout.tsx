@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import CustomCursor from "@/app/components/CustomCursor";
 
 export const metadata: Metadata = {
   title: "Vishal Aakash | Nothing × X Portfolio",
@@ -55,6 +56,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <CustomCursor />
         {children}
         <div id="cursor" aria-hidden="true" />
       </body>

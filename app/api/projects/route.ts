@@ -8,7 +8,8 @@ export async function GET() {
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 });
+    console.error("Proxy GET projects error:", error);
+    return NextResponse.json({ error: 'Failed to fetch projects', details: (error as Error).message }, { status: 500 });
   }
 }
 
