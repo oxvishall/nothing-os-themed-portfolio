@@ -30,8 +30,8 @@ export default function Home() {
                 </a>
               ))}
             </div>
-            <p className="footer-copy">
-              © {new Date().getFullYear()} Vishal Aakash · Built with Nothing
+            <p className="">
+              Ideated, Designed & Developed by <span className="font-serif italic">Vishal</span>  
             </p>
           </footer>
         </div>
