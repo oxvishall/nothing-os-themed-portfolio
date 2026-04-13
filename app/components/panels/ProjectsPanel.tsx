@@ -40,20 +40,19 @@ function drawProjectThumb(canvas: HTMLCanvasElement, seed: number | undefined, i
 
   ctx.clearRect(0, 0, W, H);
   
-  // Outer frame background
-  ctx.fillStyle = isDark ? '#000000' : '#f0f0f0';
+  // Outer frame background - slightly lighter than page in dark mode for visibility
+  ctx.fillStyle = isDark ? '#1e1e1e' : '#f0fafe'; 
   ctx.fillRect(0, 0, W, H);
 
-  const DOTSize = 2;
   const GAP = 10;
   
-  // Grid opacity
-  const dotColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
+  // Grid opacity - significantly brighter in dark mode for visibility
+  const dotColor = isDark ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.1)';
 
   for (let x = GAP; x < W; x += GAP) {
     for (let y = GAP; y < H; y += GAP) {
       ctx.fillStyle = dotColor;
-      ctx.fillRect(x - 0.5, y - 0.5, 1, 1); // 1px sharp dots for grid feel
+      ctx.fillRect(x, y, 1, 1);
     }
   }
 }
