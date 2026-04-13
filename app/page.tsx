@@ -12,7 +12,7 @@ export default function Home() {
 
       <main className="layout">
         {/* Main Content Column */}
-        <div className="main-content border-x border-border min-h-screen bg-page">
+        <div className="main-content border-x border-strong min-h-screen">
           <CoverBanner name={portfolio.name} />
 
           <div className="content-wrap">

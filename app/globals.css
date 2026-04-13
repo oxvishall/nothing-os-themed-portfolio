@@ -37,6 +37,9 @@
 @theme inline {
   --color-background: var(--bg-page);
   --color-foreground: var(--text-primary);
+  --color-page: var(--bg-page);
+  --color-border: var(--border);
+  --color-strong: var(--border-strong);
   --font-sans: var(--font-sans);
   --font-serif: var(--font-serif);
   --font-dot: var(--font-dot);
@@ -65,6 +68,17 @@ body {
 @media (min-width: 640px) { .layout { max-width: 680px; } }
 @media (min-width: 1024px) { 
   .layout { grid-template-columns: minmax(0, 680px) 300px; gap: 24px; max-width: 1004px; } 
+}
+
+.main-content {
+  background-color: var(--bg-page);
+}
+
+@media (max-width: 640px) {
+  .main-content {
+    border-left: none;
+    border-right: none;
+  }
 }
 
 /* 4. Splash Screen */
