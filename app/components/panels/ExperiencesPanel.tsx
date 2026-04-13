@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { FaExternalLinkAlt, FaRegComment, FaRetweet, FaRegHeart, FaChartBar } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
 
@@ -26,11 +26,10 @@ interface Experience {
 }
 
 interface ExperiencesPanelProps {
-  experiences?: Experience[]; // Optional mock data
-  data: any; // Portfolio data
+  experiences?: Experience[];
+  data: any;
+  loading?: boolean;
 }
-
- const API_URL = "/api";
 
 function CompanyAvatar({ name, logo }: { name: string; logo?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -67,7 +66,6 @@ function CompanyAvatar({ name, logo }: { name: string; logo?: string }) {
 
 function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExperience: boolean }) {
   const org = exp.organization || exp.company || 'Unknown';
-  // Show roles in reverse chronological order (latest at top)
   const roles = [...exp.roles].reverse();
 
   return (
@@ -150,27 +148,10 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
   );
 }
 
-export default function ExperiencesPanel({ data }: ExperiencesPanelProps) {
-  const [experiences, setExperiences] = useState<Experience[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    fetch(`${API_URL}/experience`)
-      .then(res => res.json())
-      .then(apiExps => {
-        console.log("API Experiences:", apiExps);
-        if (Array.isArray(apiExps)) {
-          setExperiences(apiExps);
-        }
-      })
-      .catch(err => console.error("Failed to fetch API experiences:", err))
-      .finally(() => setLoading(false));
-  }, []);
-
+export default function ExperiencesPanel({ data, experiences = [], loading = false }: ExperiencesPanelProps) {
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[200px] animate-pulse">
+      <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
         <div className="font-dot text-[10px] uppercase tracking-[0.2em] text-secondary">
           Booting System...
         </div>

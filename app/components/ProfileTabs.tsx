@@ -22,9 +22,36 @@ export default function ProfileTabs({ data }: { data: any }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialTab = searchParams.get('tab') as TabId || 'projects';
+  
   const [active, setActive] = useState<TabId>(initialTab);
   const [layout, setLayout] = useState<'list' | 'grid'>('list');
+  const [projects, setProjects] = useState<any[]>([]);
+  const [experiences, setExperiences] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   const tabsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Fetch all data once on component mount
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        setLoading(true);
+        const [projectsRes, experiencesRes] = await Promise.all([
+          fetch('/api/projects').then(res => res.json()),
+          fetch('/api/experience').then(res => res.json())
+        ]);
+        
+        if (Array.isArray(projectsRes)) setProjects(projectsRes);
+        if (Array.isArray(experiencesRes)) setExperiences(experiencesRes);
+      } catch (err) {
+        console.error("Critical fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchAllData();
+  }, []);
 
   useEffect(() => {
     const tabUrl = searchParams.get('tab') as TabId;
@@ -39,27 +66,37 @@ export default function ProfileTabs({ data }: { data: any }) {
     params.set('tab', id);
     router.replace(`?${params.toString()}`, { scroll: false });
     
-    // Scroll so the tabs are exactly at the top of the viewport
+    // Conditional scroll: Only scroll to the tabs if the user has already scrolled past them
     if (tabsContainerRef.current) {
-      // offsetTop gives position relative to document
-      const targetPos = tabsContainerRef.current.offsetTop;
-      window.scrollTo({
-        top: targetPos,
-        behavior: 'smooth'
-      });
+      const rect = tabsContainerRef.current.getBoundingClientRect();
+      const absoluteTop = rect.top + window.scrollY - 5;
+      
+      // If we are currently scrolled past the tabs (sticky mode active or deep in content)
+      if (window.scrollY > absoluteTop) {
+        window.scrollTo({
+          top: absoluteTop,
+          behavior: 'smooth'
+        });
+      }
     }
   };
 
   return (
     <div className="w-full">
       <div className="px-6 py-4 flex gap-6 text-[11px] font-dot text-secondary uppercase tracking-widest border-b border-border/50">
-        <span className="flex gap-1.5"><strong className="text-primary">{data.projects.length}</strong> Projects</span>
-        <span className="flex gap-1.5"><strong className="text-primary">{data.experiences.length}</strong> Experiences</span>
-        <span className="flex gap-1.5"><strong className="text-primary">{data.contributions?.length || 0}</strong> Contributions</span>
+        <span className="flex gap-1.5">
+          <strong className="text-primary">{loading ? '--' : projects.length}</strong> Projects
+        </span>
+        <span className="flex gap-1.5">
+          <strong className="text-primary">{loading ? '--' : experiences.length}</strong> Experiences
+        </span>
+        <span className="flex gap-1.5">
+          <strong className="text-primary">{data.contributions?.length || 0}</strong> Contributions
+        </span>
       </div>
 
+      <div ref={tabsContainerRef} className="tabs-anchor" />
       <div 
-        ref={tabsContainerRef}
         className="sticky top-0 z-40 bg-page/90 backdrop-blur-md flex items-center justify-between border-b border-border pr-2 pt-2 -mt-px"
       >
         <nav 
@@ -123,8 +160,21 @@ export default function ProfileTabs({ data }: { data: any }) {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
-            {active === 'projects' && <ProjectsPanel data={data} layout={layout} />}
-            {active === 'experiences' && <ExperiencesPanel data={data} />}
+            {active === 'projects' && (
+              <ProjectsPanel 
+                data={data} 
+                layout={layout} 
+                projects={projects} 
+                loading={loading} 
+              />
+            )}
+            {active === 'experiences' && (
+              <ExperiencesPanel 
+                data={data} 
+                experiences={experiences} 
+                loading={loading} 
+              />
+            )}
             {active === 'about' && <AboutMePanel />}
             {active === 'tools' && <ToolsPanel tools={data.tools} />}
           </motion.div>

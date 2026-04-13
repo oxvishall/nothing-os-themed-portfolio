@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { FaGithub, FaExternalLinkAlt, FaShareAlt } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
 
@@ -24,9 +24,8 @@ interface ProjectsPanelProps {
   projects?: Project[];
   data: any;
   layout?: 'list' | 'grid';
+  loading?: boolean;
 }
-
-const API_URL = "/api";
 
 function drawProjectThumb(canvas: HTMLCanvasElement, seed: number | undefined, isDark: boolean, hasImage: boolean) {
   const ctx = canvas.getContext('2d');
@@ -83,14 +82,14 @@ function ProjectCard({ project }: { project: Project }) {
       </div>
       
       <div className="p-6 flex flex-col flex-1">
-        <h3 className="font-serif text-[21px] font-bold mb-3 tracking-tight">{title}</h3>
+        <h3 className="font-serif text-[21px] mb-3 tracking-tight">{title}</h3>
         <p className="text-secondary text-[14px] leading-relaxed mb-4 flex-1 line-clamp-2">
           {project.description}
         </p>
         
         <div className="flex flex-wrap gap-1.5 mb-6">
           {project.tags.map(tag => (
-            <span key={tag} className="px-2.5 py-0.5 rounded-full border border-strong font-dot text-[9px] uppercase tracking-wider text-tertiary">
+            <span key={tag} className="px-2 py-0.5 rounded-md border border-border/50 font-dot text-[8px] uppercase tracking-wider text-secondary bg-elevated/30">
               {tag}
             </span>
           ))}
@@ -207,23 +206,7 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
   );
 }
 
-export default function ProjectsPanel({ data, layout = 'list' }: ProjectsPanelProps) {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(true);
-    fetch(`${API_URL}/projects`)
-      .then(res => res.json())
-      .then(apiProjects => {
-        if (Array.isArray(apiProjects)) {
-          setProjects(apiProjects);
-        }
-      })
-      .catch(err => console.error("Failed to fetch API projects:", err))
-      .finally(() => setLoading(false));
-  }, []);
-
+export default function ProjectsPanel({ data, layout = 'list', projects = [], loading = false }: ProjectsPanelProps) {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
