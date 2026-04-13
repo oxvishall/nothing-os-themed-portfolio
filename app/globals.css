@@ -68,9 +68,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-@media (pointer: fine) {
-  body { cursor: none; }
-}
 
 /* 3. Layout */
 .layout {
@@ -109,20 +106,43 @@ body {
 @keyframes pulse { from { opacity: 0.3; transform: scale(0.8); } to { opacity: 1; transform: scale(1.1); } }
 .splash-text { margin-top: 16px; font-family: var(--font-dot); font-size: 14px; }
 
+@media (pointer: fine) {
+  body, a, button, input, textarea, label, [role="button"] { 
+    cursor: none !important; 
+  }
+}
+
 /* 5. Custom Cursor */
 #cursor {
-  position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+  position: fixed; top: 0; left: 0; 
+  width: 10px; height: 10px;
   background-color: var(--text-primary); border-radius: 50%;
   pointer-events: none; z-index: 10000;
   mix-blend-mode: difference; display: none;
-  transition: width 0.2s, height 0.2s, opacity 0.2s;
+  transition: width 0.15s, height 0.15s, opacity 0.15s, border-radius 0.15s;
 }
+
 .cursor-hover {
   width: 30px !important;
   height: 30px !important;
   opacity: 0.4;
   background-color: var(--text-secondary);
 }
+
+.cursor-text {
+  width: 1px !important;
+  height: 20px !important;
+  border-radius: 0 !important;
+  opacity: 1 !important;
+  background-color: var(--text-primary) !important;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  from, to { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
 @media (pointer: fine) { #cursor { display: block; } }
 
 /* 6. Profile Sections (Cover, Bio, Tabs) */

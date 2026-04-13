@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function CustomCursor() {
+  const [type, setType] = useState<'default' | 'pointer' | 'text'>('default');
+
   useEffect(() => {
     const cursor = document.getElementById('cursor');
     if (!cursor) return;
@@ -16,19 +18,43 @@ export default function CustomCursor() {
 
     const handlePointerOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      if (!target) return;
+
+      // Check for text inputs
+      if (
+        target.tagName === 'INPUT' || 
+        target.tagName === 'TEXTAREA' || 
+        target.isContentEditable
+      ) {
+        setType('text');
+        cursor.classList.add('cursor-text');
+        cursor.classList.remove('cursor-hover');
+        return;
+      }
+
+      // Check for clickable elements
       if (
         target.tagName === 'A' || 
         target.tagName === 'BUTTON' || 
         target.closest('a') || 
         target.closest('button') ||
-        target.classList.contains('clickable')
+        target.classList.contains('clickable') ||
+        getComputedStyle(target).cursor === 'pointer'
       ) {
+        setType('pointer');
         cursor.classList.add('cursor-hover');
+        cursor.classList.remove('cursor-text');
+        return;
       }
+
+      // Default
+      setType('default');
+      cursor.classList.remove('cursor-hover', 'cursor-text');
     };
 
     const handlePointerOut = () => {
-      cursor.classList.remove('cursor-hover');
+      cursor.classList.remove('cursor-hover', 'cursor-text');
+      setType('default');
     };
 
     window.addEventListener('mousemove', moveCursor);
