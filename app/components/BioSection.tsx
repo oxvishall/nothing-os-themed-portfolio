@@ -28,7 +28,7 @@ export default function BioSection({ data }: BioSectionProps) {
         </a>
       </div>
 
-      <h1 className="display-name">{data.name}</h1>
+      <h1 className="display-name italic">{data.name}</h1>
       <p className="handle">{data.handle}</p>
 
       <p className="bio-text">{data.bio}</p>
