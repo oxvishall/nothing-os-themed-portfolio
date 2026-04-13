@@ -83,18 +83,6 @@ export default function ProfileTabs({ data }: { data: any }) {
 
   return (
     <div className="w-full">
-      <div className="px-6 py-4 flex gap-6 text-[11px] font-dot text-secondary uppercase tracking-widest border-b border-border/50">
-        <span className="flex gap-1.5">
-          <strong className="text-primary">{loading ? '--' : projects.length}</strong> Projects
-        </span>
-        <span className="flex gap-1.5">
-          <strong className="text-primary">{loading ? '--' : experiences.length}</strong> Experiences
-        </span>
-        <span className="flex gap-1.5">
-          <strong className="text-primary">{data.contributions?.length || 0}</strong> Contributions
-        </span>
-      </div>
-
       <div ref={tabsContainerRef} className="tabs-anchor" />
       <div 
         className="sticky top-0 z-40 bg-page/90 backdrop-blur-md flex items-center justify-between border-b border-border pr-2 pt-2 -mt-px"

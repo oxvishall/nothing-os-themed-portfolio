@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_URL = process.env.API_URL || "http://localhost:5000/api";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const body = await req.json();
-    const res = await fetch(`${API_URL}/experience/${params.id}`, {
+    const res = await fetch(`${API_URL}/experience/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -20,9 +21,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const res = await fetch(`${API_URL}/experience/${params.id}`, {
+    const { id } = await params;
+    const res = await fetch(`${API_URL}/experience/${id}`, {
       method: 'DELETE',
       headers: {
         'x-admin-password': req.headers.get('x-admin-password') || '',

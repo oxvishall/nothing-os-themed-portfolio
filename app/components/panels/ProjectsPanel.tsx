@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaGithub, FaExternalLinkAlt, FaShareAlt } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Project {
   id?: string;
@@ -27,6 +28,98 @@ interface ProjectsPanelProps {
   loading?: boolean;
 }
 
+const API_URL = "/api";
+
+function ProjectMenu({ project }: { project: Project }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const liveUrl = project.liveUrl || project.url;
+  const sourceUrl = project.sourceUrl || project.githubUrl;
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?tab=projects&project=${project._id || project.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    // Use a custom event or toast if available, otherwise native alert for simplicity in this brutalist design
+    alert('Project link copied to clipboard!');
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative" ref={menuRef}>
+      <button 
+        className="post-more hover:bg-elevated p-2 rounded-full transition-colors flex items-center justify-center text-secondary hover:text-primary" 
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+        aria-label="More options"
+      >
+        <HiDotsHorizontal size={20} />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute right-0 mt-2 w-56 bg-page border border-strong rounded-2xl shadow-2xl z-50 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex flex-col p-1.5 bg-page">
+              {liveUrl && (
+                <a 
+                  href={liveUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FaExternalLinkAlt className="text-tertiary" size={14} />
+                  <span>Project Demo</span>
+                </a>
+              )}
+              {sourceUrl && (
+                <a 
+                  href={sourceUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FaGithub className="text-tertiary" size={16} />
+                  <span>Source Code</span>
+                </a>
+              )}
+              <button 
+                onClick={handleShare}
+                className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium text-left w-full"
+              >
+                <FaShareAlt className="text-tertiary" size={14} />
+                <span>Share Project</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function drawProjectThumb(canvas: HTMLCanvasElement, seed: number | undefined, isDark: boolean, hasImage: boolean) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
@@ -49,7 +142,6 @@ function drawProjectThumb(canvas: HTMLCanvasElement, seed: number | undefined, i
 function ProjectCard({ project }: { project: Project }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const title = project.title || project.name;
-  const liveUrl = project.liveUrl || project.url;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -81,8 +173,12 @@ function ProjectCard({ project }: { project: Project }) {
         )}
       </div>
       
-      <div className="p-6 flex flex-col flex-1">
-        <h3 className="font-serif text-[21px] mb-3 tracking-tight">{title}</h3>
+      <div className="p-6 flex flex-col flex-1 relative">
+        <div className="flex justify-between items-start mb-3 gap-4">
+          <h3 className="font-serif text-[21px] font-bold tracking-tight leading-tight flex-1">{title}</h3>
+          <ProjectMenu project={project} />
+        </div>
+        
         <p className="text-secondary text-[14px] leading-relaxed mb-4 flex-1 line-clamp-2">
           {project.description}
         </p>
@@ -97,14 +193,6 @@ function ProjectCard({ project }: { project: Project }) {
         
         <div className="mt-auto flex items-center gap-1 font-serif text-[18px]">
           <span className="opacity-50 tracking-tighter">{project.year}</span>
-          <a 
-            href={liveUrl} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="hover:italic hover:translate-x-0.5 transition-all text-primary"
-          >
-            View ↗
-          </a>
         </div>
       </div>
     </div>
@@ -136,8 +224,6 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
   }, [project.seed]);
 
   const title = project.title || project.name;
-  const liveUrl = project.liveUrl || project.url;
-  const sourceUrl = project.sourceUrl || project.githubUrl;
 
   return (
     <article className="project-post" aria-label={title}>
@@ -159,9 +245,7 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
             <span className="post-sep">·</span>
             <span className="post-time">{project.year || '2024'}</span>
           </div>
-          <button className="post-more" aria-label="More options">
-            <HiDotsHorizontal size={18} />
-          </button>
+          <ProjectMenu project={project} />
         </header>
 
         <div className="post-body">
@@ -183,24 +267,7 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
           </div>
         </div>
 
-        <div className="post-actions project-redirection">
-          {liveUrl && (
-            <a href={liveUrl} target="_blank" rel="noopener noreferrer" className="post-action-group" title="External Website">
-              <FaExternalLinkAlt size={16} className="post-action-icon" />
-            </a>
-          )}
-          {sourceUrl && (
-            <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="post-action-group" title="View Source on GitHub">
-              <FaGithub size={18} className="post-action-icon" />
-            </a>
-          )}
-          <button className="post-action-group" title="Share Project">
-            <FaShareAlt size={16} className="post-action-icon" />
-          </button>
-          <div className="post-action-group">
-            <div className="post-action-dummy-space" />
-          </div>
-        </div>
+        {/* Removed redundant action row as everything is in the dots menu */}
       </div>
     </article>
   );
