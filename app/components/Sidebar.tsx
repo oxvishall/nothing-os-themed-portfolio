@@ -33,42 +33,59 @@ function LocalTime() {
 }
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     const stored = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    if (stored) setTheme(stored);
-    else setTheme('system');
-  }, []);
-
-  const toggle = () => {
     const html = document.documentElement;
-    const isDark = html.classList.contains('dark');
-    if (isDark) {
-      html.classList.remove('dark');
-      html.classList.add('light');
-      localStorage.setItem('theme', 'light');
-      setTheme('light');
-    } else {
-      html.classList.remove('light');
-      html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+    if (stored) {
+      setTheme(stored);
+    } else if (html.classList.contains('dark')) {
       setTheme('dark');
     }
+  }, []);
+
+  const setThemeMode = (mode: 'light' | 'dark') => {
+    const html = document.documentElement;
+    if (mode === 'dark') {
+      html.classList.add('dark');
+      html.classList.remove('light');
+    } else {
+      html.classList.add('light');
+      html.classList.remove('dark');
+    }
+    localStorage.setItem('theme', mode);
+    setTheme(mode);
   };
 
-  const icon = theme === 'dark' ? '◑' : theme === 'light' ? '◐' : '◐';
-
   return (
-    <button
-      id="theme-toggle"
-      className="theme-btn border-strong transition-all duration-300 hover:bg-elevated/80 active:scale-95"
-      onClick={toggle}
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-    >
-      <span className="theme-btn-dot-label">· THEME ·</span>
-      <span className="theme-btn-icon" aria-hidden="true">{icon}</span>
-    </button>
+    <div className="sidebar-card border-strong p-5">
+      <span className="sidebar-heading !mb-4 block">· INTERFACE ·</span>
+      <div className="flex bg-surface border border-strong rounded-full p-1 relative">
+        <button 
+          onClick={() => setThemeMode('light')}
+          className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-all duration-300 z-10 ${
+            theme === 'light' ? 'text-background' : 'text-secondary hover:text-primary'
+          }`}
+        >
+          LIGHT
+        </button>
+        <button 
+          onClick={() => setThemeMode('dark')}
+          className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-all duration-300 z-10 ${
+            theme === 'dark' ? 'text-background' : 'text-secondary hover:text-primary'
+          }`}
+        >
+          DARK
+        </button>
+        {/* Active Indicator Slider */}
+        <div 
+          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-primary rounded-full transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${
+            theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-1'
+          }`}
+        />
+      </div>
+    </div>
   );
 }
 
