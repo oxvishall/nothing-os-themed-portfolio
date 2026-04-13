@@ -27,6 +27,7 @@ interface Experience {
 
 interface ExperiencesPanelProps {
   experiences: Experience[];
+  data: any; // Portfolio data
 }
 
 const API_URL = "/api";
@@ -149,7 +150,7 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
   );
 }
 
-export default function ExperiencesPanel({ experiences: initialExperiences }: ExperiencesPanelProps) {
+export default function ExperiencesPanel({ experiences: initialExperiences, data }: ExperiencesPanelProps) {
   const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
 
   useEffect(() => {

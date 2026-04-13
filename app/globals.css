@@ -163,10 +163,6 @@ body {
 .stats-row { display: flex; gap: 16px; font-size: 14px; color: var(--text-secondary); }
 .stats-row strong { color: var(--text-primary); }
 
-.profile-tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
-.profile-tabs button { padding: 14px 20px; background: none; border: none; font-size: 15px; color: var(--text-secondary); border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s; }
-.profile-tabs button:hover { background: var(--bg-surface); color: var(--text-primary); }
-.profile-tabs button[aria-selected="true"] { color: var(--text-primary); border-bottom-color: var(--text-primary); font-weight: 500; }
 .tab-panel { display: none; }
 .tab-panel--active { display: block; animation: fade 0.3s ease-out; }
 @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
@@ -239,12 +235,12 @@ body {
 /* 8. Sidebar & Others */
 .sidebar { display: none; }
 @media (min-width: 1024px) { .sidebar { display: flex; flex-direction: column; gap: 16px; padding: 16px 0; position: sticky; top: 16px; height: max-content; } }
-.sidebar-card { background: var(--bg-page); border: 1px solid var(--border); border-radius: 18px; padding: 20px; }
+.sidebar-card { background: var(--bg-page); border: 1px solid var(--border-strong); border-radius: 18px; padding: 20px; }
 .sidebar-heading { font-family: var(--font-dot); font-size: 10px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 12px; }
 .sidebar-about-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 .link-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .sidebar-link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); font-size: 14px; font-weight: 500; }
-.theme-btn { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 99px; cursor: pointer; }
+.theme-btn { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: 99px; cursor: pointer; }
 .theme-btn-dot-label { font-family: var(--font-dot); font-size: 10px; color: var(--text-secondary); }
 
 .ndot-section { margin-top: 32px; border-top: 1px solid var(--border); padding-top: 32px; }

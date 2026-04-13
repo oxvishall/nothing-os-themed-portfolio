@@ -1,102 +1,84 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import ProjectsPanel from '@/app/components/panels/ProjectsPanel';
-import ExperiencesPanel from '@/app/components/panels/ExperiencesPanel';
-import AboutMePanel from '@/app/components/panels/AboutMePanel';
-import ToolsPanel from '@/app/components/panels/ToolsPanel';
-import type { PortfolioData } from '@/app/data/portfolio';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import ProjectsPanel from './panels/ProjectsPanel';
+import ExperiencesPanel from './panels/ExperiencesPanel';
+import AboutMePanel from './panels/AboutMePanel';
+import ToolsPanel from './panels/ToolsPanel';
 
-type TabId = 'projects' | 'experiences' | 'about' | 'tools';
-
-const TABS: { id: TabId; label: string }[] = [
+const TABS = [
   { id: 'projects', label: 'Projects' },
   { id: 'experiences', label: 'Experiences' },
   { id: 'about', label: 'About' },
   { id: 'tools', label: 'Tools' },
-];
+] as const;
 
-interface ProfileTabsProps {
-  data: PortfolioData;
-}
+type TabId = typeof TABS[number]['id'];
 
-export default function ProfileTabs({ data }: ProfileTabsProps) {
-  const [active, setActive] = useState<TabId>('projects');
+export default function ProfileTabs({ data }: { data: any }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialTab = searchParams.get('tab') as TabId || 'projects';
+  const [active, setActive] = useState<TabId>(initialTab);
 
-  // URL-based deep linking support (stretch goal §13.5)
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get('tab') as TabId | null;
-    if (tab && TABS.some(t => t.id === tab)) {
-      setActive(tab);
+    const tabUrl = searchParams.get('tab') as TabId;
+    if (tabUrl && tabUrl !== active) {
+      setActive(tabUrl);
     }
-  }, []);
+  }, [searchParams]);
 
   const handleTabClick = (id: TabId) => {
     setActive(id);
-    const url = new URL(window.location.href);
-    url.searchParams.set('tab', id);
-    window.history.replaceState({}, '', url.toString());
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', id);
+    router.replace(`?${params.toString()}`, { scroll: false });
   };
 
   return (
-    <>
-      <nav className="profile-tabs" role="tablist" aria-label="Portfolio sections">
+    <div className="w-full">
+      <nav 
+        className="profile-tabs px-4 flex gap-4 border-b border-border pb-4 overflow-x-auto scrollbar-hide relative" 
+        role="tablist"
+      >
         {TABS.map(tab => (
           <button
             key={tab.id}
-            role="tab"
-            id={`tab-${tab.id}`}
-            aria-selected={active === tab.id}
-            aria-controls={`panel-${tab.id}`}
             onClick={() => handleTabClick(tab.id)}
+            className={`relative font-dot text-[10px] uppercase tracking-widest px-6 py-2.5 transition-colors duration-300 z-10 ${
+              active === tab.id ? 'text-background' : 'text-secondary hover:text-primary'
+            }`}
           >
+            {active === tab.id && (
+              <motion.div
+                layoutId="active-pill"
+                className="absolute inset-0 bg-primary rounded-full -z-10"
+                transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+              />
+            )}
             {tab.label}
           </button>
         ))}
       </nav>
 
-      <main className="tab-panels">
-        <div
-          id="panel-projects"
-          role="tabpanel"
-          aria-labelledby="tab-projects"
-          className={`tab-panel${active === 'projects' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'projects'}
-        >
-          <ProjectsPanel projects={data.projects} data={data} />
-        </div>
-
-        <div
-          id="panel-experiences"
-          role="tabpanel"
-          aria-labelledby="tab-experiences"
-          className={`tab-panel${active === 'experiences' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'experiences'}
-        >
-          <ExperiencesPanel experiences={data.experiences} />
-        </div>
-
-        <div
-          id="panel-about"
-          role="tabpanel"
-          aria-labelledby="tab-about"
-          className={`tab-panel${active === 'about' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'about'}
-        >
-          <AboutMePanel />
-        </div>
-
-        <div
-          id="panel-tools"
-          role="tabpanel"
-          aria-labelledby="tab-tools"
-          className={`tab-panel${active === 'tools' ? ' tab-panel--active' : ''}`}
-          hidden={active !== 'tools'}
-        >
-          <ToolsPanel tools={data.tools} />
-        </div>
-      </main>
-    </>
+      <div className="tab-content min-h-[400px]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+          >
+            {active === 'projects' && <ProjectsPanel projects={data.projects} data={data} />}
+            {active === 'experiences' && <ExperiencesPanel experiences={data.experiences} data={data} />}
+            {active === 'about' && <AboutMePanel />}
+            {active === 'tools' && <ToolsPanel tools={data.tools} />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }
