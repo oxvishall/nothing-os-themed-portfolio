@@ -3,41 +3,57 @@
 import { useEffect, useRef, useState } from 'react';
 import { FaGithub, FaExternalLinkAlt, FaShareAlt } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
-import type { Project } from '@/app/data/portfolio';
+interface Project {
+  id?: string;
+  _id?: string;
+  name?: string;
+  title?: string;
+  description: string;
+  year?: number;
+  tags: string[];
+  url?: string;
+  liveUrl?: string;
+  githubUrl?: string;
+  sourceUrl?: string;
+  seed?: number;
+  image?: string;
+}
 
 interface ProjectsPanelProps {
   projects: Project[];
   data: any; // Portfolio data
 }
 
-function drawProjectThumb(canvas: HTMLCanvasElement, seed: number, isDark: boolean) {
+const API_URL = "/api";
+
+function drawProjectThumb(canvas: HTMLCanvasElement, seed: number | undefined, isDark: boolean, hasImage: boolean) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   const W = canvas.width;
   const H = canvas.height;
 
-  let s = seed;
+  let s = seed || 42;
   const rand = () => {
     s = (s * 1664525 + 1013904223) & 0xffffffff;
     return (s >>> 0) / 0xffffffff;
   };
 
-  ctx.fillStyle = isDark ? '#1a1a1a' : '#ebebeb';
+  ctx.clearRect(0, 0, W, H);
+  
+  // Outer frame background
+  ctx.fillStyle = isDark ? '#000000' : '#f0f0f0';
   ctx.fillRect(0, 0, W, H);
 
-  const DOT = 2; // Fixed small dots for premium look
-  const GAP = 8;
-  const primary = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)';
-  const accent = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)';
+  const DOTSize = 2;
+  const GAP = 10;
+  
+  // Grid opacity
+  const dotColor = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
 
-  for (let x = GAP; x < W; x += GAP + DOT) {
-    for (let y = GAP; y < H; y += GAP + DOT) {
-      const noise = rand();
-      if (noise < 0.2) continue; // Sparse look
-      ctx.fillStyle = noise > 0.8 ? primary : accent;
-      ctx.beginPath();
-      ctx.arc(x, y, DOT / 2, 0, Math.PI * 2);
-      ctx.fill();
+  for (let x = GAP; x < W; x += GAP) {
+    for (let y = GAP; y < H; y += GAP) {
+      ctx.fillStyle = dotColor;
+      ctx.fillRect(x - 0.5, y - 0.5, 1, 1); // 1px sharp dots for grid feel
     }
   }
 }
@@ -54,7 +70,7 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
     const draw = () => {
       canvas.width = canvas.offsetWidth || 500;
       canvas.height = Math.round((canvas.width * 9) / 16);
-      drawProjectThumb(canvas, project.seed, isDark());
+      drawProjectThumb(canvas, project.seed, isDark(), !!project.image);
     };
 
     draw();
@@ -66,8 +82,12 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
     return () => { ro.disconnect(); mo.disconnect(); mq.removeEventListener('change', draw); };
   }, [project.seed]);
 
+  const title = project.title || project.name;
+  const liveUrl = project.liveUrl || project.url;
+  const sourceUrl = project.sourceUrl || project.githubUrl;
+
   return (
-    <article className="project-post" aria-label={project.name}>
+    <article className="project-post" aria-label={title}>
       <div className="post-avatar-col">
         <div className="post-avatar">
           {data.avatarUrl ? (
@@ -84,7 +104,7 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
             <span className="post-name">{data.name}</span>
             <span className="post-handle">{data.handle}</span>
             <span className="post-sep">·</span>
-            <span className="post-time">{project.year}</span>
+            <span className="post-time">{project.year || '2024'}</span>
           </div>
           <button className="post-more" aria-label="More options">
             <HiDotsHorizontal size={18} />
@@ -93,26 +113,31 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
 
         <div className="post-body">
           <p className="post-text">
-            <strong>{project.name}</strong> — {project.description}
+            <strong>{title}</strong> — {project.description}
           </p>
           <div className="post-media">
             <canvas ref={canvasRef} className="post-canvas" aria-hidden="true" />
-            <div className="post-hashtags">
-              {project.tags.map(tag => (
-                <span key={tag} className="post-hashtag">#{tag.replace(/\s+/g, '')}</span>
-              ))}
-            </div>
+            {project.image && (
+              <div className="post-media-inner">
+                <img src={project.image} alt="" className="post-media-img" aria-hidden="true" />
+                <div className="post-hashtags">
+                  {project.tags.map(tag => (
+                    <span key={tag} className="post-hashtag">#{tag.replace(/\s+/g, '')}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="post-actions project-redirection">
-          {project.url && (
-            <a href={project.url} target="_blank" rel="noopener noreferrer" className="post-action-group" title="External Website">
+          {liveUrl && (
+            <a href={liveUrl} target="_blank" rel="noopener noreferrer" className="post-action-group" title="External Website">
               <FaExternalLinkAlt size={16} className="post-action-icon" />
             </a>
           )}
-          {project.githubUrl && (
-            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="post-action-group" title="View Source on GitHub">
+          {sourceUrl && (
+            <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="post-action-group" title="View Source on GitHub">
               <FaGithub size={18} className="post-action-icon" />
             </a>
           )}
@@ -128,11 +153,25 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
   );
 }
 
-export default function ProjectsPanel({ projects, data }: ProjectsPanelProps) {
+export default function ProjectsPanel({ projects: initialProjects, data }: ProjectsPanelProps) {
+  const [projects, setProjects] = useState<Project[]>(initialProjects);
+
+  useEffect(() => {
+    fetch(`${API_URL}/projects`)
+      .then(res => res.json())
+      .then(apiProjects => {
+        console.log("API Projects:", apiProjects);
+        if (Array.isArray(apiProjects)) {
+          setProjects(apiProjects);
+        }
+      })
+      .catch(err => console.error("Failed to fetch API projects:", err));
+  }, []);
+
   return (
     <div className="project-feed" role="list">
-      {projects.map(p => (
-        <div key={p.id} role="listitem" className="post-wrapper">
+      {projects.map((p, i) => (
+        <div key={p._id || p.id || i} role="listitem" className="post-wrapper">
           <ProjectPost project={p} data={data} />
         </div>
       ))}

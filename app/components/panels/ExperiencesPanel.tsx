@@ -1,18 +1,41 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaExternalLinkAlt, FaRegComment, FaRetweet, FaRegHeart, FaChartBar } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
-import type { Experience, Role } from '@/app/data/portfolio';
+
+interface Role {
+  role?: string;
+  title?: string;
+  description?: string;
+  bullets?: string[];
+  startDate?: string;
+  endDate?: string;
+  dateRange?: string;
+  website?: string;
+}
+
+interface Experience {
+  id?: string;
+  _id?: string;
+  organization?: string;
+  company?: string;
+  logo?: string;
+  website?: string;
+  roles: Role[];
+}
 
 interface ExperiencesPanelProps {
   experiences: Experience[];
 }
 
-function CompanyAvatar({ name }: { name: string }) {
+const API_URL = "/api";
+
+function CompanyAvatar({ name, logo }: { name: string; logo?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (logo) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -28,88 +51,128 @@ function CompanyAvatar({ name }: { name: string }) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(name[0], size / 2, size / 2);
-  }, [name]);
+  }, [name, logo]);
 
-  return <canvas ref={canvasRef} className="company-logo" style={{ borderRadius: '8px' }} />;
+  if (logo) {
+    return (
+      <div className="company-logo" style={{ width: 48, height: 48, overflow: 'hidden', borderRadius: '8px' }}>
+        <img src={logo} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      </div>
+    );
+  }
+
+  return <canvas ref={canvasRef} className="company-logo" style={{ borderRadius: '8px', width: 48, height: 48 }} />;
 }
 
-export default function ExperiencesPanel({ experiences }: ExperiencesPanelProps) {
+function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExperience: boolean }) {
+  const org = exp.organization || exp.company || 'Unknown';
+  // Show roles in reverse chronological order (latest at top)
+  const roles = [...exp.roles].reverse();
+
   return (
-    <div className="experience-thread" role="list">
-      {experiences.map((exp, expIdx) => {
-        const isLastExperience = expIdx === experiences.length - 1;
+    <div className="company-group">
+      {roles.map((role, roleIdx) => {
+        const isFirstInCompany = roleIdx === 0;
+        const isLastInCompany = roleIdx === roles.length - 1;
+        const isLastOverall = isLastExperience && isLastInCompany;
+
+        const roleTitle = role.role || role.title || '';
+        const roleDesc = role.description || '';
+        const rolePeriod = role.dateRange || `${role.startDate} — ${role.endDate}`;
+        const bullets = role.bullets || [];
 
         return (
-          <div key={expIdx} className="company-group">
-            {exp.roles.map((role, roleIdx) => {
-              const isFirstInCompany = roleIdx === 0;
-              const isLastInCompany = roleIdx === exp.roles.length - 1;
-              const isFirstOverall = expIdx === 0 && isFirstInCompany;
-              const isLastOverall = isLastExperience && isLastInCompany;
+          <article key={roleIdx} className={`experience-post ${!isFirstInCompany ? 'sub-role' : ''}`}>
+            <div className="thread-aside">
+              <div className="thread-avatar-wrap">
+                {isFirstInCompany ? (
+                  <CompanyAvatar name={org} logo={exp.logo} />
+                ) : (
+                  <div className="thread-role-dot" />
+                )}
+              </div>
+              <div className={`thread-line-below ${isLastOverall ? 'thread-line--hidden' : ''}`} />
+            </div>
 
-              return (
-                <article key={roleIdx} className={`experience-post ${!isFirstInCompany ? 'sub-role' : ''}`}>
-                  <div className="thread-aside">
-                    <div className={`thread-line-above ${isFirstOverall ? 'thread-line--hidden' : ''}`} />
-                    <div className="thread-avatar-wrap">
-                      {isFirstInCompany ? (
-                        <CompanyAvatar name={exp.company} />
-                      ) : (
-                        <div className="thread-role-dot" />
-                      )}
-                    </div>
-                    <div className={`thread-line-below ${isLastOverall ? 'thread-line--hidden' : ''}`} />
-                  </div>
+            <div className={`thread-content ${!isFirstInCompany ? 'sub-content' : ''}`}>
+              <header className="post-header">
+                <div className="post-user-info">
+                  {isFirstInCompany && <span className="post-name">{org}</span>}
+                  {isFirstInCompany && <span className="post-handle">@{org.replace(/\s+/g, '').toLowerCase()}</span>}
+                  <span className="post-sep">·</span>
+                  <span className="post-time">{rolePeriod}</span>
+                </div>
+                <button className="post-more" title="View options">
+                  <HiDotsHorizontal size={18} />
+                </button>
+              </header>
 
-                  <div className={`thread-content ${!isFirstInCompany ? 'sub-content' : ''}`}>
-                    <header className="post-header">
-                      <div className="post-user-info">
-                        {isFirstInCompany && <span className="post-name">{exp.company}</span>}
-                        {isFirstInCompany && <span className="post-handle">@{exp.company.replace(/\s+/g, '').toLowerCase()}</span>}
-                        <span className="post-sep">·</span>
-                        <span className="post-time">{role.dateRange}</span>
-                      </div>
-                      <button className="post-more" title="View options">
-                        <HiDotsHorizontal size={18} />
-                      </button>
-                    </header>
-                    
-                    <p className="post-thread-title">{role.title}</p>
-                    
-                    <div className="post-body">
-                      <ul className="thread-bullets">
-                        {role.bullets.map((bullet, bi) => (
-                          <li key={bi} className="thread-bullet">
-                            <span className="bullet-text">{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div className="thread-actions">
-                      <button className="post-action-group" title="Reply">
-                        <FaRegComment size={16} />
-                      </button>
-                      <button className="post-action-group" title="Repost">
-                        <FaRetweet size={16} />
-                      </button>
-                      <button className="post-action-group" title="Like">
-                        <FaRegHeart size={16} />
-                      </button>
-                      <button className="post-action-group" title="View Stats">
-                        <FaChartBar size={16} />
-                      </button>
-                      <a href="#" className="post-action-group" title="Visit Company Website">
-                        <FaExternalLinkAlt size={14} />
-                      </a>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+              <p className="post-thread-title">{roleTitle}</p>
+
+              <div className="post-body">
+                {roleDesc && <p className="post-text">{roleDesc}</p>}
+                {bullets.length > 0 && (
+                  <ul className="thread-bullets">
+                    {bullets.map((bullet, bi) => (
+                      <li key={bi} className="thread-bullet">
+                        <span className="bullet-text">{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="thread-actions">
+                <button className="post-action-group" title="Reply">
+                  <FaRegComment size={16} />
+                </button>
+                <button className="post-action-group" title="Repost">
+                  <FaRetweet size={18} />
+                </button>
+                <button className="post-action-group" title="Like">
+                  <FaRegHeart size={16} />
+                </button>
+                <button className="post-action-group" title="View Stats">
+                  <FaChartBar size={16} />
+                </button>
+                {(exp.website || role.website) && (
+                  <a href={exp.website || role.website} target="_blank" rel="noopener noreferrer" className="post-action-group" title="Visit Website">
+                    <FaExternalLinkAlt size={14} />
+                  </a>
+                )}
+              </div>
+            </div>
+          </article>
         );
       })}
+    </div>
+  );
+}
+
+export default function ExperiencesPanel({ experiences: initialExperiences }: ExperiencesPanelProps) {
+  const [experiences, setExperiences] = useState<Experience[]>(initialExperiences);
+
+  useEffect(() => {
+    fetch(`${API_URL}/experience`)
+      .then(res => res.json())
+      .then(apiExps => {
+        console.log("API Experiences:", apiExps);
+        if (Array.isArray(apiExps)) {
+          setExperiences(apiExps);
+        }
+      })
+      .catch(err => console.error("Failed to fetch API experiences:", err));
+  }, []);
+
+  return (
+    <div className="experience-thread" role="list">
+      {experiences.map((exp, expIdx) => (
+        <ExperiencePost 
+          key={exp._id || exp.id || expIdx} 
+          exp={exp} 
+          isLastExperience={expIdx === experiences.length - 1} 
+        />
+      ))}
     </div>
   );
 }
