@@ -112,7 +112,7 @@ export default function ProfileTabs({ data }: { data: any }) {
         </nav>
 
         {active === 'projects' && (
-          <div className="flex items-center gap-1 pb-4">
+          <div className="hidden md:flex items-center gap-1 pb-4">
             <button 
               onClick={() => setLayout('list')}
               className={`p-1.5 rounded-full transition-all duration-300 ${

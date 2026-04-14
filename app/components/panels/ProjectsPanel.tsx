@@ -59,7 +59,7 @@ function ProjectMenu({ project }: { project: Project }) {
   return (
     <div className="relative" ref={menuRef}>
       <button 
-        className="post-more hover:bg-elevated p-2 rounded-full transition-colors flex items-center justify-center text-secondary hover:text-primary" 
+        className="post-more hover:bg-elevated rounded-full transition-colors flex items-center justify-center text-secondary hover:text-primary" 
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
