@@ -241,9 +241,8 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
         <header className="post-header">
           <div className="post-user-info">
             <span className="post-name">{data.name}</span>
-            <span className="post-handle">{data.handle}</span>
             <span className="post-sep">·</span>
-            <span className="post-time">{project.year || '2024'}</span>
+            <span className="post-handle">{data.handle}</span>
           </div>
           <ProjectMenu project={project} />
         </header>

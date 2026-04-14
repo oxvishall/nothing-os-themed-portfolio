@@ -61,9 +61,18 @@ This isn't just a static template; it's a full-featured **Next.js 15** applicati
 
 ---
 
+## data management
+
+You have two ways to manage your portfolio content:
+
+1. **Static (Fastest)**: Simply edit `app/data/portfolio.tsx`. All project, experience, and bio data is centralized here.
+2. **Dynamic (Backend)**: Connect your own API. The app is designed to fetch data via Next.js Route Handlers. You can easily point the API endpoints in `app/api/` to your own database or CMS.
+
+---
+
 ## customise
 
-Most of the content is centralized in `app/data/portfolio.tsx`. Simply update the `portfolio` object with your details:
+To get started with the static method, update the `portfolio` object in `app/data/portfolio.tsx`:
 
 ```tsx
 const portfolio: PortfolioData = {
