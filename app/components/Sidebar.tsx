@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import type { PortfolioData } from '@/app/data/portfolio';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HiX } from 'react-icons/hi';
 
 interface SidebarProps {
   data: PortfolioData;
@@ -90,8 +92,47 @@ function ThemeToggle() {
 }
 
 export default function Sidebar({ data }: SidebarProps) {
-  return (
-    <aside className="sidebar" aria-label="Profile sidebar">
+  const [isOpen, setIsOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleToggle = () => setIsOpen(prev => !prev);
+    window.addEventListener('toggle-sidebar', handleToggle);
+
+    // Close on escape key
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('toggle-sidebar', handleToggle);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  // Lock body scroll when open on mobile
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [isOpen]);
+
+  const sidebarContent = (
+    <>
+      {/* Mobile Close Button */}
+      <div className="flex justify-end p-4 lg:hidden">
+        <button 
+          onClick={() => setIsOpen(false)}
+          className="p-2 bg-surface border border-strong rounded-full text-secondary hover:text-primary transition-all"
+          aria-label="Close Sidebar"
+        >
+          <HiX size={20} />
+        </button>
+      </div>
+
       {/* Time card - Enhanced Serif UI */}
       <div className="sidebar-card border-strong group hover:bg-elevated transition-colors duration-300">
         <span className="sidebar-heading !mb-4">· LOCAL TIME (UTC+5:30) ·</span>
@@ -131,6 +172,45 @@ export default function Sidebar({ data }: SidebarProps) {
 
       {/* Theme toggle */}
       <ThemeToggle />
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex sidebar" aria-label="Profile sidebar">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Drawer (with AnimatePresence) */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-page/80 backdrop-blur-md z-[100] lg:hidden"
+            />
+            
+            {/* Drawer */}
+            <motion.div
+              ref={sidebarRef}
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[400px] bg-page border-l border-strong z-[101] overflow-y-auto lg:hidden"
+            >
+              <div className="flex flex-col gap-4 p-4">
+                {sidebarContent}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
