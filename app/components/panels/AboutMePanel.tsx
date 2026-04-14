@@ -1,12 +1,39 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { FaMapMarkerAlt, FaBriefcase } from 'react-icons/fa';
 import { HiOutlineMail } from 'react-icons/hi';
 import { GoNorthStar } from "react-icons/go";
 
 export default function AboutMePanel() {
   const githubUsername = "oxvishall";
-  const chartUrl = `https://ghchart.rshah.org/0f0f0f/${githubUsername}`;
+  const [stats, setStats] = useState<{ lastYear: number; thisYear: number } | null>(null);
+
+  useEffect(() => {
+    fetch(`https://github-contributions-api.deno.dev/${githubUsername}.json`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.contributions) {
+          const currentYear = new Date().getFullYear().toString();
+          let thisYearCount = 0;
+          data.contributions.forEach((week: any[]) => {
+            week.forEach((day: any) => {
+              if (day.date.startsWith(currentYear)) {
+                thisYearCount += day.contributionCount;
+              }
+            });
+          });
+          setStats({
+            lastYear: data.totalContributions,
+            thisYear: thisYearCount
+          });
+        }
+      })
+      .catch(err => console.error("Could not fetch GitHub stats:", err));
+  }, [githubUsername]);
+
+  // Use the B&W color scheme and simply invert the image mathematically in dark mode.
+  const chartUrl = `https://ghchart.rshah.org/000000/${githubUsername}`;
 
   return (
     <div className="about-me-panel">
@@ -51,32 +78,57 @@ export default function AboutMePanel() {
 
       {/* GitHub Section - Framed like Project Media */}
       <div className="p-6 md:p-8">
-        <div className="flex justify-between items-end mb-6">
-          <div>
-            <span className="font-dot text-[10px] text-tertiary tracking-widest uppercase block mb-1">Live Activity</span>
-            <h3 className="font-serif text-2xl">GITHUB METRICS</h3>
+        {/* Section Header */}
+        <div className="flex justify-between items-start mb-8">
+          <div className="flex-1">
+            <span className="font-dot text-[10px] text-tertiary tracking-widest uppercase block mb-1 opacity-70">Archive Terminal</span>
+            <h3 className="font-serif text-3xl tracking-tight text-primary leading-tight">GITHUB ACTIVITY</h3>
           </div>
           <a 
             href={`https://github.com/${githubUsername}`} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-[10px] font-dot uppercase tracking-widest text-secondary hover:text-primary transition-colors px-3 py-1 border border-border rounded-full"
+            className="flex-shrink-0 text-[10px] font-dot uppercase tracking-tighter text-secondary hover:text-primary transition-all px-4 py-2 border border-strong rounded-full bg-surface/50 hover:bg-surface"
           >
             @{githubUsername} ↗
           </a>
         </div>
+
+        {/* Stats Multi-Column */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          {stats ? (
+            <>
+              <div className="p-5 bg-surface/30 border border-strong rounded-2xl flex flex-col items-center justify-center text-center">
+                <span className="font-dot text-[9px] text-tertiary uppercase tracking-widest mb-2">Year to Date</span>
+                <span className="font-serif text-3xl text-primary leading-none">
+                  {stats.thisYear.toLocaleString()}
+                </span>
+                <span className="mt-2 font-dot text-[10px] text-primary/40 uppercase tracking-widest">Commits</span>
+              </div>
+              <div className="p-5 bg-surface/30 border border-strong rounded-2xl flex flex-col items-center justify-center text-center">
+                <span className="font-dot text-[9px] text-tertiary uppercase tracking-widest mb-2">Last 365 Days</span>
+                <span className="font-serif text-3xl text-primary leading-none">
+                  {stats.lastYear.toLocaleString()}
+                </span>
+                <span className="mt-2 font-dot text-[10px] text-primary/40 uppercase tracking-widest">Total</span>
+              </div>
+            </>
+          ) : (
+             <div className="col-span-2 py-8 text-center bg-surface/30 border border-strong border-dashed rounded-2xl animate-pulse">
+               <span className="font-dot text-[10px] text-tertiary uppercase tracking-widest">Connecting to GitHub Terminal...</span>
+             </div>
+          )}
+        </div>
         
-        <div className="github-frame relative border border-border rounded-2xl overflow-hidden bg-black aspect-[4/1] md:aspect-[5/1]">
-           {/* Dot-matrix style background for the chart frame */}
-           <div className="absolute inset-0 z-0 opacity-20 pointer-events-none" style={{
-             backgroundImage: 'radial-gradient(circle, var(--text-tertiary) 0.5px, transparent 0.5px)',
-             backgroundSize: '10px 10px'
-           }} />
-           <div className="relative z-10 w-full h-full flex items-center justify-center p-4">
+        <div className="github-frame relative border border-strong rounded-2xl overflow-hidden bg-white dark:bg-black aspect-[4/1] md:aspect-[5/1]">
+           {/* Subtle terminal-style scanline effect in dark mode */}
+           <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.07] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
+           
+           <div className="relative z-10 w-full h-full flex items-center justify-center p-3 md:p-6">
              <img 
                src={chartUrl} 
                alt="GitHub Contributions" 
-               className="w-full h-auto filter invert brightness-200 pointer-events-none"
+               className="w-full h-auto pointer-events-none dark:invert dark:brightness-125 transition-all duration-700"
              />
            </div>
         </div>
