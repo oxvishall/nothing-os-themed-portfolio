@@ -64,21 +64,17 @@
   color: var(--bg-page);
 }
 
-/* 2. Global Resets */
-body {
-  background-color: var(--bg-page);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
+html, body {
+  overflow-x: hidden;
+  width: 100%;
 }
-
 
 /* 3. Layout */
 .layout {
   display: grid;
   grid-template-columns: 1fr;
   width: 100%;
+  max-width: 100%;
   margin: 0 auto;
 }
 @media (min-width: 640px) { .layout { max-width: 680px; } }
@@ -88,6 +84,8 @@ body {
 
 .main-content {
   background-color: var(--bg-page);
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (max-width: 640px) {
@@ -99,11 +97,16 @@ body {
 
 /* 4. Splash Screen */
 #splash {
-  position: fixed; inset: 0;
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0;
   background-color: var(--bg-page);
   z-index: 9999;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   transition: opacity 0.5s;
+  touch-action: none; /* Prevent interaction while booting */
 }
 .splash--hidden { opacity: 0; pointer-events: none; }
 .splash-dots { display: flex; gap: 8px; }
@@ -160,12 +163,12 @@ body {
 .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .avatar-initials { font-family: var(--font-serif); font-size: 32px; font-weight: bold; }
 .btn-follow { background: var(--text-primary); color: var(--bg-page); padding: 8px 18px; border-radius: 99px; font-weight: bold; text-decoration: none; margin-bottom: 8px; }
-.bio { padding: 16px; }
+.bio { padding: 16px; overflow-x: hidden; }
 .display-name { font-family: var(--font-serif); font-size: clamp(24px, 6vw, 28px); margin: 0; }
 .handle { color: var(--text-secondary); font-size: 15px; }
 .bio-text { margin: 12px 0; font-size: 15px; }
-.meta-chips { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; font-size: 14px; color: var(--text-secondary); }
-.stats-row { display: flex; gap: 16px; font-size: 14px; color: var(--text-secondary); }
+.meta-chips { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 14px; color: var(--text-secondary); }
+.stats-row { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 14px; color: var(--text-secondary); }
 .stats-row strong { color: var(--text-primary); }
 
 .tab-panel { display: none; }
