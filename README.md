@@ -1,7 +1,7 @@
 # nothing-os-portfolio
 
 > Developer portfolio with Nothing OS aesthetics × X (Twitter) profile UI.  
-> NDot fonts, dot-matrix generator, dark mode. Pure HTML/CSS/JS.
+> NDot fonts, dot-matrix generator, dark mode.
 
 ---
 
