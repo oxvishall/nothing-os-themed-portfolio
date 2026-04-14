@@ -68,7 +68,7 @@ const portfolio: PortfolioData = {
   bio: "Building interfaces & systems at the intersection of design and engineering. Full-stack dev who writes clean code and obsesses over the last 2% of polish.",
   location: "Chennai, India",
   website: "vishalaakash.dev",
-  joinedYear: 2021,
+  joinedYear: 2022,
   avatarUrl: "https://pbs.twimg.com/profile_images/2034316324445593600/hCVB-FsV_400x400.png",
   bannerUrl: "https://pbs.twimg.com/profile_banners/1497779013007601666/1771683539/1500x500",
 
