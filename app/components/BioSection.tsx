@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import type { PortfolioData } from '@/app/data/portfolio';
 
 interface BioSectionProps {
@@ -5,7 +8,24 @@ interface BioSectionProps {
 }
 
 export default function BioSection({ data }: BioSectionProps) {
-  const totalContributions = data.contributions.length;
+  const [realtimeContributions, setRealtimeContributions] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`https://github-contributions-api.deno.dev/${data.handle.replace('@', '')}.json`)
+      .then(res => res.json())
+      .then(d => {
+        if (d && d.totalContributions) {
+          // Format with 'k' if needed or just use toLocaleString
+          const count = d.totalContributions;
+          if (count > 1000) {
+            setRealtimeContributions(`${(count / 1000).toFixed(1)}k+`);
+          } else {
+            setRealtimeContributions(count.toLocaleString());
+          }
+        }
+      })
+      .catch(() => {}); // Fallback to provided data
+  }, [data.handle]);
 
   return (
     <section className="bio" aria-label="Profile bio">
@@ -40,9 +60,9 @@ export default function BioSection({ data }: BioSectionProps) {
       </ul>
 
       <div className="stats-row" role="list" aria-label="Profile stats">
-        <span role="listitem"><strong>{data.projects.length}</strong> Projects</span>
-        <span role="listitem"><strong>{data.experiences.length}</strong> Experiences</span>
-        <span role="listitem"><strong>{totalContributions}</strong> Contributions</span>
+        <span role="listitem"><strong>{data.stats.projects}</strong> Projects</span>
+        <span role="listitem"><strong>{data.stats.experience}</strong> Experience</span>
+        <span role="listitem"><strong>{realtimeContributions || data.stats.contributions}</strong> Contributions</span>
       </div>
     </section>
   );
