@@ -66,9 +66,9 @@
 
 
 /* Doto font weight override - make dot labels legible */
-.font-dot {
-  font-weight: 700;
-  font-variation-settings: "ROND" 0;
+.font-dot, [class*="font-dot"] {
+  font-weight: 700 !important;
+  font-variation-settings: "ROND" 0 !important;
 }
 
 body {

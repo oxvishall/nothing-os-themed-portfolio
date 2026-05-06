@@ -139,6 +139,39 @@ export default function Sidebar({ data }: SidebarProps) {
         <LocalTime />
       </div>
 
+      {/* Hackathons & Events card */}
+      <div className="sidebar-card border-strong group hover:bg-elevated transition-colors duration-300">
+        <h3 className="sidebar-heading">Hackathons & Events</h3>
+        <div className="grid grid-cols-4 gap-2 mb-4">
+          <div className="text-center">
+            <span className="font-serif text-3xl block">7+</span>
+            <span className="font-dot text-[10px] text-secondary uppercase tracking-widest leading-tight block mt-1" style={{fontWeight:700,fontVariationSettings:'"ROND" 0'}}>Won</span>
+          </div>
+          <div className="text-center border-x border-border">
+            <span className="font-serif text-3xl block">2</span>
+            <span className="font-dot text-[10px] text-secondary uppercase tracking-widest leading-tight block mt-1" style={{fontWeight:700,fontVariationSettings:'"ROND" 0'}}>Global</span>
+          </div>
+          <div className="text-center border-r border-border">
+            <span className="font-serif text-3xl block">6</span>
+            <span className="font-dot text-[10px] text-secondary uppercase tracking-widest leading-tight block mt-1" style={{fontWeight:700,fontVariationSettings:'"ROND" 0'}}>Hosted</span>
+          </div>
+          <div className="text-center">
+            <span className="font-serif text-3xl block">70+</span>
+            <span className="font-dot text-[10px] text-secondary uppercase tracking-widest leading-tight block mt-1" style={{fontWeight:700,fontVariationSettings:'"ROND" 0'}}>Attended</span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-xs text-secondary">
+            <span className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />
+            ETHGlobal Delhi
+          </div>
+          <div className="flex items-center gap-2 text-xs text-secondary">
+            <span className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />
+            Walrus Haulout
+          </div>
+        </div>
+      </div>
+
       {/* About card */}
       <div className="sidebar-card border-strong group hover:bg-elevated transition-colors duration-300">
         <h3 className="sidebar-heading">About</h3>
