@@ -69,7 +69,7 @@ const portfolio: PortfolioData = {
   location: "Chennai, India",
   website: "vishalaakash.dev",
   joinedYear: 2022,
-  avatarUrl: "https://pbs.twimg.com/profile_images/2034316324445593600/hCVB-FsV_400x400.png",
+  avatarUrl: "https://pbs.twimg.com/profile_images/2050565859140358144/b8ns8OSY_400x400.jpg",
   bannerUrl: "https://pbs.twimg.com/profile_banners/1497779013007601666/1771683539/1500x500",
 
   stats: {
