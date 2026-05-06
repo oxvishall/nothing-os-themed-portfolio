@@ -510,7 +510,7 @@ export default function AdminDashboard() {
 
       <style jsx global>{`
         .admin-field-group { display: flex; flex-direction: column; }
-        .admin-label { font-family: 'DotGothic16', monospace; font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+        .admin-label { font-family: 'Doto', monospace; font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
         .admin-input { width: 100%; background: var(--bg-page); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; outline: none; transition: border-color 0.2s; font-size: 14px; color: var(--text-primary); }
         .admin-input:focus { border-color: var(--text-primary); }
         .admin-input-small { width: 100%; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; outline: none; font-size: 13px; }

@@ -2,7 +2,7 @@
 
 /* 1. Tokens & Variables */
 :root {
-  --font-dot: "DotGothic16", "Dot Gothic 16", monospace;
+  --font-dot: "Doto", monospace;
   --font-sans: "Space Grotesk", sans-serif;
   --font-serif: "DM Serif Display", serif;
 
@@ -65,6 +65,11 @@
 }
 
 
+/* Doto font weight override - make dot labels legible */
+.font-dot {
+  font-weight: 700;
+  font-variation-settings: "ROND" 0;
+}
 
 body {
   background-color: var(--bg-page);
@@ -259,7 +264,7 @@ body {
   } 
 }
 .sidebar-card { background: var(--bg-page); border: 1px solid var(--border-strong); border-radius: 18px; padding: 20px; }
-.sidebar-heading { font-family: var(--font-dot); font-size: 10px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 12px; }
+.sidebar-heading { font-family: var(--font-dot); font-size: 10px; font-weight: 700; font-variation-settings: "ROND" 0; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
 .sidebar-about-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 .link-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .sidebar-link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); font-size: 14px; font-weight: 500; }
