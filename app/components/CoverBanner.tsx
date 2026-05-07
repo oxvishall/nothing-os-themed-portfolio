@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import portfolio from '@/app/data/portfolio';
+import ImageLightbox from './ImageLightbox';
 
 export default function CoverBanner({ name }: { name: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [bannerOpen, setBannerOpen] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,17 +42,34 @@ export default function CoverBanner({ name }: { name: string }) {
   }, []);
 
   return (
-    <header className="cover">
-      <img
+    <>
+      <header className="cover group relative cursor-pointer" onClick={() => setBannerOpen(true)} aria-label="View cover banner">
+        <img
+          src={portfolio.bannerUrl}
+          alt={`${name}'s banner`}
+          className="cover-img"
+        />
+        <canvas
+          ref={canvasRef}
+          className="cover-dots-overlay"
+          aria-hidden="true"
+        />
+        {/* Hover overlay hint */}
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+          <span className="font-dot font-bold text-[10px] tracking-widest uppercase text-white bg-black/40 px-4 py-2 rounded-full backdrop-blur-sm border border-white/20">
+            View Banner
+          </span>
+        </div>
+      </header>
+
+      {/* Banner lightbox */}
+      <ImageLightbox
         src={portfolio.bannerUrl}
         alt={`${name}'s banner`}
-        className="cover-img"
+        isOpen={bannerOpen}
+        onClose={() => setBannerOpen(false)}
+        shape="rect"
       />
-      <canvas
-        ref={canvasRef}
-        className="cover-dots-overlay"
-        aria-hidden="true"
-      />
-    </header>
+    </>
   );
 }

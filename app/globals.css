@@ -2,7 +2,7 @@
 
 /* 1. Tokens & Variables */
 :root {
-  --font-dot: "DotGothic16", "Dot Gothic 16", monospace;
+  --font-dot: "Doto", monospace;
   --font-sans: "Space Grotesk", sans-serif;
   --font-serif: "DM Serif Display", serif;
 
@@ -65,6 +65,11 @@
 }
 
 
+/* Doto font weight override - make dot labels legible */
+.font-dot, [class*="font-dot"] {
+  font-weight: 700 !important;
+  font-variation-settings: "ROND" 0 !important;
+}
 
 body {
   background-color: var(--bg-page);
@@ -236,7 +241,7 @@ body {
 .post-media-img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 .post-wrapper:hover .post-media-img { filter: grayscale(0); }
 .post-hashtags { position: absolute; bottom: 12px; left: 12px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 10; }
-.post-hashtag { font-family: var(--font-dot); font-size: 10px; background: var(--bg-page); opacity: 0.8; backdrop-filter: blur(4px); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-strong); color: var(--text-primary); }
+.post-hashtag { font-family: var(--font-dot); font-size: 10px; font-weight: 700; font-variation-settings: "ROND" 0; background: var(--bg-page); backdrop-filter: blur(6px); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-strong); color: var(--text-primary); letter-spacing: 0.05em; }
 .post-actions { display: flex; justify-content: space-between; max-width: 425px; margin-top: 12px; color: var(--text-secondary); }
 .post-action-group { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
 .post-action-group:hover { color: var(--text-primary); }
@@ -259,7 +264,7 @@ body {
   } 
 }
 .sidebar-card { background: var(--bg-page); border: 1px solid var(--border-strong); border-radius: 18px; padding: 20px; }
-.sidebar-heading { font-family: var(--font-dot); font-size: 10px; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 12px; }
+.sidebar-heading { font-family: var(--font-dot); font-size: 10px; font-weight: 700; font-variation-settings: "ROND" 0; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
 .sidebar-about-text { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
 .link-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .sidebar-link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); font-size: 14px; font-weight: 500; }
