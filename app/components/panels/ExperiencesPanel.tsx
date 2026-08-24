@@ -2,8 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import ExpandableText from '@/app/components/ExpandableText';
-import { FaExternalLinkAlt, FaRegComment, FaRetweet, FaRegHeart, FaChartBar } from 'react-icons/fa';
-import { HiDotsHorizontal } from 'react-icons/hi';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 
 interface Role {
   role?: string;
@@ -102,9 +101,17 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
                   <span className="post-sep">·</span>
                   <span className="post-time">{rolePeriod}</span>
                 </div>
-                <button className="post-more" title="View options">
-                  <HiDotsHorizontal size={18} />
-                </button>
+                {(role.website || exp.website) && (
+                  <a
+                    href={role.website || exp.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="post-more hover:bg-elevated rounded-full transition-colors flex items-center justify-center text-secondary hover:text-primary"
+                    title="Visit Website"
+                  >
+                    <FaExternalLinkAlt size={14} />
+                  </a>
+                )}
               </header>
 
               <p className="post-thread-title">{roleTitle}</p>
@@ -126,26 +133,6 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
                       ))}
                     </ul>
                   </ExpandableText>
-                )}
-              </div>
-
-              <div className="thread-actions">
-                <button className="post-action-group" title="Reply">
-                  <FaRegComment size={16} />
-                </button>
-                <button className="post-action-group" title="Repost">
-                  <FaRetweet size={18} />
-                </button>
-                <button className="post-action-group" title="Like">
-                  <FaRegHeart size={16} />
-                </button>
-                <button className="post-action-group" title="View Stats">
-                  <FaChartBar size={16} />
-                </button>
-                {(exp.website || role.website) && (
-                  <a href={exp.website || role.website} target="_blank" rel="noopener noreferrer" className="post-action-group" title="Visit Website">
-                    <FaExternalLinkAlt size={14} />
-                  </a>
                 )}
               </div>
             </div>
