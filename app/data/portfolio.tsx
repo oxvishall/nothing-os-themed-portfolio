@@ -35,6 +35,7 @@ export interface Tool {
   name: string;
   icon: string;
   category: string;
+  blurb?: string;
 }
 
 export interface PortfolioData {
@@ -216,18 +217,23 @@ const portfolio: PortfolioData = {
   ],
 
   tools: [
-    { name: "TypeScript", icon: "TS", category: "Languages" },
-    { name: "JavaScript", icon: "JS", category: "Languages" },
-    { name: "Solidity", icon: "SL", category: "Languages" },
-    { name: "Rust", icon: "RS", category: "Languages" },
-    { name: "React", icon: "RE", category: "Frontend" },
-    { name: "Next.js", icon: "NX", category: "Frontend" },
-    { name: "Tailwind", icon: "TW", category: "Frontend" },
-    { name: "Node.js", icon: "ND", category: "Backend" },
-    { name: "PostgreSQL", icon: "PG", category: "Backend" },
-    { name: "Docker", icon: "DK", category: "Infra" },
-    { name: "AWS", icon: "AW", category: "Infra" },
-    { name: "Figma", icon: "FG", category: "Design" }
+    { name: "TypeScript", icon: "TS", category: "Languages", blurb: "Typed across the stack" },
+    { name: "JavaScript", icon: "JS", category: "Languages", blurb: "Runtime of the web" },
+    { name: "Solidity", icon: "SL", category: "Languages", blurb: "Smart contracts" },
+    { name: "Rust", icon: "RS", category: "Languages", blurb: "Systems & performance" },
+    { name: "React", icon: "RE", category: "Frontend", blurb: "Component-driven UIs" },
+    { name: "Next.js", icon: "NX", category: "Frontend", blurb: "App Router & SSR" },
+    { name: "Tailwind", icon: "TW", category: "Frontend", blurb: "Utility-first CSS" },
+    { name: "Framer Motion", icon: "FM", category: "Frontend", blurb: "Motion & presence" },
+    { name: "Node.js", icon: "ND", category: "Backend", blurb: "APIs & tooling" },
+    { name: "PostgreSQL", icon: "PG", category: "Backend", blurb: "Relational source of truth" },
+    { name: "MongoDB", icon: "MG", category: "Backend", blurb: "Document stores" },
+    { name: "Ethers.js", icon: "ET", category: "Web3", blurb: "Chain reads & writes" },
+    { name: "Docker", icon: "DK", category: "Infra", blurb: "Reproducible environments" },
+    { name: "AWS", icon: "AW", category: "Infra", blurb: "Cloud & deploys" },
+    { name: "Vercel", icon: "VC", category: "Infra", blurb: "Edge & previews" },
+    { name: "Git", icon: "GT", category: "Infra", blurb: "Version control" },
+    { name: "Figma", icon: "FG", category: "Design", blurb: "Interface systems" },
   ],
 
   links: [

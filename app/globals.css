@@ -269,10 +269,6 @@ body {
 .link-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .sidebar-link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); font-size: 14px; font-weight: 500; }
  
- .ndot-section { margin-top: 32px; border-top: 1px solid var(--border); padding-top: 32px; }
-.ndot-generator { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px; }
-.ndot-dropzone { width: 100%; min-height: 200px; border: 2px dashed var(--border-strong); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
 .experiences-list { padding: 24px 0; }
 .experience-item { display: flex; gap: 16px; }
 .experience-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); margin-top: 8px; }

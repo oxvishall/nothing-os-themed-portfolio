@@ -1,255 +1,133 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import type { ReactNode } from 'react';
+import { FaAws } from 'react-icons/fa';
+import {
+  SiTypescript,
+  SiJavascript,
+  SiSolidity,
+  SiRust,
+  SiReact,
+  SiNextdotjs,
+  SiTailwindcss,
+  SiFramer,
+  SiNodedotjs,
+  SiPostgresql,
+  SiMongodb,
+  SiEthereum,
+  SiDocker,
+  SiVercel,
+  SiGit,
+  SiFigma,
+} from 'react-icons/si';
 import type { Tool } from '@/app/data/portfolio';
 
 interface ToolsPanelProps {
   tools: Tool[];
 }
 
-// NDot Image Generator — dot-matrix-ify any uploaded image
-function NdotGenerator() {
-  const [dotSize, setDotSize] = useState(6);
-  const [gap, setGap] = useState(2);
-  const [mono, setMono] = useState(true);
-  const [hasImage, setHasImage] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+const ICONS: Record<string, ReactNode> = {
+  TypeScript: <SiTypescript />,
+  JavaScript: <SiJavascript />,
+  Solidity: <SiSolidity />,
+  Rust: <SiRust />,
+  React: <SiReact />,
+  'Next.js': <SiNextdotjs />,
+  Tailwind: <SiTailwindcss />,
+  'Framer Motion': <SiFramer />,
+  'Node.js': <SiNodedotjs />,
+  PostgreSQL: <SiPostgresql />,
+  MongoDB: <SiMongodb />,
+  'Ethers.js': <SiEthereum />,
+  Docker: <SiDocker />,
+  AWS: <FaAws />,
+  Vercel: <SiVercel />,
+  Git: <SiGit />,
+  Figma: <SiFigma />,
+};
 
-  const srcCanvasRef = useRef<HTMLCanvasElement>(null);
-  const outCanvasRef = useRef<HTMLCanvasElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const dotMatrixify = useCallback(() => {
-    const srcCanvas = srcCanvasRef.current;
-    const outCanvas = outCanvasRef.current;
-    if (!srcCanvas || !outCanvas) return;
-
-    const src = srcCanvas.getContext('2d');
-    const out = outCanvas.getContext('2d');
-    if (!src || !out) return;
-
-    const W = outCanvas.width;
-    const H = outCanvas.height;
-    const step = dotSize + gap;
-    const isDark = document.documentElement.classList.contains('dark') ||
-      window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    out.clearRect(0, 0, W, H);
-    out.fillStyle = isDark ? '#0a0a0a' : '#ffffff';
-    out.fillRect(0, 0, W, H);
-
-    for (let x = 0; x < W; x += step) {
-      for (let y = 0; y < H; y += step) {
-        const px = src.getImageData(
-          Math.floor((x * srcCanvas.width) / W),
-          Math.floor((y * srcCanvas.height) / H),
-          1, 1
-        ).data;
-        const [r, g, b, a] = px;
-        if (a < 20) continue;
-        const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        const radius = (dotSize / 2) * (1 - lum * 0.8);
-        if (radius < 0.5) continue;
-        out.beginPath();
-        out.arc(x + dotSize / 2, y + dotSize / 2, radius, 0, Math.PI * 2);
-        out.fillStyle = mono
-          ? (isDark
-            ? `rgba(240,240,240,${0.3 + lum * 0.7})`
-            : `rgba(15,15,15,${0.3 + (1 - lum) * 0.7})`)
-          : `rgba(${r},${g},${b},${a / 255})`;
-        out.fill();
-      }
-    }
-  }, [dotSize, gap, mono]);
-
-  const loadImage = useCallback((file: File) => {
-    if (!file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new window.Image();
-      img.onload = () => {
-        const srcCanvas = srcCanvasRef.current;
-        const outCanvas = outCanvasRef.current;
-        if (!srcCanvas || !outCanvas) return;
-
-        // Scale down for performance
-        const maxDim = 600;
-        const scale = Math.min(maxDim / img.width, maxDim / img.height, 1);
-        const W = Math.round(img.width * scale);
-        const H = Math.round(img.height * scale);
-
-        srcCanvas.width = W;
-        srcCanvas.height = H;
-        srcCanvas.getContext('2d')?.drawImage(img, 0, 0, W, H);
-
-        outCanvas.width = W;
-        outCanvas.height = H;
-
-        setHasImage(true);
-        dotMatrixify();
-      };
-      img.src = e.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  }, [dotMatrixify]);
-
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) loadImage(file);
-  }, [loadImage]);
-
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) loadImage(file);
-  }, [loadImage]);
-
-  const handleDownload = useCallback(() => {
-    const canvas = outCanvasRef.current;
-    if (!canvas) return;
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'ndot-output.png';
-      a.click();
-      URL.revokeObjectURL(url);
-    }, 'image/png');
-  }, []);
-
-  return (
-    <div className="ndot-generator" aria-label="NDot Image Generator">
-      <div className="ndot-header">
-        <h2 className="ndot-title">NDot Generator</h2>
-        <p className="ndot-subtitle">Transform any image into Nothing&rsquo;s dot-matrix aesthetic</p>
-      </div>
-
-      {/* Hidden source canvas */}
-      <canvas ref={srcCanvasRef} style={{ display: 'none' }} aria-hidden="true" />
-
-      {/* Drop zone */}
-      <div
-        className={`ndot-dropzone${isDragging ? ' ndot-dropzone--active' : ''}`}
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        aria-label="Upload image drop zone"
-        onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-      >
-        <input
-          ref={fileInputRef}
-          id="ndot-file-input"
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{ display: 'none' }}
-          aria-label="Upload image file"
-        />
-        {hasImage ? (
-          <canvas ref={outCanvasRef} className="ndot-output" aria-label="Dot-matrix output" />
-        ) : (
-          <div className="ndot-placeholder">
-            <span className="ndot-icon">◻</span>
-            <span>Drop an image or click to upload</span>
-            <span className="ndot-hint">PNG, JPG, WebP supported</span>
-          </div>
-        )}
-      </div>
-
-      {/* Controls */}
-      <div className="ndot-controls" aria-label="Generator controls">
-        <div className="ndot-control-row">
-          <label htmlFor="dot-size-slider" className="ndot-label">
-            Dot Size <span className="ndot-value">{dotSize}px</span>
-          </label>
-          <input
-            id="dot-size-slider"
-            type="range"
-            min={4}
-            max={16}
-            value={dotSize}
-            onChange={(e) => { setDotSize(Number(e.target.value)); if (hasImage) dotMatrixify(); }}
-            className="ndot-slider"
-          />
-        </div>
-
-        <div className="ndot-control-row">
-          <label htmlFor="gap-slider" className="ndot-label">
-            Gap <span className="ndot-value">{gap}px</span>
-          </label>
-          <input
-            id="gap-slider"
-            type="range"
-            min={1}
-            max={8}
-            value={gap}
-            onChange={(e) => { setGap(Number(e.target.value)); if (hasImage) dotMatrixify(); }}
-            className="ndot-slider"
-          />
-        </div>
-
-        <div className="ndot-toggle-row">
-          <button
-            id="mono-toggle"
-            className={`ndot-pill${mono ? ' ndot-pill--active' : ''}`}
-            onClick={() => { setMono(true); if (hasImage) dotMatrixify(); }}
-            aria-pressed={mono}
-          >
-            Mono
-          </button>
-          <button
-            id="color-toggle"
-            className={`ndot-pill${!mono ? ' ndot-pill--active' : ''}`}
-            onClick={() => { setMono(false); if (hasImage) dotMatrixify(); }}
-            aria-pressed={!mono}
-          >
-            Color
-          </button>
-        </div>
-
-        {hasImage && (
-          <button
-            id="ndot-download-btn"
-            className="ndot-download"
-            onClick={handleDownload}
-            aria-label="Download dot-matrix image as PNG"
-          >
-            Download PNG ↓
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
+const CATEGORY_COPY: Record<string, string> = {
+  Languages: 'What I write in',
+  Frontend: 'Interfaces & motion',
+  Backend: 'Services & data',
+  Web3: 'Onchain primitives',
+  Infra: 'Ship & operate',
+  Design: 'Shape before code',
+};
 
 export default function ToolsPanel({ tools }: ToolsPanelProps) {
   const categories = [...new Set(tools.map(t => t.category))];
 
   return (
     <div className="tools-panel">
-      <div className="tools-grid" aria-label="Tools and skills">
-        {categories.map(cat => (
-          <div key={cat} className="tools-category">
-            <h3 className="tools-cat-label">{cat}</h3>
-            <div className="tools-badges">
-              {tools.filter(t => t.category === cat).map(tool => (
-                <span key={tool.name} className="tool-badge" title={tool.name}>
-                  <span className="tool-icon" aria-hidden="true">{tool.icon}</span>
-                  <span className="tool-name">{tool.name}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <header className="px-6 md:px-8 pt-8 pb-6 flex items-end justify-between gap-4">
+        <div>
+          <span className="font-dot text-[10px] text-tertiary tracking-widest uppercase block mb-1 opacity-70">
+            Operating system
+          </span>
+          <h3 className="font-serif text-3xl tracking-tight text-primary leading-tight">THE STACK</h3>
+        </div>
+        <span className="font-dot text-[10px] text-tertiary uppercase tracking-widest">
+          {tools.length} tools
+        </span>
+      </header>
 
-      <div className="ndot-section">
-        <NdotGenerator />
+      <div className="border-t border-border" aria-label="Tools and skills">
+        {categories.map((cat, ci) => {
+          const items = tools.filter(t => t.category === cat);
+          return (
+            <section
+              key={cat}
+              className={ci === 0 ? '' : 'border-t border-border'}
+              aria-labelledby={`tools-${cat}`}
+            >
+              <div className="px-6 md:px-8 pt-6 pb-3 flex items-baseline justify-between gap-4">
+                <div>
+                  <h4
+                    id={`tools-${cat}`}
+                    className="font-dot text-[10px] text-tertiary uppercase tracking-widest"
+                  >
+                    {cat}
+                  </h4>
+                  {CATEGORY_COPY[cat] && (
+                    <p className="text-secondary text-sm mt-1">{CATEGORY_COPY[cat]}</p>
+                  )}
+                </div>
+                <span className="font-dot text-[9px] text-tertiary/70 uppercase tracking-widest">
+                  {String(items.length).padStart(2, '0')}
+                </span>
+              </div>
+
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border border-t border-border">
+                {items.map((tool) => (
+                  <li
+                    key={tool.name}
+                    className="tool-card group list-none bg-page"
+                  >
+                    <div className="flex items-start gap-4 p-5 md:p-6 h-full hover:bg-surface/70 transition-colors">
+                      <span
+                        className="tool-mark shrink-0 w-11 h-11 rounded-xl border border-strong bg-surface flex items-center justify-center text-[18px] text-primary group-hover:bg-primary group-hover:text-background group-hover:border-primary transition-colors"
+                        aria-hidden
+                      >
+                        {ICONS[tool.name] ?? tool.icon}
+                      </span>
+                      <div className="min-w-0">
+                        <span className="block text-primary font-medium text-sm leading-tight">
+                          {tool.name}
+                        </span>
+                        {tool.blurb && (
+                          <span className="block text-tertiary text-xs mt-1 leading-snug">
+                            {tool.blurb}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })}
       </div>
     </div>
   );
