@@ -218,6 +218,20 @@ body {
 .post-body { margin-top: 4px; }
 .post-text { font-size: 15px; line-height: 1.4; }
 .post-text strong { font-family: var(--font-serif); font-weight: normal; font-size: 17px; }
+.expand-toggle {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-dot);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.expand-toggle:hover { color: var(--text-primary); }
 .post-media { 
   position: relative; 
   border: 1px solid var(--border-strong); 
