@@ -25,7 +25,14 @@ export default function ExpandableText({
       const containerRect = el.getBoundingClientRect();
       const totalH = el.scrollHeight;
 
-      // Use document TreeWalker + Range.getClientRects to get the EXACT browser-rendered line boxes
+      // 1. Get actual text line height
+      const sampleEl = el.querySelector('p, li, span, div') || el;
+      const styles = getComputedStyle(sampleEl);
+      const fs = parseFloat(styles.fontSize) || 15;
+      let lh = parseFloat(styles.lineHeight);
+      if (!Number.isFinite(lh)) lh = fs * 1.55;
+
+      // 2. Use TreeWalker + Range.getClientRects() to find exact line 4 bottom
       const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
       let currentNode: Node | null = walker.nextNode();
       
@@ -39,7 +46,6 @@ export default function ExpandableText({
           const rects = Array.from(range.getClientRects());
 
           for (const r of rects) {
-            // Ignore zero-height or zero-width rects
             if (r.height > 2 && r.width > 2) {
               lineCount++;
               lineCap = r.bottom - containerRect.top;
@@ -54,20 +60,21 @@ export default function ExpandableText({
         currentNode = walker.nextNode();
       }
 
-      if (lineCount > TARGET_LINES && lineCap > 0) {
-        // Add 4px gap so cutoff happens cleanly in the blank space between lines
-        const finalHeight = Math.ceil(lineCap + 4);
-        
-        // Only toggle if content actually extends beyond 4 lines
-        if (totalH > finalHeight + 8) {
-          setCanToggle(true);
-          setCollapsedHeight(finalHeight);
-          return;
-        }
+      if (lineCap <= 0) {
+        lineCap = lh * TARGET_LINES;
       }
 
-      setCanToggle(false);
-      setCollapsedHeight(null);
+      // Add 4px buffer so cutoff is cleanly between lines
+      const finalCap = Math.ceil(lineCap + 4);
+
+      // If total content height is greater than 4 lines (+ tolerance), enable Show More!
+      if (totalH > finalCap + 4) {
+        setCanToggle(true);
+        setCollapsedHeight(finalCap);
+      } else {
+        setCanToggle(false);
+        setCollapsedHeight(null);
+      }
     };
 
     measure();
