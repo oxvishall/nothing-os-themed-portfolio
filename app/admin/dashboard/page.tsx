@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { HiDotsHorizontal, HiPlus, HiTrash, HiX } from 'react-icons/hi';
+import RichTextEditor from '@/app/components/RichTextEditor';
 
 const API_URL = "/api";
 
@@ -285,13 +286,10 @@ export default function AdminDashboard() {
                   </div>
                   <div className="admin-field-group">
                     <label className="admin-label">Description</label>
-                    <textarea 
+                    <RichTextEditor
                       value={projForm.description}
-                      onChange={e => setProjForm({...projForm, description: e.target.value})}
-                      rows={4} 
-                      className="admin-input resize-none" 
+                      onChange={(html) => setProjForm({...projForm, description: html})}
                       placeholder="Tell the story of this project..."
-                      required 
                     />
                   </div>
                   <div className="admin-field-group">
@@ -435,18 +433,18 @@ export default function AdminDashboard() {
                             placeholder="Role Title" 
                             required
                           />
-                          <textarea 
-                            value={role.description}
-                            onChange={e => {
-                               const newRoles = [...expForm.roles];
-                               newRoles[idx].description = e.target.value;
-                               setExpForm({...expForm, roles: newRoles});
-                            }}
-                            className="admin-input-small resize-none mb-2" 
-                            placeholder="What did you build?" 
-                            rows={2}
-                            required
-                          />
+                          <div className="mb-2">
+                            <RichTextEditor
+                              value={role.description}
+                              onChange={(html) => {
+                                const newRoles = [...expForm.roles];
+                                newRoles[idx].description = html;
+                                setExpForm({...expForm, roles: newRoles});
+                              }}
+                              placeholder="What did you build?"
+                              small
+                            />
+                          </div>
                           <div className="grid grid-cols-2 gap-2">
                              <input 
                                value={role.startDate}

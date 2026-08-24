@@ -109,8 +109,14 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
               <p className="post-thread-title">{roleTitle}</p>
 
               <div className="post-body">
-                {roleDesc && <p className="post-text">{roleDesc}</p>}
-                {bullets.length > 0 && (
+                {roleDesc && (
+                  <div
+                    className="post-text rich-text"
+                    dangerouslySetInnerHTML={{ __html: roleDesc }}
+                  />
+                )}
+                {/* Legacy bullets fallback for entries without HTML descriptions */}
+                {!roleDesc && bullets.length > 0 && (
                   <ul className="thread-bullets">
                     {bullets.map((bullet, bi) => (
                       <li key={bi} className="thread-bullet">

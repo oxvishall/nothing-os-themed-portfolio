@@ -179,9 +179,10 @@ function ProjectCard({ project }: { project: Project }) {
           <ProjectMenu project={project} />
         </div>
         
-        <p className="text-secondary text-[14px] leading-relaxed mb-4 flex-1 line-clamp-2">
-          {project.description}
-        </p>
+        <div 
+          className="text-secondary text-[14px] leading-relaxed mb-4 flex-1 line-clamp-3 rich-text"
+          dangerouslySetInnerHTML={{ __html: project.description }}
+        />
         
         <div className="flex flex-wrap gap-1.5 mb-6">
           {project.tags.map(tag => (
@@ -248,9 +249,9 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
         </header>
 
         <div className="post-body">
-          <p className="post-text">
-            <strong>{title}</strong> — {project.description}
-          </p>
+          <div className="post-text rich-text"
+            dangerouslySetInnerHTML={{ __html: project.description }}
+          />
           <div className="post-media">
             <canvas ref={canvasRef} className="post-canvas" aria-hidden="true" />
             {project.image && (
