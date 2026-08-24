@@ -35,6 +35,7 @@ export interface Tool {
   name: string;
   icon: string;
   category: string;
+  blurb?: string;
 }
 
 export interface PortfolioData {
@@ -69,8 +70,8 @@ const portfolio: PortfolioData = {
   location: "Chennai, India",
   website: "vishalaakash.dev",
   joinedYear: 2022,
-  avatarUrl: "https://pbs.twimg.com/profile_images/2050565859140358144/b8ns8OSY_400x400.jpg",
-  bannerUrl: "https://pbs.twimg.com/profile_banners/1497779013007601666/1771683539/1500x500",
+  avatarUrl: "/pp.png",
+  bannerUrl: "/bp.png",
 
   stats: {
     projects: "30+",
@@ -216,18 +217,33 @@ const portfolio: PortfolioData = {
   ],
 
   tools: [
-    { name: "TypeScript", icon: "TS", category: "Languages" },
-    { name: "JavaScript", icon: "JS", category: "Languages" },
-    { name: "Solidity", icon: "SL", category: "Languages" },
-    { name: "Rust", icon: "RS", category: "Languages" },
-    { name: "React", icon: "RE", category: "Frontend" },
-    { name: "Next.js", icon: "NX", category: "Frontend" },
-    { name: "Tailwind", icon: "TW", category: "Frontend" },
-    { name: "Node.js", icon: "ND", category: "Backend" },
-    { name: "PostgreSQL", icon: "PG", category: "Backend" },
-    { name: "Docker", icon: "DK", category: "Infra" },
-    { name: "AWS", icon: "AW", category: "Infra" },
-    { name: "Figma", icon: "FG", category: "Design" }
+    { name: "TypeScript", icon: "TS", category: "Languages", blurb: "Typed across the stack" },
+    { name: "JavaScript", icon: "JS", category: "Languages", blurb: "Runtime of the web" },
+    { name: "Solidity", icon: "SL", category: "Languages", blurb: "Smart contracts" },
+    { name: "React", icon: "RE", category: "Frontend", blurb: "Component-driven UIs" },
+    { name: "Next.js", icon: "NX", category: "Frontend", blurb: "App Router & SSR" },
+    { name: "Tailwind", icon: "TW", category: "Frontend", blurb: "Utility-first CSS" },
+    { name: "Framer Motion", icon: "FM", category: "Frontend", blurb: "Motion & presence" },
+    { name: "GSAP", icon: "GS", category: "Frontend", blurb: "Timeline animation" },
+    { name: "shadcn/ui", icon: "UI", category: "Frontend", blurb: "Accessible component kit" },
+    { name: "Node.js", icon: "ND", category: "Backend", blurb: "APIs & tooling" },
+    { name: "PostgreSQL", icon: "PG", category: "Backend", blurb: "Relational source of truth" },
+    { name: "MongoDB", icon: "MG", category: "Backend", blurb: "Document stores" },
+    { name: "Ethers.js", icon: "ET", category: "Onchain", blurb: "EVM reads & writes" },
+    { name: "Aptos TS SDK", icon: "AP", category: "Onchain", blurb: "@aptos-labs/ts-sdk" },
+    { name: "AWS", icon: "AW", category: "Ship & Operate", blurb: "Cloud & deploys" },
+    { name: "Vercel", icon: "VC", category: "Ship & Operate", blurb: "Edge & previews" },
+    { name: "DigitalOcean", icon: "DO", category: "Ship & Operate", blurb: "Droplets & apps" },
+    { name: "Hetzner", icon: "HZ", category: "Ship & Operate", blurb: "Bare metal & VPS" },
+    { name: "Git", icon: "GT", category: "Ship & Operate", blurb: "Version control" },
+    { name: "Figma", icon: "FG", category: "Shape", blurb: "Interface systems" },
+    { name: "Canva", icon: "CV", category: "Shape", blurb: "Visuals & decks" },
+    { name: "Gemini 3.6 Flash", icon: "G6", category: "AI Tools", blurb: "Fast multimodal drafts" },
+    { name: "Gemini 3.1 Pro", icon: "G3", category: "AI Tools", blurb: "Long-context reasoning" },
+    { name: "Cursor Composer 2.5", icon: "C2", category: "AI Tools", blurb: "Multi-file edits" },
+    { name: "Cursor Grok 4.6", icon: "GX", category: "AI Tools", blurb: "Agent coding loop" },
+    { name: "Claude Opus 5", icon: "OP", category: "AI Tools", blurb: "Deep architecture work" },
+    { name: "GPT-5.6 Sol", icon: "GP", category: "AI Tools", blurb: "General problem solving" },
   ],
 
   links: [

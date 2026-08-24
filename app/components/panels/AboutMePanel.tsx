@@ -5,35 +5,52 @@ import { FaMapMarkerAlt, FaBriefcase } from 'react-icons/fa';
 import { HiOutlineMail } from 'react-icons/hi';
 import { GoNorthStar } from "react-icons/go";
 
+type GhDay = { date: string; count: number; level: number };
+type GhStats = { thisYear: number; lastYear: number; days: GhDay[] };
+
+function ContributionGraph({ days }: { days: GhDay[] }) {
+  const weeks: GhDay[][] = [];
+  for (let i = 0; i < days.length; i += 7) {
+    weeks.push(days.slice(i, i + 7));
+  }
+
+  return (
+    <div className="gh-graph" aria-label="GitHub contribution graph">
+      {weeks.map((week, wi) => (
+        <div className="gh-week" key={wi}>
+          {week.map(day => (
+            <span
+              key={day.date}
+              className={`gh-cell gh-cell--${day.level}`}
+              title={`${day.date}: ${day.count} contribution${day.count === 1 ? '' : 's'}`}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AboutMePanel() {
   const githubUsername = "oxvishall";
-  const [stats, setStats] = useState<{ lastYear: number; thisYear: number } | null>(null);
+  const [stats, setStats] = useState<GhStats | null>(null);
+  const [statsError, setStatsError] = useState(false);
 
   useEffect(() => {
-    fetch(`https://github-contributions-api.deno.dev/${githubUsername}.json`)
-      .then(res => res.json())
+    fetch('/api/github-stats')
+      .then(res => {
+        if (!res.ok) throw new Error('bad status');
+        return res.json();
+      })
       .then(data => {
-        if (data && data.contributions) {
-          const currentYear = new Date().getFullYear().toString();
-          let thisYearCount = 0;
-          data.contributions.forEach((week: any[]) => {
-            week.forEach((day: any) => {
-              if (day.date.startsWith(currentYear)) {
-                thisYearCount += day.contributionCount;
-              }
-            });
-          });
-          setStats({
-            lastYear: data.totalContributions,
-            thisYear: thisYearCount
-          });
+        if (data && Array.isArray(data.days)) {
+          setStats({ thisYear: data.thisYear, lastYear: data.lastYear, days: data.days });
+        } else {
+          setStatsError(true);
         }
       })
-      .catch(err => console.error("Could not fetch GitHub stats:", err));
-  }, [githubUsername]);
-
-  // Use the B&W color scheme and simply invert the image mathematically in dark mode.
-  const chartUrl = `https://ghchart.rshah.org/000000/${githubUsername}`;
+      .catch(() => setStatsError(true));
+  }, []);
 
   return (
     <div className="about-me-panel">
@@ -115,21 +132,24 @@ export default function AboutMePanel() {
             </>
           ) : (
              <div className="col-span-2 py-8 text-center bg-surface/30 border border-strong border-dashed rounded-2xl animate-pulse">
-               <span className="font-dot text-[10px] text-tertiary uppercase tracking-widest">Connecting to GitHub Terminal...</span>
+               <span className="font-dot text-[10px] text-tertiary uppercase tracking-widest">
+                 {statsError ? 'GitHub terminal offline' : 'Connecting to GitHub Terminal...'}
+               </span>
              </div>
           )}
         </div>
         
-        <div className="github-frame relative border border-strong rounded-2xl overflow-hidden bg-white dark:bg-black aspect-[4/1] md:aspect-[5/1]">
-           {/* Subtle terminal-style scanline effect in dark mode */}
+        <div className="github-frame relative border border-strong rounded-2xl overflow-hidden">
            <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.07] pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%]" />
            
-           <div className="relative z-10 w-full h-full flex items-center justify-center p-3 md:p-6">
-             <img 
-               src={chartUrl} 
-               alt="GitHub Contributions" 
-               className="w-full h-auto pointer-events-none dark:invert dark:brightness-125 transition-all duration-700"
-             />
+           <div className="relative z-10 w-full flex items-center justify-center p-3 md:p-6 overflow-x-auto">
+             {stats ? (
+               <ContributionGraph days={stats.days} />
+             ) : (
+               <span className="font-dot text-[10px] text-tertiary uppercase tracking-widest py-8">
+                 {statsError ? 'Graph unavailable' : 'Loading graph...'}
+               </span>
+             )}
            </div>
         </div>
       </div>
@@ -154,6 +174,36 @@ export default function AboutMePanel() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
         </div>
       </div>
+
+      <style>{`
+        .github-frame { background: var(--bg-page); }
+        .gh-graph {
+          display: flex;
+          gap: 3px;
+          width: max-content;
+          margin: 0 auto;
+        }
+        .gh-week {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+        }
+        .gh-cell {
+          width: 10px;
+          height: 10px;
+          border-radius: 2px;
+          background: var(--text-primary);
+        }
+        .gh-cell--0 { opacity: 0.1; }
+        .gh-cell--1 { opacity: 0.32; }
+        .gh-cell--2 { opacity: 0.52; }
+        .gh-cell--3 { opacity: 0.74; }
+        .gh-cell--4 { opacity: 1; }
+        @media (max-width: 640px) {
+          .gh-cell { width: 7px; height: 7px; }
+          .gh-graph, .gh-week { gap: 2px; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { FaGithub, FaExternalLinkAlt, FaShareAlt } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
 import { motion, AnimatePresence } from 'framer-motion';
+import ExpandableText from '@/app/components/ExpandableText';
 
 interface Project {
   id?: string;
@@ -179,9 +180,9 @@ function ProjectCard({ project }: { project: Project }) {
           <ProjectMenu project={project} />
         </div>
         
-        <p className="text-secondary text-[14px] leading-relaxed mb-4 flex-1 line-clamp-2">
-          {project.description}
-        </p>
+        <ExpandableText className="text-secondary text-[14px] leading-relaxed mb-4 flex-1 rich-text">
+          <div dangerouslySetInnerHTML={{ __html: project.description }} />
+        </ExpandableText>
         
         <div className="flex flex-wrap gap-1.5 mb-6">
           {project.tags.map(tag => (
@@ -248,9 +249,9 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
         </header>
 
         <div className="post-body">
-          <p className="post-text">
-            <strong>{title}</strong> — {project.description}
-          </p>
+          <ExpandableText className="post-text rich-text">
+            <div dangerouslySetInnerHTML={{ __html: project.description }} />
+          </ExpandableText>
           <div className="post-media">
             <canvas ref={canvasRef} className="post-canvas" aria-hidden="true" />
             {project.image && (

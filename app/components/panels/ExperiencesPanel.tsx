@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import ExpandableText from '@/app/components/ExpandableText';
 import { FaExternalLinkAlt, FaRegComment, FaRetweet, FaRegHeart, FaChartBar } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
 
@@ -109,15 +110,22 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
               <p className="post-thread-title">{roleTitle}</p>
 
               <div className="post-body">
-                {roleDesc && <p className="post-text">{roleDesc}</p>}
-                {bullets.length > 0 && (
-                  <ul className="thread-bullets">
-                    {bullets.map((bullet, bi) => (
-                      <li key={bi} className="thread-bullet">
-                        <span className="bullet-text">{bullet}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {roleDesc && (
+                  <ExpandableText className="post-text rich-text">
+                    <div dangerouslySetInnerHTML={{ __html: roleDesc }} />
+                  </ExpandableText>
+                )}
+                {/* Legacy bullets fallback for entries without HTML descriptions */}
+                {!roleDesc && bullets.length > 0 && (
+                  <ExpandableText>
+                    <ul className="thread-bullets">
+                      {bullets.map((bullet, bi) => (
+                        <li key={bi} className="thread-bullet">
+                          <span className="bullet-text">{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </ExpandableText>
                 )}
               </div>
 

@@ -162,12 +162,12 @@ body {
 
 /* 6. Profile Sections (Cover, Bio, Tabs) */
 .cover { width: 100%; aspect-ratio: 3/1; border-bottom: 1px solid var(--border); overflow: hidden; position: relative; }
-.cover-img { width: 100%; height: 100%; object-fit: cover; }
+.cover-img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .cover-dots-overlay { position: absolute; inset: 0; pointer-events: none; }
 .cover-canvas { width: 100%; height: 100%; display: block; }
 .avatar-wrap { display: flex; justify-content: space-between; align-items: flex-end; margin-top: -45px; padding: 0 16px; position: relative; z-index: 10; }
 .avatar { width: 90px; height: 90px; background: var(--bg-page); border: 2px solid var(--border-strong); border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; isolation: isolate; }
-.avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.avatar-img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; border-radius: 50%; }
 .avatar-initials { font-family: var(--font-serif); font-size: 32px; font-weight: bold; }
 .btn-follow { background: var(--text-primary); color: var(--bg-page); padding: 8px 18px; border-radius: 99px; font-weight: bold; text-decoration: none; }
 .bio { padding: 16px; }
@@ -208,7 +208,7 @@ body {
 
 .post-avatar-col { flex-shrink: 0; width: 48px; display: flex; justify-content: center; }
 .post-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--bg-surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-weight: bold; overflow: hidden; isolation: isolate; }
-.post-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.post-avatar-img { width: 100%; height: 100%; object-fit: cover; object-position: center 18%; border-radius: 50%; }
 .post-content { flex-grow: 1; min-width: 0; }
 .post-header { display: flex; justify-content: space-between; align-items: flex-start; }
 .post-user-info { display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; font-size: 14px; }
@@ -218,6 +218,20 @@ body {
 .post-body { margin-top: 4px; }
 .post-text { font-size: 15px; line-height: 1.4; }
 .post-text strong { font-family: var(--font-serif); font-weight: normal; font-size: 17px; }
+.expand-toggle {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-dot);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.expand-toggle:hover { color: var(--text-primary); }
 .post-media { 
   position: relative; 
   border: 1px solid var(--border-strong); 
@@ -269,10 +283,6 @@ body {
 .link-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .sidebar-link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); font-size: 14px; font-weight: 500; }
  
- .ndot-section { margin-top: 32px; border-top: 1px solid var(--border); padding-top: 32px; }
-.ndot-generator { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 18px; padding: 20px; }
-.ndot-dropzone { width: 100%; min-height: 200px; border: 2px dashed var(--border-strong); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
 .experiences-list { padding: 24px 0; }
 .experience-item { display: flex; gap: 16px; }
 .experience-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); margin-top: 8px; }
@@ -285,3 +295,13 @@ body {
 .footer-links { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
 .footer-link { color: var(--text-secondary); text-decoration: none; font-size: 13px; }
 .footer-copy { font-family: var(--font-dot); font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; }
+
+/* 10. Rich Text (rendered HTML from Tiptap descriptions) */
+.rich-text ul { list-style: disc; padding-left: 1.3em; margin: 0.3em 0; }
+.rich-text ol { list-style: decimal; padding-left: 1.3em; margin: 0.3em 0; }
+.rich-text li { margin: 0.15em 0; line-height: 1.55; }
+.rich-text strong { font-weight: 700; }
+.rich-text em { font-style: italic; }
+.rich-text p { margin: 0; }
+.rich-text p + p { margin-top: 0.35em; }
+
