@@ -216,8 +216,8 @@ body {
 .post-handle, .post-sep, .post-time { color: var(--text-secondary); }
 .post-more { background: none; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; }
 .post-body { margin-top: 4px; }
-.post-text { font-size: 15px; line-height: 1.4; }
-.post-text strong { font-family: var(--font-serif); font-weight: normal; font-size: 17px; }
+.post-text { font-size: 15px; line-height: 1.55; }
+.post-text strong { font-weight: 700; font-size: 15px; }
 .expand-toggle {
   display: inline-block;
   margin-top: 6px;
@@ -226,12 +226,18 @@ body {
   background: none;
   cursor: pointer;
   font-family: var(--font-dot);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  opacity: 0.9;
+  transition: opacity 0.15s ease;
 }
-.expand-toggle:hover { color: var(--text-primary); }
+.expand-toggle:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
 .post-media { 
   position: relative; 
   border: 1px solid var(--border-strong); 
@@ -297,11 +303,12 @@ body {
 .footer-copy { font-family: var(--font-dot); font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.1em; }
 
 /* 10. Rich Text (rendered HTML from Tiptap descriptions) */
-.rich-text ul { list-style: disc; padding-left: 1.3em; margin: 0.3em 0; }
-.rich-text ol { list-style: decimal; padding-left: 1.3em; margin: 0.3em 0; }
-.rich-text li { margin: 0.15em 0; line-height: 1.55; }
+.rich-text { font-size: 15px; line-height: 1.55; }
+.rich-text ul { list-style: disc; padding-left: 1.3em; margin: 0.35em 0; }
+.rich-text ol { list-style: decimal; padding-left: 1.3em; margin: 0.35em 0; }
+.rich-text li { margin: 0.2em 0; line-height: 1.55; }
 .rich-text strong { font-weight: 700; }
 .rich-text em { font-style: italic; }
-.rich-text p { margin: 0; }
-.rich-text p + p { margin-top: 0.35em; }
+.rich-text p { margin: 0; line-height: 1.55; }
+.rich-text p + p { margin-top: 0.4em; }
 

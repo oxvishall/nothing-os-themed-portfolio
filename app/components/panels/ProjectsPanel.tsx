@@ -249,6 +249,11 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
         </header>
 
         <div className="post-body">
+          {title && (
+            <p className="post-thread-title">
+              {title}
+            </p>
+          )}
           <ExpandableText className="post-text rich-text">
             <div dangerouslySetInnerHTML={{ __html: project.description }} />
           </ExpandableText>
