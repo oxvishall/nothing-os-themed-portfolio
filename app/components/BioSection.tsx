@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapPin, Calendar } from 'lucide-react';
+import { MapPin, Calendar, Star } from 'lucide-react';
 import { HiDotsVertical } from 'react-icons/hi';
 import type { PortfolioData } from '@/app/data/portfolio';
 import ImageLightbox from './ImageLightbox';
@@ -12,6 +12,7 @@ interface BioSectionProps {
 
 export default function BioSection({ data }: BioSectionProps) {
   const [realtimeContributions, setRealtimeContributions] = useState<string | null>(null);
+  const [starCount, setStarCount] = useState<number | null>(null);
   const [avatarOpen, setAvatarOpen] = useState(false);
 
   useEffect(() => {
@@ -23,6 +24,15 @@ export default function BioSection({ data }: BioSectionProps) {
           setRealtimeContributions(
             count >= 1000 ? `${(count / 1000).toFixed(1).replace(/\.0$/, '')}k+` : count.toLocaleString(),
           );
+        }
+      })
+      .catch(() => {});
+
+    fetch('https://api.github.com/repos/oxvishall/nothing-os-themed-portfolio')
+      .then(res => res.json())
+      .then(d => {
+        if (typeof d?.stargazers_count === 'number') {
+          setStarCount(d.stargazers_count);
         }
       })
       .catch(() => {});
@@ -51,12 +61,16 @@ export default function BioSection({ data }: BioSectionProps) {
 
           <div className="flex items-center gap-2">
             <a 
-              href={data.links.find(l => l.label === 'GitHub')?.url ?? '#'} 
+              href="https://github.com/oxvishall/nothing-os-themed-portfolio" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="btn-follow h-10 flex items-center justify-center mb-0"
+              className="btn-follow h-10 px-4 flex items-center gap-2 justify-center mb-0 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 group"
+              title="Star repository on GitHub"
             >
-              Follow
+              <Star size={15} className="fill-current text-amber-400 transition-transform duration-300 group-hover:rotate-12" />
+              <span className="font-dot text-[13px] font-bold tracking-widest">
+                {starCount !== null ? starCount : 'STAR'}
+              </span>
             </a>
             <button 
               onClick={toggleSidebar}
