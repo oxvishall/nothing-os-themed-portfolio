@@ -15,20 +15,18 @@ export default function BioSection({ data }: BioSectionProps) {
   const [avatarOpen, setAvatarOpen] = useState(false);
 
   useEffect(() => {
-    fetch(`https://github-contributions-api.deno.dev/${data.handle.replace('@', '')}.json`)
+    fetch('/api/github-stats')
       .then(res => res.json())
       .then(d => {
-        if (d && d.totalContributions) {
-          const count = d.totalContributions;
-          if (count > 1000) {
-            setRealtimeContributions(`${(count / 1000).toFixed(1)}k+`);
-          } else {
-            setRealtimeContributions(count.toLocaleString());
-          }
+        const count = d?.lastYear;
+        if (typeof count === 'number') {
+          setRealtimeContributions(
+            count >= 1000 ? `${(count / 1000).toFixed(1).replace(/\.0$/, '')}k+` : count.toLocaleString(),
+          );
         }
       })
-      .catch(() => {}); 
-  }, [data.handle]);
+      .catch(() => {});
+  }, []);
 
   const toggleSidebar = () => {
     window.dispatchEvent(new CustomEvent('toggle-sidebar'));

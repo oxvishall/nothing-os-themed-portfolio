@@ -47,7 +47,7 @@ export default function CoverBanner({ name }: { name: string }) {
         <img
           src={portfolio.bannerUrl}
           alt={`${name}'s banner`}
-          className="cover-img"
+          className="cover-img w-full h-full object-cover"
         />
         <canvas
           ref={canvasRef}

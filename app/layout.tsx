@@ -6,7 +6,9 @@ export const metadata: Metadata = {
   title: "Vishal Aakash | Nothing × X Portfolio",
   description: "A minimal, monochrome portfolio inspired by Nothing OS and X UI.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
   },
 };
 
