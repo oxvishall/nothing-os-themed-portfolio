@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import type { PortfolioData } from '@/app/data/portfolio';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
+import { trackThemeToggle, trackSocialLinkClick } from '@/lib/analytics';
 
 interface SidebarProps {
   data: PortfolioData;
@@ -58,6 +59,7 @@ function ThemeToggle() {
     }
     localStorage.setItem('theme', mode);
     setTheme(mode);
+    trackThemeToggle(mode);
   };
 
   return (
@@ -194,6 +196,7 @@ export default function Sidebar({ data }: SidebarProps) {
                 rel="noopener noreferrer"
                 className="sidebar-link hover:translate-x-1 transition-all"
                 aria-label={link.label}
+                onClick={() => trackSocialLinkClick(link.label, link.url)}
               >
                 <span className="sidebar-link-icon opacity-60 group-hover:opacity-100 transition-opacity" aria-hidden="true">{link.icon}</span>
                 {link.label}

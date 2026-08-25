@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import ExpandableText from '@/app/components/ExpandableText';
 import { FaExternalLinkAlt } from 'react-icons/fa';
+import { trackExperienceExpand } from '@/lib/analytics';
 
 interface Role {
   role?: string;
@@ -108,6 +109,7 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
                     rel="noopener noreferrer"
                     className="post-more hover:bg-elevated rounded-full transition-colors flex items-center justify-center text-secondary hover:text-primary"
                     title="Visit Website"
+                    onClick={() => trackExperienceExpand(org)}
                   >
                     <FaExternalLinkAlt size={14} />
                   </a>

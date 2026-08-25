@@ -5,6 +5,7 @@ import { FaGithub, FaExternalLinkAlt, FaShareAlt } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
 import { motion, AnimatePresence } from 'framer-motion';
 import ExpandableText from '@/app/components/ExpandableText';
+import { trackProjectLinkClick } from '@/lib/analytics';
 
 interface Project {
   id?: string;
@@ -88,7 +89,7 @@ function ProjectMenu({ project }: { project: Project }) {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => { setIsOpen(false); trackProjectLinkClick(project.title || project.name || '', 'live'); }}
                 >
                   <FaExternalLinkAlt className="text-tertiary" size={14} />
                   <span>Project Demo</span>
@@ -100,7 +101,7 @@ function ProjectMenu({ project }: { project: Project }) {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => { setIsOpen(false); trackProjectLinkClick(project.title || project.name || '', 'github'); }}
                 >
                   <FaGithub className="text-tertiary" size={16} />
                   <span>Source Code</span>
@@ -227,7 +228,11 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
   const title = project.title || project.name;
 
   return (
-    <article className="project-post" aria-label={title}>
+    <article
+      className="project-post"
+      aria-label={title}
+      data-project-id={project._id || project.id}
+    >
       <div className="post-avatar-col">
         <div className="post-avatar">
           {data.avatarUrl ? (
@@ -293,7 +298,7 @@ export default function ProjectsPanel({ data, layout = 'list', projects = [], lo
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 md:p-6">
         {projects.map((p, i) => (
-          <div key={p._id || p.id || i} className="h-full">
+          <div key={p._id || p.id || i} className="h-full" data-project-id={p._id || p.id}>
             <ProjectCard project={p} />
           </div>
         ))}
@@ -304,7 +309,7 @@ export default function ProjectsPanel({ data, layout = 'list', projects = [], lo
   return (
     <div className="project-feed" role="list">
       {projects.map((p, i) => (
-        <div key={p._id || p.id || i} role="listitem" className="post-wrapper">
+        <div key={p._id || p.id || i} role="listitem" className="post-wrapper" data-project-id={p._id || p.id}>
           <ProjectPost project={p} data={data} />
         </div>
       ))}
