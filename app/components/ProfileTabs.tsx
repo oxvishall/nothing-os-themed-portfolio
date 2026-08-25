@@ -8,6 +8,7 @@ import ProjectsPanel from './panels/ProjectsPanel';
 import ExperiencesPanel from './panels/ExperiencesPanel';
 import AboutMePanel from './panels/AboutMePanel';
 import ToolsPanel from './panels/ToolsPanel';
+import { trackTabSwitch, trackLayoutToggle } from '@/lib/analytics';
 
 const TABS = [
   { id: 'projects', label: 'Projects' },
@@ -62,6 +63,7 @@ export default function ProfileTabs({ data }: { data: any }) {
 
   const handleTabClick = (id: TabId) => {
     setActive(id);
+    trackTabSwitch(id);
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', id);
     router.replace(`?${params.toString()}`, { scroll: false });
@@ -114,7 +116,7 @@ export default function ProfileTabs({ data }: { data: any }) {
         {active === 'projects' && (
           <div className="hidden md:flex items-center gap-1 pb-4">
             <button 
-              onClick={() => setLayout('list')}
+              onClick={() => { setLayout('list'); trackLayoutToggle('list'); }}
               className={`p-1.5 rounded-full transition-all duration-300 ${
                 layout === 'list' 
                   ? 'bg-primary text-background scale-110' 
@@ -125,7 +127,7 @@ export default function ProfileTabs({ data }: { data: any }) {
               <List size={14} />
             </button>
             <button 
-              onClick={() => setLayout('grid')}
+              onClick={() => { setLayout('grid'); trackLayoutToggle('grid'); }}
               className={`p-1.5 rounded-full transition-all duration-300 ${
                 layout === 'grid' 
                   ? 'bg-primary text-background scale-110' 

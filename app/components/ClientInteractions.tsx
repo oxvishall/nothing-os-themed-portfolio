@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { trackPageView, trackSplashDismissed } from '@/lib/analytics';
 
 export default function ClientInteractions() {
   const [showSplash, setShowSplash] = useState(true);
@@ -18,6 +19,8 @@ export default function ClientInteractions() {
     // Splash Screen Timeout
     const timer = setTimeout(() => {
       setShowSplash(false);
+      trackSplashDismissed();
+      trackPageView('home');
     }, 1200);
 
     return () => {

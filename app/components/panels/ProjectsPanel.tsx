@@ -5,6 +5,7 @@ import { FaGithub, FaExternalLinkAlt, FaShareAlt } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
 import { motion, AnimatePresence } from 'framer-motion';
 import ExpandableText from '@/app/components/ExpandableText';
+import { trackProjectLinkClick } from '@/lib/analytics';
 
 interface Project {
   id?: string;
@@ -88,7 +89,7 @@ function ProjectMenu({ project }: { project: Project }) {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => { setIsOpen(false); trackProjectLinkClick(project.title || project.name || '', 'live'); }}
                 >
                   <FaExternalLinkAlt className="text-tertiary" size={14} />
                   <span>Project Demo</span>
@@ -100,7 +101,7 @@ function ProjectMenu({ project }: { project: Project }) {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => { setIsOpen(false); trackProjectLinkClick(project.title || project.name || '', 'github'); }}
                 >
                   <FaGithub className="text-tertiary" size={16} />
                   <span>Source Code</span>
