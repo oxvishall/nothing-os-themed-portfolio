@@ -228,7 +228,11 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
   const title = project.title || project.name;
 
   return (
-    <article className="project-post" aria-label={title}>
+    <article
+      className="project-post"
+      aria-label={title}
+      data-project-id={project._id || project.id}
+    >
       <div className="post-avatar-col">
         <div className="post-avatar">
           {data.avatarUrl ? (
@@ -294,7 +298,7 @@ export default function ProjectsPanel({ data, layout = 'list', projects = [], lo
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 md:p-6">
         {projects.map((p, i) => (
-          <div key={p._id || p.id || i} className="h-full">
+          <div key={p._id || p.id || i} className="h-full" data-project-id={p._id || p.id}>
             <ProjectCard project={p} />
           </div>
         ))}
@@ -305,7 +309,7 @@ export default function ProjectsPanel({ data, layout = 'list', projects = [], lo
   return (
     <div className="project-feed" role="list">
       {projects.map((p, i) => (
-        <div key={p._id || p.id || i} role="listitem" className="post-wrapper">
+        <div key={p._id || p.id || i} role="listitem" className="post-wrapper" data-project-id={p._id || p.id}>
           <ProjectPost project={p} data={data} />
         </div>
       ))}

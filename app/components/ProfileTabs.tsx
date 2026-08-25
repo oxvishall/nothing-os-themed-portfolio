@@ -61,6 +61,33 @@ export default function ProfileTabs({ data }: { data: any }) {
     }
   }, [searchParams, active]);
 
+  // Scroll to a specific project when ?project=<id> is in the URL
+  useEffect(() => {
+    if (loading) return;
+    const projectId = searchParams.get('project');
+    if (!projectId || active !== 'projects') return;
+
+    // Give the DOM a tick to render the project list
+    const timeout = setTimeout(() => {
+      const el = document.querySelector<HTMLElement>(`[data-project-id="${projectId}"]`);
+      if (!el) return;
+
+      // Scroll element into view
+      const elTop = el.getBoundingClientRect().top + window.scrollY;
+      const offset = 80; // account for sticky tabs bar height
+      window.scrollTo({ top: elTop - offset, behavior: 'smooth' });
+
+      // Brief highlight pulse so the user knows which card was linked
+      el.style.transition = 'background 0.3s ease';
+      el.style.background = 'var(--bg-elevated)';
+      setTimeout(() => {
+        el.style.background = '';
+      }, 1800);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [loading, projects, searchParams, active]);
+
   const handleTabClick = (id: TabId) => {
     setActive(id);
     trackTabSwitch(id);
