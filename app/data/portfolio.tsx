@@ -249,8 +249,8 @@ const portfolio: PortfolioData = {
   links: [
     { label: "GitHub", url: "https://github.com/oxvishall", icon: <FaGithub /> },
     { label: "LinkedIn", url: "https://linkedin.com/in/vishal-aakash", icon: <FaLinkedin /> },
-    { label: "X / Twitter", url: "https://x.com/0xVishal_", icon: <FaXTwitter /> },
-    { label: "Resume PDF", url: "/resume.pdf", icon: <FaFilePdf /> }
+    { label: "X / Twitter", url: "https://x.com/oxvishall", icon: <FaXTwitter /> },
+    // { label: "Resume PDF", url: "/resume.pdf", icon: <FaFilePdf /> }
   ]
 };
 
