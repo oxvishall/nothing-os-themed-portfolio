@@ -88,7 +88,7 @@ export default function AboutMePanel() {
           </div>
           <div>
             <span className="block font-dot text-[10px] text-tertiary uppercase tracking-widest leading-none mb-1">Status</span>
-            <span className="text-primary font-medium text-sm">Available for Roles</span>
+            <span className="text-primary font-medium text-sm">Software Engineer @xyralabs</span>
           </div>
         </div>
       </div>
