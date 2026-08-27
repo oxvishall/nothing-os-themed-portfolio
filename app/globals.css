@@ -72,7 +72,7 @@
 }
 
 html {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -81,7 +81,7 @@ body {
   font-family: var(--font-sans);
   margin: 0;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
 }
 
@@ -102,7 +102,7 @@ body {
 .main-content {
   background-color: var(--bg-page);
   min-width: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 @media (max-width: 640px) {
@@ -290,7 +290,7 @@ body {
     padding: 16px 0; 
     position: sticky; 
     top: 16px; 
-    height: max-content; 
+    align-self: start;
   } 
 }
 .sidebar-card { background: var(--bg-page); border: 1px solid var(--border-strong); border-radius: 18px; padding: 20px; }
