@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { MapPin, Calendar, Star } from 'lucide-react';
+import { MapPin, Calendar, Star, Eye } from 'lucide-react';
 import { HiDotsVertical } from 'react-icons/hi';
 import type { PortfolioData } from '@/app/data/portfolio';
 import ImageLightbox from './ImageLightbox';
@@ -14,6 +14,7 @@ interface BioSectionProps {
 export default function BioSection({ data }: BioSectionProps) {
   const [realtimeContributions, setRealtimeContributions] = useState<string | null>(null);
   const [starCount, setStarCount] = useState<number | null>(null);
+  const [viewsCount, setViewsCount] = useState<number | null>(null);
   const [avatarOpen, setAvatarOpen] = useState(false);
 
   useEffect(() => {
@@ -34,6 +35,22 @@ export default function BioSection({ data }: BioSectionProps) {
       .then(d => {
         if (typeof d?.stargazers_count === 'number') {
           setStarCount(d.stargazers_count);
+        }
+      })
+      .catch(() => {});
+
+    // Track/fetch total portfolio views
+    const hasViewed = typeof window !== 'undefined' && sessionStorage.getItem('portfolio_viewed');
+    const method = hasViewed ? 'GET' : 'POST';
+
+    fetch('/api/views', { method })
+      .then(res => res.json())
+      .then(d => {
+        if (typeof d?.count === 'number') {
+          setViewsCount(d.count);
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('portfolio_viewed', 'true');
+          }
         }
       })
       .catch(() => {});
@@ -77,6 +94,21 @@ export default function BioSection({ data }: BioSectionProps) {
                 {starCount !== null ? starCount : 'STAR'}
               </span>
             </a>
+
+            <div 
+              className="h-10 px-3.5 flex items-center gap-2 justify-center rounded-full border border-strong bg-surface/60 text-primary transition-all duration-300 hover:scale-105 cursor-default select-none group"
+              title="Total Portfolio Views"
+            >
+              <Eye size={15} className="text-secondary group-hover:text-primary transition-colors" />
+              <span className="font-dot text-[13px] font-bold tracking-widest">
+                {viewsCount !== null
+                  ? (viewsCount >= 1000
+                      ? `${(viewsCount / 1000).toFixed(1).replace(/\.0$/, '')}k`
+                      : viewsCount.toLocaleString())
+                  : '--'}
+              </span>
+            </div>
+
             <button 
               onClick={toggleSidebar}
               className="lg:hidden h-10 w-10 flex items-center justify-center border border-strong rounded-full text-secondary hover:text-primary hover:bg-surface transition-all"

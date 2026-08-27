@@ -3,7 +3,7 @@ import "./globals.css";
 import CustomCursor from "@/app/components/CustomCursor";
 
 export const metadata: Metadata = {
-  title: "Vishal Aakash — Full-Stack Developer & Systems Engineer",
+  title: "Vishal Aakash | Full-Stack Developer & Systems Engineer",
   description:
     "I'm a full-stack developer and systems engineer from Chennai, India. I build high-performance web apps, DeFi protocols, and pixel-perfect UIs — 3+ years deep in React, Next.js, Node.js, and onchain development.",
   keywords: [
