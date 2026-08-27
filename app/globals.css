@@ -290,8 +290,16 @@ body {
     padding: 16px 0; 
     position: sticky; 
     top: 16px; 
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     align-self: start;
   } 
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
 }
 .sidebar-card { background: var(--bg-page); border: 1px solid var(--border-strong); border-radius: 18px; padding: 20px; }
 .sidebar-heading { font-family: var(--font-dot); font-size: 10px; font-weight: 700; font-variation-settings: "ROND" 0; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
