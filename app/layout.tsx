@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: "https://vishalaakash.dev",
     siteName: "Vishal Aakash",
-    title: "Vishal Aakash — Full-Stack Developer & Systems Engineer",
+    title: "Vishal Aakash | Full-Stack Developer & Systems Engineer",
     description:
       "I build performant web apps, DeFi protocols, and pixel-perfect interfaces from Chennai. Obsessed with clean code and the last 2% of polish.",
     images: [
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@oxvishall",
     creator: "@oxvishall",
-    title: "Vishal Aakash — Full-Stack Developer & Systems Engineer",
+    title: "Vishal Aakash | Full-Stack Developer & Systems Engineer",
     description:
       "I build performant web apps, DeFi protocols, and pixel-perfect interfaces. Chennai-based, obsessed with the last 2% of polish.",
     images: ["/bp.png"],
