@@ -5,6 +5,7 @@ import type { PortfolioData } from '@/app/data/portfolio';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
 import { trackThemeToggle, trackSocialLinkClick } from '@/lib/analytics';
+import { sfxThemeToggle, sfxClick } from '@/lib/sfx';
 
 interface SidebarProps {
   data: PortfolioData;
@@ -49,6 +50,8 @@ function ThemeToggle() {
   }, []);
 
   const setThemeMode = (mode: 'light' | 'dark') => {
+    if (mode === theme) return;
+    sfxThemeToggle();
     const html = document.documentElement;
     if (mode === 'dark') {
       html.classList.add('dark');

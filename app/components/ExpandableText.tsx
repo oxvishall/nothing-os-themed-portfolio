@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { sfxExpand } from '@/lib/sfx';
 
 const TARGET_LINES = 4;
 
@@ -101,7 +102,7 @@ export default function ExpandableText({
           type="button"
           className="expand-toggle"
           aria-expanded={expanded}
-          onClick={() => setExpanded((open) => !open)}
+          onClick={() => { sfxExpand(); setExpanded((open) => !open); }}
         >
           {expanded ? 'Show less' : 'Show more'}
         </button>

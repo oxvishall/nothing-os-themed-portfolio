@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ExpandableText from '@/app/components/ExpandableText';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { trackExperienceExpand } from '@/lib/analytics';
+import { ArrowUp } from 'lucide-react';
+import { sfxScrollTop } from '@/lib/sfx';
 
 interface Role {
   role?: string;
@@ -146,6 +148,19 @@ function ExperiencePost({ exp, isLastExperience }: { exp: Experience; isLastExpe
 }
 
 export default function ExperiencesPanel({ data, experiences = [], loading = false }: ExperiencesPanelProps) {
+  const [showTop, setShowTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollTop = () => {
+    sfxScrollTop();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
@@ -157,14 +172,27 @@ export default function ExperiencesPanel({ data, experiences = [], loading = fal
   }
 
   return (
-    <div className="experience-thread" role="list">
-      {experiences.map((exp, expIdx) => (
-        <ExperiencePost 
-          key={exp._id || exp.id || expIdx} 
-          exp={exp} 
-          isLastExperience={expIdx === experiences.length - 1} 
-        />
-      ))}
+    <div className="relative">
+      <div className="experience-thread" role="list">
+        {experiences.map((exp, expIdx) => (
+          <ExperiencePost 
+            key={exp._id || exp.id || expIdx} 
+            exp={exp} 
+            isLastExperience={expIdx === experiences.length - 1} 
+          />
+        ))}
+      </div>
+
+      {/* Mobile-only Scroll to Top FAB */}
+      {showTop && (
+        <button
+          onClick={scrollTop}
+          aria-label="Scroll to top"
+          className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-all duration-300 hover:scale-110 active:scale-95"
+        >
+          <ArrowUp size={18} />
+        </button>
+      )}
     </div>
   );
 }

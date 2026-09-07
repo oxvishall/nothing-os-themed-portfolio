@@ -6,6 +6,8 @@ import { HiDotsHorizontal } from 'react-icons/hi';
 import { motion, AnimatePresence } from 'framer-motion';
 import ExpandableText from '@/app/components/ExpandableText';
 import { trackProjectLinkClick } from '@/lib/analytics';
+import { ArrowUp } from 'lucide-react';
+import { sfxScrollTop, sfxClick } from '@/lib/sfx';
 
 interface Project {
   id?: string;
@@ -284,6 +286,19 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
 }
 
 export default function ProjectsPanel({ data, layout = 'list', projects = [], loading = false }: ProjectsPanelProps) {
+  const [showTop, setShowTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const scrollTop = () => {
+    sfxScrollTop();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
@@ -296,23 +311,45 @@ export default function ProjectsPanel({ data, layout = 'list', projects = [], lo
 
   if (layout === 'grid') {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 md:p-6">
-        {projects.map((p, i) => (
-          <div key={p._id || p.id || i} className="h-full" data-project-id={p._id || p.id}>
-            <ProjectCard project={p} />
-          </div>
-        ))}
+      <div className="relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 md:p-6">
+          {projects.map((p, i) => (
+            <div key={p._id || p.id || i} className="h-full" data-project-id={p._id || p.id}>
+              <ProjectCard project={p} />
+            </div>
+          ))}
+        </div>
+        {showTop && (
+          <button
+            onClick={scrollTop}
+            aria-label="Scroll to top"
+            className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-all duration-300 hover:scale-110 active:scale-95"
+          >
+            <ArrowUp size={18} />
+          </button>
+        )}
       </div>
     );
   }
 
   return (
-    <div className="project-feed" role="list">
-      {projects.map((p, i) => (
-        <div key={p._id || p.id || i} role="listitem" className="post-wrapper" data-project-id={p._id || p.id}>
-          <ProjectPost project={p} data={data} />
-        </div>
-      ))}
+    <div className="relative">
+      <div className="project-feed" role="list">
+        {projects.map((p, i) => (
+          <div key={p._id || p.id || i} role="listitem" className="post-wrapper" data-project-id={p._id || p.id}>
+            <ProjectPost project={p} data={data} />
+          </div>
+        ))}
+      </div>
+      {showTop && (
+        <button
+          onClick={scrollTop}
+          aria-label="Scroll to top"
+          className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-all duration-300 hover:scale-110 active:scale-95"
+        >
+          <ArrowUp size={18} />
+        </button>
+      )}
     </div>
   );
 }

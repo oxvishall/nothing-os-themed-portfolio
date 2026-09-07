@@ -6,6 +6,7 @@ import { HiDotsVertical } from 'react-icons/hi';
 import type { PortfolioData } from '@/app/data/portfolio';
 import ImageLightbox from './ImageLightbox';
 import { trackAvatarView, trackStarClick } from '@/lib/analytics';
+import { sfxClick } from '@/lib/sfx';
 
 interface BioSectionProps {
   data: PortfolioData;
@@ -57,6 +58,7 @@ export default function BioSection({ data }: BioSectionProps) {
   }, []);
 
   const toggleSidebar = () => {
+    sfxClick();
     window.dispatchEvent(new CustomEvent('toggle-sidebar'));
   };
 
@@ -87,7 +89,7 @@ export default function BioSection({ data }: BioSectionProps) {
               rel="noopener noreferrer" 
               className="btn-follow h-10 px-4 flex items-center gap-2 justify-center mb-0 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 group"
               title="Star repository on GitHub"
-              onClick={() => trackStarClick()}
+              onClick={() => { sfxClick(); trackStarClick(); }}
             >
               <Star size={15} className="fill-current text-amber-400 transition-transform duration-300 group-hover:rotate-12" />
               <span className="font-dot text-[13px] font-bold tracking-widest">
