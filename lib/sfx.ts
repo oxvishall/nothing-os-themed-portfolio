@@ -6,10 +6,26 @@
  * Styled to match the Nothing OS digital/dot-matrix aesthetic.
  */
 
+const SFX_KEY = 'sfx_enabled';
+
+/** Returns true when SFX is on (default: on). */
+export function isSfxEnabled(): boolean {
+  if (typeof window === 'undefined') return false;
+  const val = localStorage.getItem(SFX_KEY);
+  return val === null ? true : val === 'true';
+}
+
+/** Persist SFX preference. */
+export function setSfxEnabled(enabled: boolean) {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem(SFX_KEY, String(enabled));
+}
+
 let ctx: AudioContext | null = null;
 
 function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
+  if (!isSfxEnabled()) return null;
   if (!ctx) {
     ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
   }

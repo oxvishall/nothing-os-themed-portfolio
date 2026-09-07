@@ -133,7 +133,7 @@ export default function BioSection({ data }: BioSectionProps) {
           </li>
           <li className="flex items-center gap-1.5 opacity-70">
             <Calendar size={14} className="text-secondary" />
-            <span>Joined 2023</span>
+            <span>Since 2023</span>
           </li>
         </ul>
 

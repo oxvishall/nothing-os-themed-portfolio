@@ -5,7 +5,8 @@ import type { PortfolioData } from '@/app/data/portfolio';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
 import { trackThemeToggle, trackSocialLinkClick } from '@/lib/analytics';
-import { sfxThemeToggle, sfxClick } from '@/lib/sfx';
+import { sfxThemeToggle, sfxClick, isSfxEnabled, setSfxEnabled } from '@/lib/sfx';
+import { Volume2, VolumeX } from 'lucide-react';
 
 interface SidebarProps {
   data: PortfolioData;
@@ -38,6 +39,7 @@ function LocalTime() {
 
 function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [sfxOn, setSfxOn] = useState(true);
 
   useEffect(() => {
     const stored = localStorage.getItem('theme') as 'light' | 'dark' | null;
@@ -47,6 +49,7 @@ function ThemeToggle() {
     } else if (html.classList.contains('dark')) {
       setTheme('dark');
     }
+    setSfxOn(isSfxEnabled());
   }, []);
 
   const setThemeMode = (mode: 'light' | 'dark') => {
@@ -65,10 +68,20 @@ function ThemeToggle() {
     trackThemeToggle(mode);
   };
 
+  const toggleSfx = () => {
+    const next = !sfxOn;
+    setSfxEnabled(next);
+    setSfxOn(next);
+    // Play a quick confirmation sound if turning ON
+    if (next) sfxClick();
+  };
+
   return (
     <div className="sidebar-card border-strong p-5">
       <span className="sidebar-heading !mb-4 block">· INTERFACE ·</span>
-      <div className="flex bg-surface border border-strong rounded-full p-1 relative">
+
+      {/* Theme toggle */}
+      <div className="flex bg-surface border border-strong rounded-full p-1 relative mb-3">
         <button 
           onClick={() => setThemeMode('light')}
           className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-all duration-300 z-10 ${
@@ -92,6 +105,21 @@ function ThemeToggle() {
           }`}
         />
       </div>
+
+      {/* SFX toggle */}
+      <button
+        onClick={toggleSfx}
+        className="w-full flex items-center justify-between px-3 py-2 rounded-full border border-strong bg-surface/50 hover:bg-surface transition-all duration-200 group"
+        title={sfxOn ? 'Turn off sounds' : 'Turn on sounds'}
+      >
+        <span className="font-dot text-[10px] tracking-widest text-secondary group-hover:text-primary transition-colors">
+          SOUNDS
+        </span>
+        <div className={`flex items-center gap-1.5 transition-colors ${sfxOn ? 'text-primary' : 'text-secondary/50'}`}>
+          {sfxOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
+          <span className="font-dot text-[9px] tracking-widest">{sfxOn ? 'ON' : 'OFF'}</span>
+        </div>
+      </button>
     </div>
   );
 }
