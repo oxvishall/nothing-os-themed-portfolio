@@ -210,7 +210,7 @@ function ProjectCard({ project }: { project: Project }) {
           <img 
             src={project.image} 
             alt={title} 
-            className="absolute inset-0 w-full h-full object-cover grayscale transition-transform duration-700 group-hover:scale-105" 
+            className="absolute inset-0 w-full h-full object-cover md:grayscale transition-all duration-700 md:group-hover:grayscale-0 group-hover:scale-105" 
           />
         )}
       </div>
