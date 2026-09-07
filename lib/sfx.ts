@@ -46,145 +46,105 @@ function masterOut(ac: AudioContext) {
   return comp;
 }
 
-// ─── Click / Button Press ──────────────────────────────────────────────────
-export function sfxClick() {
-  const ac = getCtx();
-  if (!ac) return;
-  const out = masterOut(ac);
-  const t = ac.currentTime;
+// Cache for pre-rendered physical switch click buffers
+const clickBuffers: { [key: number]: AudioBuffer } = {};
 
-  // Two short oscillator ticks — tight, digital, tactile
-  [0, 0.04].forEach((offset, i) => {
-    const osc = ac.createOscillator();
-    const gain = ac.createGain();
+function createSwitchClickBuffer(ac: AudioContext, variant: number): AudioBuffer {
+  const sampleRate = ac.sampleRate;
+  const duration = 0.014; // 14ms acoustic impulse
+  const numSamples = Math.floor(sampleRate * duration);
+  const buffer = ac.createBuffer(1, numSamples, sampleRate);
+  const data = buffer.getChannelData(0);
 
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(1200 - i * 300, t + offset);
-    osc.frequency.exponentialRampToValueAtTime(800 - i * 200, t + offset + 0.05);
+  // 4 distinct physical switch profiles (Optical, Kailh, Omron, Soft Tactile)
+  const profiles = [
+    { resFreq: 3400, resDecay: 750, thudFreq: 260, thudDecay: 450, noiseMix: 0.68 },
+    { resFreq: 4200, resDecay: 900, thudFreq: 310, thudDecay: 550, noiseMix: 0.76 },
+    { resFreq: 2800, resDecay: 650, thudFreq: 220, thudDecay: 400, noiseMix: 0.58 },
+    { resFreq: 3800, resDecay: 820, thudFreq: 280, thudDecay: 500, noiseMix: 0.72 },
+  ];
+  const p = profiles[variant % profiles.length];
 
-    gain.gain.setValueAtTime(0.08, t + offset);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + offset + 0.07);
+  for (let i = 0; i < numSamples; i++) {
+    const t = i / sampleRate;
 
-    osc.connect(gain);
-    gain.connect(out);
+    // 1. High-frequency microswitch snap transient
+    const snapEnvelope = Math.exp(-t * p.resDecay);
+    const snapOsc = Math.sin(2 * Math.PI * p.resFreq * t);
+    const snapNoise = Math.random() * 2 - 1;
+    const snap = (snapOsc * 0.45 + snapNoise * 0.55) * snapEnvelope * p.noiseMix;
 
-    osc.start(t + offset);
-    osc.stop(t + offset + 0.1);
-  });
+    // 2. Low-frequency switch body thud
+    const thudEnvelope = Math.exp(-t * p.thudDecay);
+    const thud = Math.sin(2 * Math.PI * p.thudFreq * (1 - t * 12) * t) * thudEnvelope * (1 - p.noiseMix);
+
+    // 3. Switch release micro-rebound tick (~4ms)
+    let rebound = 0;
+    if (t > 0.0035) {
+      const rebT = t - 0.0035;
+      rebound = (Math.random() * 2 - 1) * Math.exp(-rebT * 1100) * 0.3;
+    }
+
+    // Combine and soft clip for clean tactile punch
+    const raw = (snap + thud + rebound) * 2.2;
+    data[i] = Math.tanh(raw);
+  }
+
+  return buffer;
 }
 
-// ─── Tab Switch ────────────────────────────────────────────────────────────
+// ─── Authentic Physical Mouse Switch Click with Variations ────────────────
+export function sfxClick(variant?: number) {
+  const ac = getCtx();
+  if (!ac) return;
+
+  try {
+    const out = masterOut(ac);
+    const t = ac.currentTime;
+
+    const v = variant !== undefined ? variant : Math.floor(Math.random() * 4);
+    if (!clickBuffers[v] || clickBuffers[v].sampleRate !== ac.sampleRate) {
+      clickBuffers[v] = createSwitchClickBuffer(ac, v);
+    }
+
+    const src = ac.createBufferSource();
+    src.buffer = clickBuffers[v];
+
+    // Subtle pitch jitter between 0.94 and 1.06 (±6%) for organic click variation
+    src.playbackRate.setValueAtTime(0.94 + Math.random() * 0.12, t);
+
+    const gain = ac.createGain();
+    gain.gain.setValueAtTime(0.4, t);
+
+    src.connect(gain);
+    gain.connect(out);
+    src.start(t);
+  } catch (err) {
+    // Audio safe fallback
+  }
+}
+
+// ─── Mobile Sidepanel Open Sound ──────────────────────────────────────────
+export function sfxPanelOpen() {
+  sfxClick(1);
+}
+
+// ─── Tab Switch (Tactile navigation click) ──────────────────────────────────
 export function sfxTabSwitch() {
-  const ac = getCtx();
-  if (!ac) return;
-  const out = masterOut(ac);
-  const t = ac.currentTime;
-
-  // Ascending two-tone sweep — navigation feel
-  const freqs = [440, 660];
-  freqs.forEach((freq, i) => {
-    const osc = ac.createOscillator();
-    const gain = ac.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, t + i * 0.06);
-    osc.frequency.exponentialRampToValueAtTime(freq * 1.15, t + i * 0.06 + 0.08);
-
-    gain.gain.setValueAtTime(0.0, t + i * 0.06);
-    gain.gain.linearRampToValueAtTime(0.07, t + i * 0.06 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.06 + 0.1);
-
-    osc.connect(gain);
-    gain.connect(out);
-    osc.start(t + i * 0.06);
-    osc.stop(t + i * 0.06 + 0.15);
-  });
+  sfxClick(0);
 }
 
-// ─── Theme Toggle ─────────────────────────────────────────────────────────
+// ─── Theme Toggle (Solid tactile switch click) ────────────────────────────
 export function sfxThemeToggle() {
-  const ac = getCtx();
-  if (!ac) return;
-  const out = masterOut(ac);
-  const t = ac.currentTime;
-
-  // Whoosh-like sweep: high → low for dark, low → high for light
-  const osc = ac.createOscillator();
-  const gain = ac.createGain();
-
-  osc.type = 'sawtooth';
-  osc.frequency.setValueAtTime(2400, t);
-  osc.frequency.exponentialRampToValueAtTime(200, t + 0.18);
-
-  gain.gain.setValueAtTime(0.06, t);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
-
-  // Add a subtle noise texture
-  const bufferSize = ac.sampleRate * 0.15;
-  const noiseBuffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
-  const data = noiseBuffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-  const noise = ac.createBufferSource();
-  noise.buffer = noiseBuffer;
-  const noiseGain = ac.createGain();
-  noiseGain.gain.setValueAtTime(0.015, t);
-  noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-  noise.connect(noiseGain);
-  noiseGain.connect(out);
-  noise.start(t);
-
-  osc.connect(gain);
-  gain.connect(out);
-  osc.start(t);
-  osc.stop(t + 0.25);
+  sfxClick(2);
 }
 
-// ─── Read More / Show More ─────────────────────────────────────────────────
+// ─── Read More / Show More (Subtle tactile click) ─────────────────────────
 export function sfxExpand() {
-  const ac = getCtx();
-  if (!ac) return;
-  const out = masterOut(ac);
-  const t = ac.currentTime;
-
-  // Gentle upward chime — reveals content
-  const osc = ac.createOscillator();
-  const gain = ac.createGain();
-
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(523, t);        // C5
-  osc.frequency.setValueAtTime(659, t + 0.07); // E5
-  osc.frequency.setValueAtTime(784, t + 0.14); // G5
-
-  gain.gain.setValueAtTime(0.0, t);
-  gain.gain.linearRampToValueAtTime(0.06, t + 0.03);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
-
-  osc.connect(gain);
-  gain.connect(out);
-  osc.start(t);
-  osc.stop(t + 0.32);
+  sfxClick(3);
 }
 
-// ─── Scroll to Top ────────────────────────────────────────────────────────
+// ─── Scroll to Top (Crisp tactile launch click) ───────────────────────────
 export function sfxScrollTop() {
-  const ac = getCtx();
-  if (!ac) return;
-  const out = masterOut(ac);
-  const t = ac.currentTime;
-
-  // Rising blip — satisfying launch
-  const osc = ac.createOscillator();
-  const gain = ac.createGain();
-
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(300, t);
-  osc.frequency.exponentialRampToValueAtTime(1200, t + 0.15);
-
-  gain.gain.setValueAtTime(0.07, t);
-  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-
-  osc.connect(gain);
-  gain.connect(out);
-  osc.start(t);
-  osc.stop(t + 0.2);
+  sfxClick(1);
 }

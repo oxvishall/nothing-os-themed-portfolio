@@ -6,7 +6,7 @@ import { HiDotsVertical } from 'react-icons/hi';
 import type { PortfolioData } from '@/app/data/portfolio';
 import ImageLightbox from './ImageLightbox';
 import { trackAvatarView, trackStarClick } from '@/lib/analytics';
-import { sfxClick } from '@/lib/sfx';
+import { sfxClick, sfxPanelOpen } from '@/lib/sfx';
 
 interface BioSectionProps {
   data: PortfolioData;
@@ -58,7 +58,7 @@ export default function BioSection({ data }: BioSectionProps) {
   }, []);
 
   const toggleSidebar = () => {
-    sfxClick();
+    sfxPanelOpen();
     window.dispatchEvent(new CustomEvent('toggle-sidebar'));
   };
 
@@ -70,6 +70,7 @@ export default function BioSection({ data }: BioSectionProps) {
           <button
             className="avatar group relative"
             onClick={() => {
+              sfxClick();
               setAvatarOpen(true);
               trackAvatarView();
             }}

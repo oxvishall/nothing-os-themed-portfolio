@@ -93,6 +93,41 @@ export default function AboutMePanel() {
         </div>
       </div>
 
+      {/* Hackathons & Events (Mobile Only) */}
+      <div className="block lg:hidden p-6 border-b border-border">
+        <div className="sidebar-card border-strong group hover:bg-elevated transition-colors duration-300">
+          <h3 className="sidebar-heading">Hackathons & Events</h3>
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            <div className="text-center">
+              <span className="font-serif text-3xl block text-primary">7+</span>
+              <span className="font-dot text-[10px] text-secondary uppercase tracking-widest leading-tight block mt-1" style={{ fontWeight: 700, fontVariationSettings: '"ROND" 0' }}>Won</span>
+            </div>
+            <div className="text-center border-x border-border">
+              <span className="font-serif text-3xl block text-primary">2</span>
+              <span className="font-dot text-[10px] text-secondary uppercase tracking-widest leading-tight block mt-1" style={{ fontWeight: 700, fontVariationSettings: '"ROND" 0' }}>Global</span>
+            </div>
+            <div className="text-center border-r border-border">
+              <span className="font-serif text-3xl block text-primary">6</span>
+              <span className="font-dot text-[10px] text-secondary uppercase tracking-widest leading-tight block mt-1" style={{ fontWeight: 700, fontVariationSettings: '"ROND" 0' }}>Hosted</span>
+            </div>
+            <div className="text-center">
+              <span className="font-serif text-3xl block text-primary">70+</span>
+              <span className="font-dot text-[10px] text-secondary uppercase tracking-widest leading-tight block mt-1" style={{ fontWeight: 700, fontVariationSettings: '"ROND" 0' }}>Attended</span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 pt-2 border-t border-border/50">
+            <div className="flex items-center gap-2 text-xs text-secondary">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+              ETHGlobal Delhi
+            </div>
+            <div className="flex items-center gap-2 text-xs text-secondary">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+              Walrus Haulout
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* GitHub Section - Framed like Project Media */}
       <div className="p-6 md:p-8">
         {/* Section Header */}

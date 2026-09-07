@@ -158,7 +158,10 @@ export default function Sidebar({ data }: SidebarProps) {
       {/* Mobile Close Button */}
       <div className="flex justify-end p-4 lg:hidden">
         <button 
-          onClick={() => setIsOpen(false)}
+          onClick={() => {
+            sfxClick();
+            setIsOpen(false);
+          }}
           className="p-2 bg-surface border border-strong rounded-full text-secondary hover:text-primary transition-all"
           aria-label="Close Sidebar"
         >
@@ -258,7 +261,10 @@ export default function Sidebar({ data }: SidebarProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                sfxClick();
+                setIsOpen(false);
+              }}
               className="fixed inset-0 bg-page/80 backdrop-blur-md z-[100] lg:hidden"
             />
             

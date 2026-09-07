@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
+import { sfxClick } from '@/lib/sfx';
 
 interface ImageLightboxProps {
   src: string;
@@ -16,7 +17,12 @@ export default function ImageLightbox({ src, alt, isOpen, onClose, shape = 'rect
   // Close on Escape key
   useEffect(() => {
     if (!isOpen) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        sfxClick();
+        onClose();
+      }
+    };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
@@ -27,6 +33,11 @@ export default function ImageLightbox({ src, alt, isOpen, onClose, shape = 'rect
     return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
+  const handleClose = () => {
+    sfxClick();
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -36,14 +47,14 @@ export default function ImageLightbox({ src, alt, isOpen, onClose, shape = 'rect
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          onClick={onClose}
+          onClick={handleClose}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
 
           {/* Close button */}
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-white transition-colors"
             aria-label="Close preview"
           >

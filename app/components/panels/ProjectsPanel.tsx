@@ -66,6 +66,7 @@ function ProjectMenu({ project }: { project: Project }) {
   };
 
   const handleShare = () => {
+    sfxClick();
     const shareUrl = `${window.location.origin}${window.location.pathname}?tab=projects&project=${project._id || project.id}`;
     navigator.clipboard.writeText(shareUrl);
     alert('Project link copied to clipboard!');
@@ -93,6 +94,7 @@ function ProjectMenu({ project }: { project: Project }) {
                 className="fixed inset-0 bg-black/10 backdrop-blur-[0.5px]"
                 onClick={(e) => {
                   e.stopPropagation();
+                  sfxClick();
                   setIsOpen(false);
                 }}
               />
@@ -120,6 +122,7 @@ function ProjectMenu({ project }: { project: Project }) {
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
                       onClick={() => {
+                        sfxClick();
                         setIsOpen(false);
                         trackProjectLinkClick(project.title || project.name || '', 'live');
                       }}
@@ -135,6 +138,7 @@ function ProjectMenu({ project }: { project: Project }) {
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
                       onClick={() => {
+                        sfxClick();
                         setIsOpen(false);
                         trackProjectLinkClick(project.title || project.name || '', 'github');
                       }}
