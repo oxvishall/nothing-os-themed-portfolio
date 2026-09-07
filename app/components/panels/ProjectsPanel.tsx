@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { FaGithub, FaExternalLinkAlt, FaShareAlt } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,42 +38,32 @@ const API_URL = "/api";
 function ProjectMenu({ project }: { project: Project }) {
   const [isOpen, setIsOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
+  const [mounted, setMounted] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
   const liveUrl = project.liveUrl || project.url;
   const sourceUrl = project.sourceUrl || project.githubUrl;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const openMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    sfxClick();
-    if (!btnRef.current) return;
-    const rect = btnRef.current.getBoundingClientRect();
-    setMenuPos({
-      top: rect.bottom + window.scrollY + 8,
-      right: window.innerWidth - rect.right,
-    });
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setMenuPos({
+        top: rect.bottom + 8,
+        right: Math.max(16, window.innerWidth - rect.right),
+      });
+    }
     setIsOpen(prev => !prev);
+    try {
+      sfxClick();
+    } catch (err) {
+      console.warn("SFX error:", err);
+    }
   };
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current && !menuRef.current.contains(event.target as Node) &&
-        btnRef.current && !btnRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-    const handleScroll = () => setIsOpen(false);
-    document.addEventListener('mousedown', handleClickOutside);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [isOpen]);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}${window.location.pathname}?tab=projects&project=${project._id || project.id}`;
@@ -80,53 +71,6 @@ function ProjectMenu({ project }: { project: Project }) {
     alert('Project link copied to clipboard!');
     setIsOpen(false);
   };
-
-  const dropdown = (
-    <motion.div
-      ref={menuRef}
-      initial={{ opacity: 0, scale: 0.95, y: -6 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95, y: -6 }}
-      transition={{ duration: 0.15 }}
-      style={{ position: 'absolute', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}
-      className="w-56 bg-page border border-strong rounded-2xl shadow-2xl overflow-hidden"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div className="flex flex-col p-1.5">
-        {liveUrl && (
-          <a
-            href={liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
-            onClick={() => { setIsOpen(false); trackProjectLinkClick(project.title || project.name || '', 'live'); }}
-          >
-            <FaExternalLinkAlt className="text-tertiary" size={14} />
-            <span>Project Demo</span>
-          </a>
-        )}
-        {sourceUrl && (
-          <a
-            href={sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
-            onClick={() => { setIsOpen(false); trackProjectLinkClick(project.title || project.name || '', 'github'); }}
-          >
-            <FaGithub className="text-tertiary" size={16} />
-            <span>Source Code</span>
-          </a>
-        )}
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium text-left w-full"
-        >
-          <FaShareAlt className="text-tertiary" size={14} />
-          <span>Share Project</span>
-        </button>
-      </div>
-    </motion.div>
-  );
 
   return (
     <>
@@ -139,11 +83,80 @@ function ProjectMenu({ project }: { project: Project }) {
       >
         <HiDotsHorizontal size={20} />
       </button>
-      <AnimatePresence>
-        {isOpen && typeof document !== 'undefined' &&
-          ReactDOM.createPortal(dropdown, document.body)
-        }
-      </AnimatePresence>
+
+      {mounted && createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <div className="fixed inset-0 z-[99999] pointer-events-auto">
+              {/* Invisible backdrop to capture outside clicks safely */}
+              <div
+                className="fixed inset-0 bg-black/10 backdrop-blur-[0.5px]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOpen(false);
+                }}
+              />
+
+              {/* Dropdown Menu */}
+              <motion.div
+                key="project-dropdown"
+                initial={{ opacity: 0, scale: 0.95, y: -6 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -6 }}
+                transition={{ duration: 0.15 }}
+                style={{
+                  position: 'fixed',
+                  top: menuPos.top,
+                  right: menuPos.right,
+                }}
+                className="w-56 bg-page border border-strong rounded-2xl shadow-2xl overflow-hidden z-[100000]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex flex-col p-1.5">
+                  {liveUrl && (
+                    <a
+                      href={liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
+                      onClick={() => {
+                        setIsOpen(false);
+                        trackProjectLinkClick(project.title || project.name || '', 'live');
+                      }}
+                    >
+                      <FaExternalLinkAlt className="text-tertiary" size={14} />
+                      <span>Project Demo</span>
+                    </a>
+                  )}
+                  {sourceUrl && (
+                    <a
+                      href={sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium"
+                      onClick={() => {
+                        setIsOpen(false);
+                        trackProjectLinkClick(project.title || project.name || '', 'github');
+                      }}
+                    >
+                      <FaGithub className="text-tertiary" size={16} />
+                      <span>Source Code</span>
+                    </a>
+                  )}
+                  <button
+                    onClick={handleShare}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-surface rounded-xl transition-colors text-[14px] font-medium text-left w-full"
+                  >
+                    <FaShareAlt className="text-tertiary" size={14} />
+                    <span>Share Project</span>
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }
