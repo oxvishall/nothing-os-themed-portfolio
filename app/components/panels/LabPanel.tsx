@@ -19,28 +19,28 @@ export default function LabPanel() {
         </span>
       </header>
 
-      <section className="lab-section" aria-labelledby="lab-playground">
-        <div className="lab-section-head">
-          <h4 id="lab-playground" className="font-dot text-[10px] text-tertiary uppercase tracking-widest">
-            01 · Dot Playground
-          </h4>
-          <p className="text-secondary text-sm mt-1">
-            Draw on the matrix, stamp a word, then hit Life and watch it evolve.
-          </p>
-        </div>
-        <DotPlayground />
-      </section>
-
       <section className="lab-section" aria-labelledby="lab-generator">
         <div className="lab-section-head">
           <h4 id="lab-generator" className="font-dot text-[10px] text-tertiary uppercase tracking-widest">
-            02 · Dot Matrix Generator
+            01 · Dot Matrix Generator
           </h4>
           <p className="text-secondary text-sm mt-1">
             Turn any photo into Nothing-style dot art, then download it.
           </p>
         </div>
         <NdotGenerator />
+      </section>
+
+      <section className="lab-section" aria-labelledby="lab-playground">
+        <div className="lab-section-head">
+          <h4 id="lab-playground" className="font-dot text-[10px] text-tertiary uppercase tracking-widest">
+            02 · Dot Playground
+          </h4>
+          <p className="text-secondary text-sm mt-1">
+            Draw on the matrix, stamp a word, then hit Life and watch it evolve.
+          </p>
+        </div>
+        <DotPlayground />
       </section>
     </div>
   );
