@@ -308,6 +308,7 @@ export default function DotPlayground() {
         <canvas
           ref={canvasRef}
           className="lab-canvas"
+          data-cursor="crosshair"
           role="img"
           aria-label="Dot matrix drawing board. Click or drag to light dots."
         />

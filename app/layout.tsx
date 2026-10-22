@@ -122,7 +122,10 @@ export default function RootLayout({
       <body>
         <CustomCursor />
         {children}
-        <div id="cursor" aria-hidden="true" />
+        <div id="cursor" aria-hidden="true">
+          <div className="cursor-shape" />
+          <span className="cursor-label" />
+        </div>
       </body>
     </html>
   );

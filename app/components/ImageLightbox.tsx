@@ -50,7 +50,7 @@ export default function ImageLightbox({ src, alt, isOpen, onClose, shape = 'rect
           onClick={handleClose}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" data-cursor-label="CLOSE" />
 
           {/* Close button */}
           <button

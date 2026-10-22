@@ -172,40 +172,78 @@ html, body { overscroll-behavior-y: none; }
   }
 }
 
-/* 5. Custom Cursor */
+/* 5. Custom Cursor
+   #cursor is a zero-size point that follows the mouse; .cursor-shape is centered
+   on it, so every state can change size without drifting off the pointer.
+   States are set by CustomCursor.tsx via data-state. */
 #cursor {
-  position: fixed; top: 0; left: 0; 
-  width: 10px; height: 10px;
-  background-color: #ffffff; border-radius: 50%;
+  position: fixed; top: 0; left: 0; width: 0; height: 0;
   pointer-events: none; z-index: 2147483647;
   mix-blend-mode: difference; display: none;
-  transition: width 0.15s, height 0.15s, opacity 0.15s, border-radius 0.15s;
-  /* Own GPU layer — avoids repaint on mousemove */
   will-change: transform;
+  transition: opacity 0.15s ease;
 }
-
-.cursor-hover {
-  width: 30px !important;
-  height: 30px !important;
-  opacity: 0.4;
-  background-color: var(--text-secondary);
-}
-
-.cursor-text {
-  width: 1px !important;
-  height: 20px !important;
-  border-radius: 0 !important;
-  opacity: 1 !important;
-  background-color: var(--text-primary) !important;
-  animation: blink 0.8s infinite;
-}
-
-@keyframes blink {
-  from, to { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
 @media (pointer: fine) { #cursor { display: block; } }
+
+.cursor-shape {
+  position: absolute; left: 0; top: 0;
+  width: 10px; height: 10px;
+  transform: translate(-50%, -50%) scale(1);
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 0 solid #ffffff;
+  transition:
+    width 0.15s ease, height 0.15s ease, border-radius 0.15s ease,
+    background-color 0.15s ease, border-width 0.15s ease, opacity 0.15s ease, transform 0.12s ease;
+}
+.cursor-shape::before, .cursor-shape::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  background: #ffffff; opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Pressing anything: the shape squeezes a little */
+#cursor.is-down .cursor-shape { transform: translate(-50%, -50%) scale(0.8); }
+
+/* Links & buttons: big soft disc */
+#cursor[data-state="pointer"] .cursor-shape { width: 34px; height: 34px; opacity: 0.35; }
+
+/* Text fields: I-beam */
+#cursor[data-state="text"] .cursor-shape {
+  width: 2px; height: 22px; border-radius: 1px;
+  animation: blink 0.9s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0.25; } }
+
+/* Sliders & draggables: open ring, tightens while dragging */
+#cursor[data-state="grab"] .cursor-shape { width: 26px; height: 26px; background-color: transparent; border-width: 2px; }
+#cursor[data-state="grab"].is-down .cursor-shape { width: 16px; height: 16px; border-width: 4px; transform: translate(-50%, -50%) scale(1); }
+
+/* Drawing surfaces: crosshair */
+#cursor[data-state="crosshair"] .cursor-shape { width: 4px; height: 4px; }
+#cursor[data-state="crosshair"] .cursor-shape::before { width: 22px; height: 1.5px; transform: translate(-50%, -50%); opacity: 1; }
+#cursor[data-state="crosshair"] .cursor-shape::after { width: 1.5px; height: 22px; transform: translate(-50%, -50%); opacity: 1; }
+
+/* Disabled: crossed-out ring */
+#cursor[data-state="disabled"] .cursor-shape { width: 22px; height: 22px; background-color: transparent; border-width: 1.5px; opacity: 0.7; }
+#cursor[data-state="disabled"] .cursor-shape::after { width: 1.5px; height: 22px; transform: translate(-50%, -50%) rotate(45deg); opacity: 1; }
+
+/* Labelled actions ("VIEW", "HOLD"…): solid disc, no blending so the word
+   stays readable over photos */
+#cursor[data-state="label"] { mix-blend-mode: normal; }
+#cursor[data-state="label"] .cursor-shape {
+  width: 68px; height: 68px;
+  background-color: var(--text-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+.cursor-label {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, -50%);
+  font-family: var(--font-dot); font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+  font-variation-settings: "ROND" 0;
+  color: var(--bg-page); white-space: nowrap; opacity: 0;
+  transition: opacity 0.15s ease;
+}
+#cursor[data-state="label"] .cursor-label { opacity: 1; }
 
 /* 6. Profile Sections (Cover, Bio, Tabs) */
 .cover { width: 100%; aspect-ratio: 3/1; border-bottom: 1px solid var(--border); overflow: hidden; position: relative; }
@@ -434,7 +472,8 @@ html, body { overscroll-behavior-y: none; }
 }
 .lab-btn:hover { color: var(--text-primary); border-color: var(--text-primary); }
 .lab-btn:active { transform: scale(0.96); }
-.lab-btn:disabled { opacity: 0.4; pointer-events: none; }
+.lab-btn:disabled { opacity: 0.4; }
+.lab-btn:disabled:hover { color: var(--text-secondary); border-color: var(--border-strong); }
 .lab-btn--active, .lab-btn--primary { background: var(--text-primary); color: var(--bg-page); border-color: var(--text-primary); }
 .lab-btn--active:hover, .lab-btn--primary:hover { color: var(--bg-page); }
 .lab-btn--push { margin-left: auto; }

@@ -174,6 +174,7 @@ export default function NdotGenerator() {
         <button
           type="button"
           className={`gen-drop ${dragging ? 'gen-drop--active' : ''}`}
+          data-cursor-label="UPLOAD"
           onClick={() => { sfxClick(); inputRef.current?.click(); }}
           onDragOver={e => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
@@ -190,6 +191,7 @@ export default function NdotGenerator() {
       ) : (
         <div
           className="gen-preview"
+          data-cursor-label={comparing ? 'ORIGINAL' : 'HOLD'}
           onPointerDown={() => setComparing(true)}
           onPointerUp={() => setComparing(false)}
           onPointerLeave={() => setComparing(false)}

@@ -136,6 +136,7 @@ export default function CoverBanner({ name }: { name: string }) {
       <header
         ref={headerRef}
         className="cover group relative cursor-pointer"
+        data-cursor-label="VIEW"
         onClick={() => setBannerOpen(true)}
         aria-label="View cover banner"
       >
@@ -149,12 +150,6 @@ export default function CoverBanner({ name }: { name: string }) {
           className="cover-dots-overlay"
           aria-hidden="true"
         />
-        {/* Small corner hint so the interactive dot field stays visible on hover */}
-        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-          <span className="font-dot font-bold text-[10px] tracking-widest uppercase text-white bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/20">
-            View Banner
-          </span>
-        </div>
       </header>
 
       {/* Banner lightbox */}
