@@ -108,6 +108,12 @@ export default function RootLayout({
                     document.documentElement.classList.add('light');
                   }
                 } catch (e) {}
+                try {
+                  // Only show the splash once per browser session
+                  if (sessionStorage.getItem('splash_seen')) {
+                    document.documentElement.classList.add('splash-seen');
+                  }
+                } catch (e) {}
               })();
             `,
           }}

@@ -124,22 +124,44 @@ html, body { overscroll-behavior-y: none; }
 
 /* 4. Splash Screen */
 #splash {
-  position: fixed; 
+  position: fixed;
   inset: 0;
   background-color: var(--bg-page);
   z-index: 9999;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  transition: opacity 0.5s;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
   touch-action: none;
   overflow: hidden;
   margin: 0;
   padding: 0;
 }
-.splash--hidden { opacity: 0; pointer-events: none; }
-.splash-dots { display: flex; gap: 8px; }
-.splash-dot { width: 8px; height: 8px; background-color: var(--text-primary); border-radius: 50%; animation: pulse 0.8s infinite alternate; }
-@keyframes pulse { from { opacity: 0.3; transform: scale(0.8); } to { opacity: 1; transform: scale(1.1); } }
-.splash-text { margin-top: 16px; font-family: var(--font-dot); font-size: 14px; }
+.splash--hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.splash-seen #splash { display: none; }
+
+.splash-inner { display: flex; flex-direction: column; align-items: center; gap: 28px; transition: transform 0.3s ease; }
+.splash--hidden .splash-inner { transform: scale(1.04); }
+
+/* Dot-matrix monogram: each glyph is a 5×7 grid of dots */
+.splash-monogram { display: flex; gap: 14px; }
+.splash-glyph { display: grid; grid-template-columns: repeat(5, 8px); grid-auto-rows: 8px; gap: 5px; }
+.splash-px { width: 8px; height: 8px; border-radius: 50%; background: var(--text-primary); opacity: 0.07; }
+.splash-px--on { animation: splash-dot-on 0.25s ease-out forwards; }
+@keyframes splash-dot-on {
+  0% { opacity: 0.07; transform: scale(0.6); }
+  60% { opacity: 1; transform: scale(1.25); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.splash-meta {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 24px;
+  width: 100%; min-width: 180px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-strong);
+  font-family: var(--font-dot); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.15em;
+}
+.splash-label { font-size: 10px; color: var(--text-secondary); }
+.splash-counter { font-size: 14px; color: var(--text-primary); font-variant-numeric: tabular-nums; }
 
 @media (pointer: fine) {
   body, a, button, input, textarea, label, [role="button"] { 
