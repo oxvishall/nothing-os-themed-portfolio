@@ -1,6 +1,7 @@
 'use client';
 
 import DotPlayground from '@/app/components/DotPlayground';
+import NdotGenerator from '@/app/components/NdotGenerator';
 
 // Interactive experiments: everything runs in the browser
 export default function LabPanel() {
@@ -28,6 +29,18 @@ export default function LabPanel() {
           </p>
         </div>
         <DotPlayground />
+      </section>
+
+      <section className="lab-section" aria-labelledby="lab-generator">
+        <div className="lab-section-head">
+          <h4 id="lab-generator" className="font-dot text-[10px] text-tertiary uppercase tracking-widest">
+            02 · Dot Matrix Generator
+          </h4>
+          <p className="text-secondary text-sm mt-1">
+            Turn any photo into Nothing-style dot art, then download it.
+          </p>
+        </div>
+        <NdotGenerator />
       </section>
     </div>
   );

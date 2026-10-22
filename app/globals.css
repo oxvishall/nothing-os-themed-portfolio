@@ -446,3 +446,39 @@ html, body { overscroll-behavior-y: none; }
   outline: none; transition: border-color 0.15s ease;
 }
 .lab-input:focus { border-color: var(--text-primary); }
+.lab-note { font-family: var(--font-dot); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-tertiary); }
+
+.gen-drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; aspect-ratio: 16/9;
+  border: 1px dashed var(--border-strong); border-radius: 16px; background: var(--bg-surface);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.gen-drop:hover, .gen-drop--active { border-color: var(--text-primary); background: var(--bg-elevated); }
+.gen-drop-dots { display: grid; grid-template-columns: repeat(5, 6px); gap: 5px; margin-bottom: 6px; }
+.gen-drop-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--text-tertiary); transition: background-color 0.15s ease; }
+.gen-drop-dots i:nth-child(odd) { background: var(--text-primary); }
+.gen-drop:hover .gen-drop-dots i { background: var(--text-primary); }
+.gen-preview {
+  position: relative; overflow: hidden; border-radius: 16px; border: 1px solid var(--border-strong);
+  user-select: none; touch-action: manipulation; line-height: 0;
+}
+.gen-canvas { display: block; width: 100%; height: auto; }
+.gen-original { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.gen-badge {
+  position: absolute; bottom: 10px; right: 10px; line-height: 1;
+  font-family: var(--font-dot); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  color: #fff; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  padding: 6px 10px; border-radius: 9999px; pointer-events: none;
+}
+.gen-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 480px) { .gen-controls { grid-template-columns: 1fr; gap: 10px; } }
+.gen-slider { display: flex; flex-direction: column; gap: 6px; }
+.gen-slider span {
+  display: flex; justify-content: space-between;
+  font-family: var(--font-dot); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-secondary);
+}
+.gen-slider b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.gen-slider input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 2px; background: var(--border-strong); border-radius: 2px; outline: none; }
+.gen-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--text-primary); border: 2px solid var(--bg-page); box-shadow: 0 0 0 1px var(--text-primary); }
+.gen-slider input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--text-primary); border: 2px solid var(--bg-page); }
