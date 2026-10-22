@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { applyTheme, getTheme } from '@/lib/theme';
+import {
+  trackEasterEgg, trackHelpOpen, trackShortcut, trackSoundToggle, trackThemeToggle,
+  type EasterEgg,
+} from '@/lib/analytics';
 import { isSfxEnabled, setSfxEnabled, sfxClick, sfxThemeToggle } from '@/lib/sfx';
 
 const SHORTCUTS: [string, string][] = [
@@ -79,16 +83,23 @@ export default function KeyboardShortcuts() {
   }, []);
 
   // The easter eggs, shared by the secret triggers and the "Try" buttons
-  const toggleGlyph = useCallback(() => {
+  type Source = 'secret' | 'try_button';
+  const toggleGlyph = useCallback((source: Source) => {
     const on = document.documentElement.classList.toggle('glyph-mode');
     sfxThemeToggle();
     dotWave(window.innerWidth / 2, window.innerHeight / 2);
     notify(on ? 'Glyph mode on' : 'Glyph mode off');
+    trackEasterEgg('glyph_mode', source, on ? 'on' : 'off');
   }, [notify]);
-  const sayNothing = useCallback((x = window.innerWidth / 2, y = window.innerHeight / 2) => {
+  const sayNothing = useCallback((egg: EasterEgg, source: Source, x = window.innerWidth / 2, y = window.innerHeight / 2) => {
     dotWave(x, y);
     notify('Say nothing.');
+    trackEasterEgg(egg, source);
   }, [notify]);
+
+  // Lets the key handler know whether "?" is opening or closing the panel
+  const helpOpenRef = useRef(helpOpen);
+  useEffect(() => { helpOpenRef.current = helpOpen; }, [helpOpen]);
 
   useEffect(() => {
     let konamiPos = 0;
@@ -106,7 +117,7 @@ export default function KeyboardShortcuts() {
       konamiPos = key === KONAMI[konamiPos] ? konamiPos + 1 : key === KONAMI[0] ? 1 : 0;
       if (konamiPos === KONAMI.length) {
         konamiPos = 0;
-        toggleGlyph();
+        toggleGlyph('secret');
         return;
       }
 
@@ -115,16 +126,22 @@ export default function KeyboardShortcuts() {
         typed = (typed + key).slice(-SECRET_WORD.length);
         if (typed === SECRET_WORD) {
           typed = '';
-          sayNothing();
+          sayNothing('say_nothing', 'secret');
           return;
         }
       }
 
       if (e.key === 'Escape') { setHelpOpen(false); return; }
-      if (e.key === '?') { sfxClick(); setHelpOpen(o => !o); return; }
+      if (e.key === '?') {
+        sfxClick();
+        if (!helpOpenRef.current) trackHelpOpen('keyboard');
+        setHelpOpen(o => !o);
+        return;
+      }
 
       if (/^[1-5]$/.test(e.key)) {
         window.dispatchEvent(new CustomEvent<number>('portfolio:tab', { detail: Number(e.key) - 1 }));
+        trackShortcut('tab', e.key);
         return;
       }
       if (key === 'd') {
@@ -132,6 +149,8 @@ export default function KeyboardShortcuts() {
         sfxThemeToggle();
         applyTheme(next);
         notify(next === 'dark' ? 'Dark mode' : 'Light mode');
+        trackThemeToggle(next);
+        trackShortcut('theme', next);
         return;
       }
       if (key === 's') {
@@ -139,18 +158,25 @@ export default function KeyboardShortcuts() {
         setSfxEnabled(next);
         if (next) sfxClick();
         notify(next ? 'Sounds on' : 'Sounds off');
+        trackSoundToggle(next, 'keyboard');
+        trackShortcut('sounds', next ? 'on' : 'off');
         return;
       }
       if (key === 'u') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        trackShortcut('top');
       }
     };
 
-    const onHelp = () => { sfxClick(); setHelpOpen(true); };
+    const onHelp = (e: Event) => {
+      sfxClick();
+      setHelpOpen(true);
+      trackHelpOpen((e as CustomEvent<'sidebar' | 'footer'>).detail ?? 'sidebar');
+    };
     // Secret 3 (touch friendly): triple-tap the footer logo
     const onWave = (e: Event) => {
       const { x, y } = (e as CustomEvent<{ x: number; y: number }>).detail;
-      sayNothing(x, y);
+      sayNothing('footer_triple_tap', 'secret', x, y);
     };
 
     window.addEventListener('keydown', onKey);
@@ -213,7 +239,10 @@ export default function KeyboardShortcuts() {
                       onClick={() => {
                         setHelpOpen(false);
                         // Let the panel close first so the effect is visible
-                        setTimeout(() => (s.id === 'glyph' ? toggleGlyph() : sayNothing()), 160);
+                        setTimeout(() => {
+                          if (s.id === 'glyph') toggleGlyph('try_button');
+                          else sayNothing(s.id === 'nothing' ? 'say_nothing' : 'footer_triple_tap', 'try_button');
+                        }, 160);
                       }}
                     >
                       Try

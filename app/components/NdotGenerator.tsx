@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { sfxClick, sfxTick } from '@/lib/sfx';
+import {
+  trackGeneratorCompare, trackGeneratorDownload, trackGeneratorOption, trackGeneratorUpload,
+} from '@/lib/analytics';
 
 type Shape = 'round' | 'square';
 
@@ -83,7 +86,7 @@ export default function NdotGenerator() {
   const [comparing, setComparing] = useState(false);
   const [error, setError] = useState('');
 
-  const loadFile = useCallback(async (file: File | null | undefined) => {
+  const loadFile = useCallback(async (file: File | null | undefined, method: 'click' | 'drop' | 'paste') => {
     if (!file) return;
     if (!file.type.startsWith('image/')) { setError('That file isn’t an image.'); return; }
     try {
@@ -95,6 +98,7 @@ export default function NdotGenerator() {
       if (bmp !== full) full.close();
       sfxClick();
       setError('');
+      trackGeneratorUpload(method, file.type, Math.round(file.size / 1024));
       setSource(prev => {
         if (prev) { prev.bmp.close(); URL.revokeObjectURL(prev.url); }
         return { bmp, name: file.name.replace(/\.[^.]+$/, ''), url: URL.createObjectURL(file) };
@@ -116,7 +120,7 @@ export default function NdotGenerator() {
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
       const item = [...(e.clipboardData?.items || [])].find(i => i.type.startsWith('image/'));
-      if (item) loadFile(item.getAsFile());
+      if (item) loadFile(item.getAsFile(), 'paste');
     };
     window.addEventListener('paste', onPaste);
     return () => window.removeEventListener('paste', onPaste);
@@ -142,6 +146,7 @@ export default function NdotGenerator() {
   const download = () => {
     if (!source) return;
     sfxClick();
+    trackGeneratorDownload(opts);
     const rows = Math.round((opts.cols * source.bmp.height) / source.bmp.width);
     const cell = Math.min(EXPORT_CELL, EXPORT_MAX / Math.max(opts.cols, rows));
     const out = document.createElement('canvas');
@@ -157,8 +162,25 @@ export default function NdotGenerator() {
     }, 'image/png');
   };
 
-  const set = <K extends keyof Options>(key: K, value: Options[K]) => setOpts(o => ({ ...o, [key]: value }));
-  const toggle = (key: 'dark' | 'invert') => { sfxClick(); setOpts(o => ({ ...o, [key]: !o[key] })); };
+  // Sliders report once they've been still for a moment, not on every step
+  const sliderTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(sliderTimer.current), []);
+  const slide = (key: 'cols' | 'contrast', value: number) => {
+    sfxTick();
+    setOpts(o => ({ ...o, [key]: value }));
+    clearTimeout(sliderTimer.current);
+    sliderTimer.current = setTimeout(() => trackGeneratorOption(key === 'cols' ? 'density' : 'contrast', value), 800);
+  };
+  const set = <K extends keyof Options>(key: K, value: Options[K]) => {
+    setOpts(o => ({ ...o, [key]: value }));
+    trackGeneratorOption(key, value);
+  };
+  const toggle = (key: 'dark' | 'invert') => {
+    sfxClick();
+    const next = !opts[key];
+    setOpts(o => ({ ...o, [key]: next }));
+    trackGeneratorOption(key === 'dark' ? 'dark_bg' : 'invert', next);
+  };
 
   return (
     <div className="lab-card">
@@ -167,7 +189,7 @@ export default function NdotGenerator() {
         type="file"
         accept="image/*"
         hidden
-        onChange={e => { loadFile(e.target.files?.[0]); e.target.value = ''; }}
+        onChange={e => { loadFile(e.target.files?.[0], 'click'); e.target.value = ''; }}
       />
 
       {!source ? (
@@ -178,7 +200,7 @@ export default function NdotGenerator() {
           onClick={() => { sfxClick(); inputRef.current?.click(); }}
           onDragOver={e => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
-          onDrop={e => { e.preventDefault(); setDragging(false); loadFile(e.dataTransfer.files?.[0]); }}
+          onDrop={e => { e.preventDefault(); setDragging(false); loadFile(e.dataTransfer.files?.[0], 'drop'); }}
         >
           <span className="gen-drop-dots" aria-hidden>
             {Array.from({ length: 25 }).map((_, i) => <i key={i} />)}
@@ -192,12 +214,12 @@ export default function NdotGenerator() {
         <div
           className="gen-preview"
           data-cursor-label={comparing ? 'ORIGINAL' : 'HOLD'}
-          onPointerDown={() => setComparing(true)}
+          onPointerDown={() => { setComparing(true); trackGeneratorCompare(); }}
           onPointerUp={() => setComparing(false)}
           onPointerLeave={() => setComparing(false)}
           onPointerCancel={() => setComparing(false)}
           onDragOver={e => e.preventDefault()}
-          onDrop={e => { e.preventDefault(); loadFile(e.dataTransfer.files?.[0]); }}
+          onDrop={e => { e.preventDefault(); loadFile(e.dataTransfer.files?.[0], 'drop'); }}
           title="Hold to see the original"
         >
           <canvas ref={previewRef} className="gen-canvas" role="img" aria-label="Dot matrix version of your image" />
@@ -211,11 +233,11 @@ export default function NdotGenerator() {
       <div className="gen-controls">
         <label className="gen-slider">
           <span>Density <b>{opts.cols}</b></span>
-          <input type="range" min={24} max={140} step={2} value={opts.cols} onChange={e => { sfxTick(); set('cols', +e.target.value); }} />
+          <input type="range" min={24} max={140} step={2} value={opts.cols} onChange={e => slide('cols', +e.target.value)} />
         </label>
         <label className="gen-slider">
           <span>Contrast <b>{opts.contrast.toFixed(1)}</b></span>
-          <input type="range" min={0.5} max={2.5} step={0.1} value={opts.contrast} onChange={e => { sfxTick(); set('contrast', +e.target.value); }} />
+          <input type="range" min={0.5} max={2.5} step={0.1} value={opts.contrast} onChange={e => slide('contrast', +e.target.value)} />
         </label>
       </div>
 

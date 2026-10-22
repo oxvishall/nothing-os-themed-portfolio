@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GLYPHS, GLYPH_W, GLYPH_H } from '@/lib/dotGlyphs';
 import { sfxClick } from '@/lib/sfx';
+import { trackPlayground } from '@/lib/analytics';
 
 const COLS = 28;
 const ROWS = 18;
@@ -240,7 +241,12 @@ export default function DotPlayground() {
       paintLine(last < 0 ? i : last, i);
       last = i;
     };
-    const onUp = () => { painting = false; last = -1; };
+    let drewOnce = false;
+    const onUp = () => {
+      if (painting && !drewOnce) { drewOnce = true; trackPlayground('draw'); }
+      painting = false;
+      last = -1;
+    };
     const onLeave = () => { hover.current = -1; kick(); };
 
     canvas.addEventListener('pointerdown', onDown);
@@ -270,7 +276,10 @@ export default function DotPlayground() {
       const same = next.every((v, i) => v === cells.current[i]);
       commit(next);
       setGeneration(g => g + 1);
-      if (same || !next.some(Boolean)) setPlaying(false);
+      if (same || !next.some(Boolean)) {
+        setPlaying(false);
+        trackPlayground('life_stop', { reason: next.some(Boolean) ? 'stable' : 'died' });
+      }
     }, LIFE_SPEED);
     return () => clearInterval(id);
   }, [playing, commit]);
@@ -280,6 +289,7 @@ export default function DotPlayground() {
   const load = (next: Uint8Array) => { setPlaying(false); setGeneration(0); commit(next); };
 
   const download = () => {
+    trackPlayground('download', { lit });
     const { on, off, bg } = readColors();
     const step = 24;
     const c = document.createElement('canvas');
@@ -321,7 +331,12 @@ export default function DotPlayground() {
 
       <form
         className="lab-row"
-        onSubmit={e => { e.preventDefault(); sfxClick(); load(stamp(textRows(text))); }}
+        onSubmit={e => {
+          e.preventDefault();
+          sfxClick();
+          load(stamp(textRows(text)));
+          trackPlayground('stamp', { text_length: text.trim().length });
+        }}
       >
         <input
           value={text}
@@ -334,7 +349,7 @@ export default function DotPlayground() {
         <button type="submit" className="lab-btn">Stamp</button>
         <span className="lab-divider" aria-hidden />
         {Object.keys(PRESETS).map(name => (
-          <button key={name} type="button" className="lab-btn" onClick={act(() => load(stamp(PRESETS[name])))}>
+          <button key={name} type="button" className="lab-btn" onClick={act(() => { load(stamp(PRESETS[name])); trackPlayground('preset', { preset: name }); })}>
             {name}
           </button>
         ))}
@@ -344,7 +359,10 @@ export default function DotPlayground() {
         <button
           type="button"
           className={`lab-btn ${playing ? 'lab-btn--active' : ''}`}
-          onClick={act(() => setPlaying(p => !p))}
+          onClick={act(() => {
+            trackPlayground(playing ? 'life_stop' : 'life_start', playing ? { reason: 'user', generation } : { lit });
+            setPlaying(p => !p);
+          })}
           title="Run Conway's Game of Life on your drawing"
         >
           {playing ? '■ Pause' : '▶ Life'}
@@ -352,14 +370,17 @@ export default function DotPlayground() {
         <button
           type="button"
           className="lab-btn"
-          onClick={act(() => load(Uint8Array.from({ length: COLS * ROWS }, () => (Math.random() < 0.28 ? 1 : 0))))}
+          onClick={act(() => {
+            load(Uint8Array.from({ length: COLS * ROWS }, () => (Math.random() < 0.28 ? 1 : 0)));
+            trackPlayground('random');
+          })}
         >
           Random
         </button>
-        <button type="button" className="lab-btn" onClick={act(() => load(cells.current.map(v => 1 - v)))}>
+        <button type="button" className="lab-btn" onClick={act(() => { load(cells.current.map(v => 1 - v)); trackPlayground('invert'); })}>
           Invert
         </button>
-        <button type="button" className="lab-btn" onClick={act(() => load(new Uint8Array(COLS * ROWS)))}>
+        <button type="button" className="lab-btn" onClick={act(() => { load(new Uint8Array(COLS * ROWS)); trackPlayground('clear'); })}>
           Clear
         </button>
         <button type="button" className="lab-btn lab-btn--push" onClick={act(download)}>

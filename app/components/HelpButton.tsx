@@ -6,7 +6,7 @@ export default function HelpButton() {
     <button
       type="button"
       className="footer-link"
-      onClick={() => window.dispatchEvent(new Event('portfolio:help'))}
+      onClick={() => window.dispatchEvent(new CustomEvent('portfolio:help', { detail: 'footer' }))}
     >
       Shortcuts & secrets
     </button>

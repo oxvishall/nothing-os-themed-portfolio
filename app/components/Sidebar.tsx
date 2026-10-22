@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useSyncExternalStore } from 'react';
 import type { PortfolioData } from '@/app/data/portfolio';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
-import { trackThemeToggle, trackSocialLinkClick } from '@/lib/analytics';
+import { trackThemeToggle, trackSocialLinkClick, trackUiStyle, trackSoundToggle } from '@/lib/analytics';
 import { sfxThemeToggle, sfxClick, isSfxEnabled, setSfxEnabled } from '@/lib/sfx';
 import { Volume2, VolumeX } from 'lucide-react';
 import { applyTheme, getTheme, type ThemeMode } from '@/lib/theme';
@@ -67,6 +67,7 @@ function UiStylePicker() {
               if (s.id === style) return;
               sfxClick();
               applyUiStyle(s.id);
+              trackUiStyle(s.id);
             }}
             className={`flex-1 py-1.5 px-2 rounded-full text-[10px] font-dot tracking-widest transition-colors duration-200 z-10 ${
               style === s.id ? 'text-background' : 'text-secondary hover:text-primary'
@@ -113,6 +114,7 @@ function ThemeToggle() {
   const toggleSfx = () => {
     const next = !sfxOn;
     setSfxEnabled(next);
+    trackSoundToggle(next, 'sidebar');
     // Play a quick confirmation sound if turning ON
     if (next) sfxClick();
   };
@@ -166,7 +168,7 @@ function ThemeToggle() {
       </button>
 
       <button
-        onClick={() => window.dispatchEvent(new Event('portfolio:help'))}
+        onClick={() => window.dispatchEvent(new CustomEvent('portfolio:help', { detail: 'sidebar' }))}
         className="mt-3 w-full text-center font-dot text-[9px] tracking-widest text-tertiary hover:text-primary transition-colors"
       >
         PRESS <kbd className="kbd">?</kbd> FOR SHORTCUTS & SECRETS
