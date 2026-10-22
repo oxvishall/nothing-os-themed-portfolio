@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import ExpandableText from '@/app/components/ExpandableText';
+import FeedSkeleton from '@/app/components/FeedSkeleton';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 import { trackExperienceExpand } from '@/lib/analytics';
 import { ArrowUp } from 'lucide-react';
@@ -163,11 +164,7 @@ export default function ExperiencesPanel({ data, experiences = [], loading = fal
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
-        <div className="font-dot text-[10px] uppercase tracking-[0.2em] text-secondary">
-          Booting System...
-        </div>
-      </div>
+      <FeedSkeleton media={false} />
     );
   }
 
@@ -188,7 +185,7 @@ export default function ExperiencesPanel({ data, experiences = [], loading = fal
         <button
           onClick={scrollTop}
           aria-label="Scroll to top"
-          className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-all duration-300 hover:scale-110 active:scale-95"
+          className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-transform duration-150 hover:scale-110 active:scale-95"
         >
           <ArrowUp size={18} />
         </button>

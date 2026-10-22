@@ -1,70 +1,61 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
+const INTERACTIVE = 'a, button, [role="button"], label, summary, select, .clickable, .cursor-pointer';
+const TEXT_INPUT = 'input, textarea, [contenteditable="true"]';
+
+// Dot cursor that eases toward the pointer in a single rAF loop.
+// No React state, so moving the mouse never triggers a re-render.
 export default function CustomCursor() {
-  const [type, setType] = useState<'default' | 'pointer' | 'text'>('default');
-
   useEffect(() => {
     const cursor = document.getElementById('cursor');
-    if (!cursor) return;
+    if (!cursor || !window.matchMedia('(pointer: fine)').matches) return;
 
-    const moveCursor = (e: MouseEvent) => {
-      // Use requestAnimationFrame for smoother performance
-      requestAnimationFrame(() => {
-        cursor.style.transform = `translate3d(${e.clientX - 5}px, ${e.clientY - 5}px, 0)`;
-      });
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ease = reduceMotion ? 1 : 0.35;
+
+    let targetX = -100, targetY = -100;
+    let x = targetX, y = targetY;
+    let frame = 0;
+
+    const tick = () => {
+      x += (targetX - x) * ease;
+      y += (targetY - y) * ease;
+      cursor.style.transform = `translate3d(${x - 5}px, ${y - 5}px, 0)`;
+      // Stop the loop once settled; the next mousemove restarts it
+      frame = Math.abs(targetX - x) + Math.abs(targetY - y) > 0.1 ? requestAnimationFrame(tick) : 0;
     };
 
-    const handlePointerOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (!target) return;
-
-      // Check for text inputs
-      if (
-        target.tagName === 'INPUT' || 
-        target.tagName === 'TEXTAREA' || 
-        target.isContentEditable
-      ) {
-        setType('text');
-        cursor.classList.add('cursor-text');
-        cursor.classList.remove('cursor-hover');
-        return;
-      }
-
-      // Check for clickable elements
-      if (
-        target.tagName === 'A' || 
-        target.tagName === 'BUTTON' || 
-        target.closest('a') || 
-        target.closest('button') ||
-        target.classList.contains('clickable') ||
-        getComputedStyle(target).cursor === 'pointer'
-      ) {
-        setType('pointer');
-        cursor.classList.add('cursor-hover');
-        cursor.classList.remove('cursor-text');
-        return;
-      }
-
-      // Default
-      setType('default');
-      cursor.classList.remove('cursor-hover', 'cursor-text');
+    const onMove = (e: MouseEvent) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      if (!frame) frame = requestAnimationFrame(tick);
     };
 
-    const handlePointerOut = () => {
-      cursor.classList.remove('cursor-hover', 'cursor-text');
-      setType('default');
+    const onOver = (e: MouseEvent) => {
+      const target = e.target as Element | null;
+      if (!target?.closest) return;
+      const isText = !!target.closest(TEXT_INPUT);
+      const isHover = !isText && !!target.closest(INTERACTIVE);
+      cursor.classList.toggle('cursor-text', isText);
+      cursor.classList.toggle('cursor-hover', isHover);
     };
 
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('mouseover', handlePointerOver as any);
-    window.addEventListener('mouseout', handlePointerOut);
+    const onLeave = () => { cursor.style.opacity = '0'; };
+    const onEnter = () => { cursor.style.opacity = ''; };
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    document.addEventListener('mouseover', onOver, { passive: true });
+    document.documentElement.addEventListener('mouseleave', onLeave);
+    document.documentElement.addEventListener('mouseenter', onEnter);
 
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
-      window.removeEventListener('mouseover', handlePointerOver as any);
-      window.removeEventListener('mouseout', handlePointerOut);
+      cancelAnimationFrame(frame);
+      window.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onOver);
+      document.documentElement.removeEventListener('mouseleave', onLeave);
+      document.documentElement.removeEventListener('mouseenter', onEnter);
     };
   }, []);
 

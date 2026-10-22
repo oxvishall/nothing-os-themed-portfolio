@@ -84,7 +84,7 @@ function ThemeToggle() {
       <div className="flex bg-surface border border-strong rounded-full p-1 relative mb-3">
         <button 
           onClick={() => setThemeMode('light')}
-          className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-all duration-300 z-10 ${
+          className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-colors duration-200 z-10 ${
             theme === 'light' ? 'text-background' : 'text-secondary hover:text-primary'
           }`}
         >
@@ -92,7 +92,7 @@ function ThemeToggle() {
         </button>
         <button 
           onClick={() => setThemeMode('dark')}
-          className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-all duration-300 z-10 ${
+          className={`flex-1 py-1.5 px-4 rounded-full text-[10px] font-dot tracking-widest transition-colors duration-200 z-10 ${
             theme === 'dark' ? 'text-background' : 'text-secondary hover:text-primary'
           }`}
         >
@@ -100,7 +100,7 @@ function ThemeToggle() {
         </button>
         {/* Active Indicator Slider */}
         <div 
-          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-primary rounded-full transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${
+          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-primary rounded-full transition-[left] duration-200 ease-out ${
             theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-1'
           }`}
         />

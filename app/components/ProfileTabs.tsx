@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { LayoutGrid, List } from 'lucide-react';
 import ProjectsPanel from './panels/ProjectsPanel';
 import ExperiencesPanel from './panels/ExperiencesPanel';
@@ -126,7 +126,7 @@ export default function ProfileTabs({ data }: { data: any }) {
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
-              className={`relative font-dot text-[10px] uppercase tracking-widest px-6 py-2.5 transition-colors duration-300 z-10 ${
+              className={`relative font-dot text-[10px] uppercase tracking-widest px-6 py-2.5 transition-colors duration-200 z-10 ${
                 active === tab.id ? 'text-background' : 'text-secondary hover:text-primary'
               }`}
             >
@@ -134,7 +134,7 @@ export default function ProfileTabs({ data }: { data: any }) {
                 <motion.div
                   layoutId="active-pill"
                   className="absolute inset-0 bg-primary rounded-full -z-10"
-                  transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                  transition={{ type: "spring", bounce: 0.15, duration: 0.35 }}
                 />
               )}
               {tab.label}
@@ -146,7 +146,7 @@ export default function ProfileTabs({ data }: { data: any }) {
           <div className="hidden md:flex items-center gap-1 pb-4">
             <button 
               onClick={() => { sfxClick(); setLayout('list'); trackLayoutToggle('list'); }}
-              className={`p-1.5 rounded-full transition-all duration-300 ${
+              className={`p-1.5 rounded-full transition-[color,background-color,transform] duration-200 ${
                 layout === 'list' 
                   ? 'bg-primary text-background scale-110' 
                   : 'text-secondary hover:text-primary hover:bg-surface'
@@ -157,7 +157,7 @@ export default function ProfileTabs({ data }: { data: any }) {
             </button>
             <button 
               onClick={() => { sfxClick(); setLayout('grid'); trackLayoutToggle('grid'); }}
-              className={`p-1.5 rounded-full transition-all duration-300 ${
+              className={`p-1.5 rounded-full transition-[color,background-color,transform] duration-200 ${
                 layout === 'grid' 
                   ? 'bg-primary text-background scale-110' 
                   : 'text-secondary hover:text-primary hover:bg-surface'
@@ -171,33 +171,32 @@ export default function ProfileTabs({ data }: { data: any }) {
       </div>
 
       <div className="tab-content min-h-[400px]">
-        <AnimatePresence mode="sync">
-          <motion.div
-            key={active}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15, ease: "easeInOut" }}
-          >
-            {active === 'projects' && (
-              <ProjectsPanel 
-                data={data} 
-                layout={layout} 
-                projects={projects} 
-                loading={loading} 
-              />
-            )}
-            {active === 'experiences' && (
-              <ExperiencesPanel 
-                data={data} 
-                experiences={experiences} 
-                loading={loading} 
-              />
-            )}
-            {active === 'about' && <AboutMePanel />}
-            {active === 'tools' && <ToolsPanel tools={data.tools} />}
-          </motion.div>
-        </AnimatePresence>
+        {/* Fade the new panel in only. Exit animations kept both panels in the
+            DOM at once, which made the page height jump on every switch. */}
+        <motion.div
+          key={active}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+        >
+          {active === 'projects' && (
+            <ProjectsPanel 
+              data={data} 
+              layout={layout} 
+              projects={projects} 
+              loading={loading} 
+            />
+          )}
+          {active === 'experiences' && (
+            <ExperiencesPanel 
+              data={data} 
+              experiences={experiences} 
+              loading={loading} 
+            />
+          )}
+          {active === 'about' && <AboutMePanel />}
+          {active === 'tools' && <ToolsPanel tools={data.tools} />}
+        </motion.div>
       </div>
     </div>
   );

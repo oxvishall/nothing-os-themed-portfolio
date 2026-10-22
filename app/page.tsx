@@ -3,6 +3,7 @@ import BioSection from "@/app/components/BioSection";
 import ProfileTabs from "@/app/components/ProfileTabs";
 import Sidebar from "@/app/components/Sidebar";
 import ClientInteractions from "@/app/components/ClientInteractions";
+import FeedSkeleton from "@/app/components/FeedSkeleton";
 import portfolio from "@/app/data/portfolio";
 
 import { Suspense } from 'react';
@@ -20,11 +21,7 @@ export default function Home() {
           <div className="content-wrap">
             <BioSection data={portfolio} />
             <Suspense fallback={
-              <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
-                <div className="font-dot text-[10px] uppercase tracking-[0.2em] text-secondary">
-                  Booting Tabs...
-                </div>
-              </div>
+              <FeedSkeleton />
             }>
               <ProfileTabs data={portfolio} />
             </Suspense>

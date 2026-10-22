@@ -6,6 +6,7 @@ import { FaGithub, FaExternalLinkAlt, FaShareAlt } from 'react-icons/fa';
 import { HiDotsHorizontal } from 'react-icons/hi';
 import { motion, AnimatePresence } from 'framer-motion';
 import ExpandableText from '@/app/components/ExpandableText';
+import FeedSkeleton from '@/app/components/FeedSkeleton';
 import { trackProjectLinkClick } from '@/lib/analytics';
 import { ArrowUp } from 'lucide-react';
 import { sfxScrollTop, sfxClick } from '@/lib/sfx';
@@ -207,14 +208,16 @@ function ProjectCard({ project }: { project: Project }) {
   }, [project.seed]);
 
   return (
-    <div className="project-card flex flex-col bg-surface border border-strong rounded-[24px] overflow-hidden h-full group transition-all duration-500 hover:bg-elevated/20 hover:-translate-y-2 hover:shadow-lg hover:shadow-primary/5">
+    <div className="project-card flex flex-col bg-surface border border-strong rounded-[24px] overflow-hidden h-full group transition-[transform,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-primary/40">
       <div className="aspect-[16/9] relative overflow-hidden bg-page border-b border-strong">
         <canvas ref={canvasRef} className="w-full h-full block" />
         {project.image && (
           <img 
             src={project.image} 
             alt={title} 
-            className="absolute inset-0 w-full h-full object-cover md:grayscale transition-all duration-700 md:group-hover:grayscale-0 group-hover:scale-105" 
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover md:grayscale transition-[filter] duration-200 md:group-hover:grayscale-0" 
           />
         )}
       </div>
@@ -310,7 +313,7 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
             <canvas ref={canvasRef} className="post-canvas" aria-hidden="true" />
             {project.image && (
               <div className="post-media-inner">
-                <img src={project.image} alt="" className="post-media-img" aria-hidden="true" />
+                <img src={project.image} alt="" className="post-media-img" aria-hidden="true" loading="lazy" decoding="async" />
                 <div className="post-hashtags">
                   {project.tags.map(tag => (
                     <span key={tag} className="post-hashtag">#{tag.replace(/\s+/g, '')}</span>
@@ -343,11 +346,7 @@ export default function ProjectsPanel({ data, layout = 'list', projects = [], lo
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] animate-pulse">
-        <div className="font-dot text-[10px] uppercase tracking-[0.2em] text-secondary">
-          Booting System...
-        </div>
-      </div>
+      <FeedSkeleton />
     );
   }
 
@@ -365,7 +364,7 @@ export default function ProjectsPanel({ data, layout = 'list', projects = [], lo
           <button
             onClick={scrollTop}
             aria-label="Scroll to top"
-            className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-all duration-300 hover:scale-110 active:scale-95"
+            className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-transform duration-150 hover:scale-110 active:scale-95"
           >
             <ArrowUp size={18} />
           </button>
@@ -387,7 +386,7 @@ export default function ProjectsPanel({ data, layout = 'list', projects = [], lo
         <button
           onClick={scrollTop}
           aria-label="Scroll to top"
-          className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-all duration-300 hover:scale-110 active:scale-95"
+          className="md:hidden fixed bottom-6 right-5 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-primary text-background shadow-lg transition-transform duration-150 hover:scale-110 active:scale-95"
         >
           <ArrowUp size={18} />
         </button>
