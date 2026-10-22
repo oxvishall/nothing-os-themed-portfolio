@@ -6,6 +6,8 @@
  * Styled to match the Nothing OS digital/dot-matrix aesthetic.
  */
 
+import { haptic } from './haptics';
+
 const SFX_KEY = 'sfx_enabled';
 
 /** Returns true when SFX is on (default: on). */
@@ -97,6 +99,8 @@ function createSwitchClickBuffer(ac: AudioContext, variant: number): AudioBuffer
 
 // ─── Authentic Physical Mouse Switch Click with Variations ────────────────
 export function sfxClick(variant?: number) {
+  // Phones feel the click even with sounds off
+  haptic('tap');
   const ac = getCtx();
   if (!ac) return;
 
@@ -149,4 +153,31 @@ export function sfxExpand() {
 // ─── Scroll to Top (Crisp tactile launch click) ───────────────────────────
 export function sfxScrollTop() {
   sfxClick(1);
+}
+
+// ─── Slider Tick (very light detent, one per step) ────────────────────────
+let lastTick = 0;
+export function sfxTick() {
+  haptic('tick');
+  const now = performance.now();
+  if (now - lastTick < 35) return;
+  lastTick = now;
+  const ac = getCtx();
+  if (!ac) return;
+  try {
+    const v = 3;
+    if (!clickBuffers[v] || clickBuffers[v].sampleRate !== ac.sampleRate) {
+      clickBuffers[v] = createSwitchClickBuffer(ac, v);
+    }
+    const src = ac.createBufferSource();
+    src.buffer = clickBuffers[v];
+    src.playbackRate.setValueAtTime(1.5, ac.currentTime);
+    const gain = ac.createGain();
+    gain.gain.setValueAtTime(0.12, ac.currentTime);
+    src.connect(gain);
+    gain.connect(masterOut(ac));
+    src.start();
+  } catch {
+    // Audio safe fallback
+  }
 }

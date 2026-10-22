@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { sfxClick } from '@/lib/sfx';
+import { sfxClick, sfxTick } from '@/lib/sfx';
 
 type Shape = 'round' | 'square';
 
@@ -211,11 +211,11 @@ export default function NdotGenerator() {
       <div className="gen-controls">
         <label className="gen-slider">
           <span>Density <b>{opts.cols}</b></span>
-          <input type="range" min={24} max={140} step={2} value={opts.cols} onChange={e => set('cols', +e.target.value)} />
+          <input type="range" min={24} max={140} step={2} value={opts.cols} onChange={e => { sfxTick(); set('cols', +e.target.value); }} />
         </label>
         <label className="gen-slider">
           <span>Contrast <b>{opts.contrast.toFixed(1)}</b></span>
-          <input type="range" min={0.5} max={2.5} step={0.1} value={opts.contrast} onChange={e => set('contrast', +e.target.value)} />
+          <input type="range" min={0.5} max={2.5} step={0.1} value={opts.contrast} onChange={e => { sfxTick(); set('contrast', +e.target.value); }} />
         </label>
       </div>
 
