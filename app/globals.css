@@ -406,3 +406,43 @@ html, body { overscroll-behavior-y: none; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 13. Lab (playground + generator) */
+.lab-section { border-top: 1px solid var(--border); padding: 24px 16px 32px; }
+@media (min-width: 768px) { .lab-section { padding: 24px 32px 36px; } }
+.lab-section-head { margin-bottom: 16px; }
+.lab-card { display: flex; flex-direction: column; gap: 12px; }
+.lab-canvas-wrap {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  padding: 10px;
+  background: var(--bg-page);
+}
+.lab-canvas { display: block; touch-action: none; user-select: none; }
+.lab-status {
+  display: flex; justify-content: space-between; gap: 12px;
+  font-family: var(--font-dot); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--text-tertiary); font-variant-numeric: tabular-nums;
+}
+.lab-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.lab-btn {
+  font-family: var(--font-dot); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  padding: 7px 12px; border-radius: 9999px;
+  border: 1px solid var(--border-strong); background: var(--bg-surface); color: var(--text-secondary);
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.lab-btn:hover { color: var(--text-primary); border-color: var(--text-primary); }
+.lab-btn:active { transform: scale(0.96); }
+.lab-btn:disabled { opacity: 0.4; pointer-events: none; }
+.lab-btn--active, .lab-btn--primary { background: var(--text-primary); color: var(--bg-page); border-color: var(--text-primary); }
+.lab-btn--active:hover, .lab-btn--primary:hover { color: var(--bg-page); }
+.lab-btn--push { margin-left: auto; }
+.lab-divider { width: 1px; height: 18px; background: var(--border-strong); margin: 0 4px; }
+.lab-input {
+  width: 72px; padding: 6px 12px; border-radius: 9999px;
+  border: 1px solid var(--border-strong); background: var(--bg-page); color: var(--text-primary);
+  font-family: var(--font-dot); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+  outline: none; transition: border-color 0.15s ease;
+}
+.lab-input:focus { border-color: var(--text-primary); }

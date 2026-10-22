@@ -8,6 +8,7 @@ import ProjectsPanel from './panels/ProjectsPanel';
 import ExperiencesPanel from './panels/ExperiencesPanel';
 import AboutMePanel from './panels/AboutMePanel';
 import ToolsPanel from './panels/ToolsPanel';
+import LabPanel from './panels/LabPanel';
 import { trackTabSwitch, trackLayoutToggle } from '@/lib/analytics';
 import { sfxTabSwitch, sfxClick } from '@/lib/sfx';
 
@@ -16,6 +17,7 @@ const TABS = [
   { id: 'experiences', label: 'Experiences' },
   { id: 'about', label: 'About' },
   { id: 'tools', label: 'Tools' },
+  { id: 'lab', label: 'Lab' },
 ] as const;
 
 type TabId = typeof TABS[number]['id'];
@@ -196,6 +198,7 @@ export default function ProfileTabs({ data }: { data: any }) {
           )}
           {active === 'about' && <AboutMePanel />}
           {active === 'tools' && <ToolsPanel tools={data.tools} />}
+          {active === 'lab' && <LabPanel />}
         </motion.div>
       </div>
     </div>
