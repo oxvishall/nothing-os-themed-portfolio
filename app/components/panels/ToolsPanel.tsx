@@ -28,14 +28,6 @@ import {
 } from 'react-icons/si';
 import type { Tool } from '@/app/data/portfolio';
 
-function CursorLogo() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M11.503.131 1.891 5.678a.84.84 0 0 0-.42.726v11.188c0 .3.162.575.42.724l9.609 5.55a1 1 0 0 0 .998 0l9.61-5.55a.84.84 0 0 0 .42-.724V6.404a.84.84 0 0 0-.42-.726L12.497.131a1.01 1.01 0 0 0-.996 0M2.657 6.338h18.55c.263 0 .43.287.297.515L12.23 22.918c-.062.107-.229.064-.229-.06V12.335a.59.59 0 0 0-.295-.51l-9.11-5.257c-.109-.063-.064-.23.061-.23" />
-    </svg>
-  );
-}
-
 function AptosLogo() {
   return (
     <svg width="18" height="18" viewBox="0 0 479.3 481.2" fill="currentColor" aria-hidden>
@@ -73,12 +65,11 @@ const ICONS: Record<string, ReactNode> = {
   Git: <SiGit />,
   Figma: <SiFigma />,
   Canva: <SiCanva />,
-  'Gemini 3.6 Flash': <SiGooglegemini />,
-  'Gemini 3.1 Pro': <SiGooglegemini />,
-  'Cursor Composer 2.5': <CursorLogo />,
-  'Cursor Grok 4.6': <CursorLogo />,
-  'Claude Opus 5': <SiClaude />,
-  'GPT-5.6 Sol': <SiOpenai />,
+  // Kept generic (no model versions) so this doesn't go stale.
+  // DeepSeek has no icon in react-icons, so it falls back to its "DS" badge.
+  Gemini: <SiGooglegemini />,
+  ChatGPT: <SiOpenai />,
+  Claude: <SiClaude />,
 };
 
 const CATEGORY_COPY: Record<string, string> = {

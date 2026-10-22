@@ -238,12 +238,10 @@ const portfolio: PortfolioData = {
     { name: "Git", icon: "GT", category: "Ship & Operate", blurb: "Version control" },
     { name: "Figma", icon: "FG", category: "Shape", blurb: "Interface systems" },
     { name: "Canva", icon: "CV", category: "Shape", blurb: "Visuals & decks" },
-    { name: "Gemini 3.6 Flash", icon: "G6", category: "AI Tools", blurb: "Fast multimodal drafts" },
-    { name: "Gemini 3.1 Pro", icon: "G3", category: "AI Tools", blurb: "Long-context reasoning" },
-    { name: "Cursor Composer 2.5", icon: "C2", category: "AI Tools", blurb: "Multi-file edits" },
-    { name: "Cursor Grok 4.6", icon: "GX", category: "AI Tools", blurb: "Agent coding loop" },
-    { name: "Claude Opus 5", icon: "OP", category: "AI Tools", blurb: "Deep architecture work" },
-    { name: "GPT-5.6 Sol", icon: "GP", category: "AI Tools", blurb: "General problem solving" },
+    { name: "Gemini", icon: "GE", category: "AI Tools", blurb: "Multimodal research & drafts" },
+    { name: "ChatGPT", icon: "GP", category: "AI Tools", blurb: "General problem solving" },
+    { name: "Claude", icon: "CL", category: "AI Tools", blurb: "Deep architecture & code" },
+    { name: "DeepSeek", icon: "DS", category: "AI Tools", blurb: "Open-weight reasoning" },
   ],
 
   links: [
