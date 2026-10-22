@@ -163,9 +163,12 @@ html, body { overscroll-behavior-y: none; }
 .splash-label { font-size: 10px; color: var(--text-secondary); }
 .splash-counter { font-size: 14px; color: var(--text-primary); font-variant-numeric: tabular-nums; }
 
+/* Hide the system cursor everywhere on desktop. Must cover every element:
+   anything with its own cursor style (cursor-pointer, cursor-default…)
+   would otherwise show the system cursor next to the custom dot. */
 @media (pointer: fine) {
-  body, a, button, input, textarea, label, [role="button"] { 
-    cursor: none !important; 
+  *, *::before, *::after {
+    cursor: none !important;
   }
 }
 
