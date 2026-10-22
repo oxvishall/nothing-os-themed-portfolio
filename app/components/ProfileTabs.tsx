@@ -114,6 +114,18 @@ export default function ProfileTabs({ data }: { data: any }) {
     }
   };
 
+  // Keyboard shortcuts (1–5) switch tabs by position
+  const handleTabClickRef = useRef(handleTabClick);
+  useEffect(() => { handleTabClickRef.current = handleTabClick; });
+  useEffect(() => {
+    const onTab = (e: Event) => {
+      const tab = TABS[(e as CustomEvent<number>).detail];
+      if (tab) handleTabClickRef.current(tab.id);
+    };
+    window.addEventListener('portfolio:tab', onTab);
+    return () => window.removeEventListener('portfolio:tab', onTab);
+  }, []);
+
   return (
     <div className="w-full">
       <div ref={tabsContainerRef} className="tabs-anchor" />

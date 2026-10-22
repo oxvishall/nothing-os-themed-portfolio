@@ -7,6 +7,7 @@ import { HiX } from 'react-icons/hi';
 import { trackThemeToggle, trackSocialLinkClick } from '@/lib/analytics';
 import { sfxThemeToggle, sfxClick, isSfxEnabled, setSfxEnabled } from '@/lib/sfx';
 import { Volume2, VolumeX } from 'lucide-react';
+import { applyTheme, getTheme, type ThemeMode } from '@/lib/theme';
 
 interface SidebarProps {
   data: PortfolioData;
@@ -38,40 +39,33 @@ function LocalTime() {
 }
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<ThemeMode>('light');
   const [sfxOn, setSfxOn] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const html = document.documentElement;
-    if (stored) {
-      setTheme(stored);
-    } else if (html.classList.contains('dark')) {
-      setTheme('dark');
-    }
+    setTheme(getTheme());
     setSfxOn(isSfxEnabled());
+    // Stay in sync with keyboard shortcuts
+    const onTheme = (e: Event) => setTheme((e as CustomEvent<ThemeMode>).detail);
+    const onSfx = (e: Event) => setSfxOn((e as CustomEvent<boolean>).detail);
+    window.addEventListener('themechange', onTheme);
+    window.addEventListener('sfxchange', onSfx);
+    return () => {
+      window.removeEventListener('themechange', onTheme);
+      window.removeEventListener('sfxchange', onSfx);
+    };
   }, []);
 
-  const setThemeMode = (mode: 'light' | 'dark') => {
+  const setThemeMode = (mode: ThemeMode) => {
     if (mode === theme) return;
     sfxThemeToggle();
-    const html = document.documentElement;
-    if (mode === 'dark') {
-      html.classList.add('dark');
-      html.classList.remove('light');
-    } else {
-      html.classList.add('light');
-      html.classList.remove('dark');
-    }
-    localStorage.setItem('theme', mode);
-    setTheme(mode);
+    applyTheme(mode);
     trackThemeToggle(mode);
   };
 
   const toggleSfx = () => {
     const next = !sfxOn;
     setSfxEnabled(next);
-    setSfxOn(next);
     // Play a quick confirmation sound if turning ON
     if (next) sfxClick();
   };
@@ -119,6 +113,13 @@ function ThemeToggle() {
           {sfxOn ? <Volume2 size={14} /> : <VolumeX size={14} />}
           <span className="font-dot text-[9px] tracking-widest">{sfxOn ? 'ON' : 'OFF'}</span>
         </div>
+      </button>
+
+      <button
+        onClick={() => window.dispatchEvent(new Event('portfolio:help'))}
+        className="mt-3 w-full text-center font-dot text-[9px] tracking-widest text-tertiary hover:text-primary transition-colors"
+      >
+        PRESS <kbd className="kbd">?</kbd> FOR SHORTCUTS
       </button>
     </div>
   );

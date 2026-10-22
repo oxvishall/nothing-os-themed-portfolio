@@ -482,3 +482,48 @@ html, body { overscroll-behavior-y: none; }
 .gen-slider input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 2px; background: var(--border-strong); border-radius: 2px; outline: none; }
 .gen-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--text-primary); border: 2px solid var(--bg-page); box-shadow: 0 0 0 1px var(--text-primary); }
 .gen-slider input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--text-primary); border: 2px solid var(--bg-page); }
+
+/* 14. Shortcuts, toasts & easter eggs */
+.kbd {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 22px;
+  padding: 2px 6px; border-radius: 6px;
+  border: 1px solid var(--border-strong); border-bottom-width: 2px; background: var(--bg-surface);
+  font-family: var(--font-dot); font-size: 10px; font-weight: 700; color: var(--text-primary);
+}
+.shortcuts-backdrop {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: color-mix(in srgb, var(--bg-page) 70%, transparent);
+  backdrop-filter: blur(6px);
+}
+.shortcuts-panel {
+  width: 100%; max-width: 340px;
+  background: var(--bg-page); border: 1px solid var(--border-strong); border-radius: 18px; padding: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+.shortcuts-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.shortcuts-list li {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 14px; color: var(--text-secondary);
+}
+.shortcuts-list li:last-child { border-bottom: none; }
+.shortcuts-secret {
+  margin-top: 12px; text-align: center;
+  font-family: var(--font-dot); font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-tertiary);
+}
+.toast {
+  position: fixed; left: 50%; bottom: 28px; z-index: 10001;
+  padding: 10px 18px; border-radius: 9999px;
+  background: var(--text-primary); color: var(--bg-page);
+  font-family: var(--font-dot); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;
+  pointer-events: none; white-space: nowrap;
+}
+.dot-wave { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 9998; pointer-events: none; }
+
+/* Konami easter egg: the whole page switches to the dot font */
+.glyph-mode body *:not(svg):not(svg *) {
+  font-family: var(--font-dot) !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
+  font-variation-settings: "ROND" 0 !important;
+}

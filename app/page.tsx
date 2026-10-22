@@ -3,6 +3,8 @@ import BioSection from "@/app/components/BioSection";
 import ProfileTabs from "@/app/components/ProfileTabs";
 import Sidebar from "@/app/components/Sidebar";
 import ClientInteractions from "@/app/components/ClientInteractions";
+import KeyboardShortcuts from "@/app/components/KeyboardShortcuts";
+import FooterLogo from "@/app/components/FooterLogo";
 import FeedSkeleton from "@/app/components/FeedSkeleton";
 import portfolio from "@/app/data/portfolio";
 
@@ -12,6 +14,7 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center bg-background min-h-screen">
       <ClientInteractions />
+      <KeyboardShortcuts />
 
       <main className="layout">
         {/* Main Content Column */}
@@ -29,7 +32,7 @@ export default function Home() {
 
           {/* Polished Site Footer */}
           <footer className="mobile-footer">
-            <span className="footer-logo">NOTHING × X</span>
+            <FooterLogo>NOTHING × X</FooterLogo>
             <div className="footer-links">
               {portfolio.links.map(link => (
                 <a key={link.label} href={link.url} className="footer-link">

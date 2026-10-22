@@ -19,6 +19,8 @@ export function isSfxEnabled(): boolean {
 export function setSfxEnabled(enabled: boolean) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(SFX_KEY, String(enabled));
+  // Let every sound toggle on the page update
+  window.dispatchEvent(new CustomEvent<boolean>('sfxchange', { detail: enabled }));
 }
 
 let ctx: AudioContext | null = null;
