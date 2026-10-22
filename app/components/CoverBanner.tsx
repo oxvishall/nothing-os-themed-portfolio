@@ -35,9 +35,14 @@ export default function CoverBanner({ name }: { name: string }) {
     let fadeTimer: ReturnType<typeof setTimeout> | undefined;
 
     const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      W = canvas.offsetWidth;
-      H = canvas.offsetHeight;
+      const nextDpr = Math.min(window.devicePixelRatio || 1, 2);
+      const nextW = canvas.offsetWidth;
+      const nextH = canvas.offsetHeight;
+      // Only rebuild when the size really changed (guards against resize feedback loops)
+      if (nextW === W && nextH === H && nextDpr === dpr) return;
+      dpr = nextDpr;
+      W = nextW;
+      H = nextH;
       canvas.width = base.width = Math.round(W * dpr);
       canvas.height = base.height = Math.round(H * dpr);
 
