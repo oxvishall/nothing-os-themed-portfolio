@@ -133,7 +133,7 @@ export default function ProfileTabs({ data }: { data: any }) {
         className="sticky top-0 z-40 bg-page/90 backdrop-blur-md flex items-center justify-between border-b border-border pr-2 pt-2 -mt-px"
       >
         <nav 
-          className="profile-tabs px-4 flex gap-3 pt-1 pb-4 overflow-x-auto scrollbar-hide relative" 
+          className="profile-tabs px-4 flex gap-4 pt-1 pb-4 overflow-x-auto scrollbar-hide relative" 
           role="tablist"
         >
           {TABS.map(tab => (
@@ -162,8 +162,8 @@ export default function ProfileTabs({ data }: { data: any }) {
               onClick={() => { sfxClick(); setLayout('list'); trackLayoutToggle('list'); }}
               className={`key p-1.5 rounded-full ${
                 layout === 'list' 
-                  ? 'key--on !bg-primary text-background !border-primary' 
-                  : 'text-secondary hover:text-primary'
+                  ? 'key--on bg-primary text-background border-primary' 
+                  : 'text-secondary hover:text-primary hover:bg-surface'
               }`}
               title="List View"
             >
@@ -173,8 +173,8 @@ export default function ProfileTabs({ data }: { data: any }) {
               onClick={() => { sfxClick(); setLayout('grid'); trackLayoutToggle('grid'); }}
               className={`key p-1.5 rounded-full ${
                 layout === 'grid' 
-                  ? 'key--on !bg-primary text-background !border-primary' 
-                  : 'text-secondary hover:text-primary'
+                  ? 'key--on bg-primary text-background border-primary' 
+                  : 'text-secondary hover:text-primary hover:bg-surface'
               }`}
               title="Grid View"
             >

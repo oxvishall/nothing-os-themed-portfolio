@@ -109,6 +109,13 @@ export default function RootLayout({
                   }
                 } catch (e) {}
                 try {
+                  // Interface style (buttons & chips); Nothing is the default
+                  var ui = localStorage.getItem('ui_style');
+                  document.documentElement.setAttribute('data-ui', ui || 'nothing');
+                } catch (e) {
+                  document.documentElement.setAttribute('data-ui', 'nothing');
+                }
+                try {
                   // Only show the splash once per browser session
                   if (sessionStorage.getItem('splash_seen')) {
                     document.documentElement.classList.add('splash-seen');

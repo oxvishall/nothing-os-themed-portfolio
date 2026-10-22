@@ -99,7 +99,7 @@ export default function BioSection({ data }: BioSectionProps) {
             </a>
 
             <div 
-              className="h-10 px-3.5 flex items-center gap-2 justify-center rounded-full border border-strong bg-surface/60 text-primary transition-all duration-300 hover:scale-105 cursor-default select-none group"
+              className="key h-10 px-3.5 flex items-center gap-2 justify-center rounded-full border border-strong bg-surface/60 text-primary transition-all duration-300 hover:scale-105 cursor-default select-none group"
               title="Total Portfolio Views"
             >
               <Eye size={15} className="text-secondary group-hover:text-primary transition-colors" />
@@ -114,7 +114,7 @@ export default function BioSection({ data }: BioSectionProps) {
 
             <button 
               onClick={toggleSidebar}
-              className="lg:hidden h-10 w-10 flex items-center justify-center border border-strong rounded-full text-secondary hover:text-primary hover:bg-surface transition-all"
+              className="key lg:hidden h-10 w-10 flex items-center justify-center border border-strong rounded-full text-secondary hover:text-primary hover:bg-surface transition-all"
               aria-label="Toggle Sidebar"
             >
               <HiDotsVertical size={20} />

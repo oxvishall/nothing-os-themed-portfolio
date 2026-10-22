@@ -473,7 +473,6 @@ html, body { overscroll-behavior-y: none; }
 }
 .lab-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .lab-btn {
-  margin-bottom: 3px; /* room for the keycap lip */
   font-family: var(--font-dot); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
   padding: 7px 12px; border-radius: 9999px;
   border: 1px solid var(--border-strong); background: var(--bg-surface); color: var(--text-secondary);
@@ -578,31 +577,51 @@ html, body { overscroll-behavior-y: none; }
 /* 15. Interactive background */
 .background-field { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-/* 16. Keycaps: raised buttons with a lip that press down on click */
+/* 16. Interface styles (html[data-ui]) — see lib/uiStyle.ts */
+
+/* Nothing (default): flat controls, a gentle squeeze on press */
 .key, .lab-btn, .btn-follow {
-  box-shadow: 0 3px 0 0 var(--key-lip);
   transition:
     transform 0.1s ease, box-shadow 0.1s ease,
     color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
-.key { border: 1px solid var(--border-strong); background: var(--bg-page); }
-.key--on, .lab-btn--active, .lab-btn--primary, .btn-follow { box-shadow: 0 3px 0 0 var(--key-lip-on); }
+.key:active, .lab-btn:active { transform: scale(0.96); }
+
+/* Keycap: raised buttons with a lip that press down on click */
+[data-ui="keycap"] .key,
+[data-ui="keycap"] .lab-btn,
+[data-ui="keycap"] .btn-follow { box-shadow: 0 3px 0 0 var(--key-lip); }
+[data-ui="keycap"] .key { border: 1px solid var(--border-strong); }
+[data-ui="keycap"] .key:not(.key--on) { background: var(--bg-page); }
+[data-ui="keycap"] .lab-btn { margin-bottom: 3px; }
+[data-ui="keycap"] .key--on,
+[data-ui="keycap"] .lab-btn--active,
+[data-ui="keycap"] .lab-btn--primary,
+[data-ui="keycap"] .btn-follow { box-shadow: 0 3px 0 0 var(--key-lip-on); }
 @media (hover: hover) {
-  .key:hover, .lab-btn:hover, .btn-follow:hover { transform: translateY(-1px); box-shadow: 0 4px 0 0 var(--key-lip); }
-  .key--on:hover, .lab-btn--active:hover, .lab-btn--primary:hover, .btn-follow:hover { box-shadow: 0 4px 0 0 var(--key-lip-on); }
+  [data-ui="keycap"] .key:hover,
+  [data-ui="keycap"] .lab-btn:hover,
+  [data-ui="keycap"] .btn-follow:hover { transform: translateY(-1px); box-shadow: 0 4px 0 0 var(--key-lip); }
+  [data-ui="keycap"] .key--on:hover,
+  [data-ui="keycap"] .lab-btn--active:hover,
+  [data-ui="keycap"] .lab-btn--primary:hover,
+  [data-ui="keycap"] .btn-follow:hover { box-shadow: 0 4px 0 0 var(--key-lip-on); }
 }
 /* Pressed: the cap sinks onto its lip */
-.key:active, .lab-btn:active, .btn-follow:active {
+[data-ui="keycap"] .key:active,
+[data-ui="keycap"] .lab-btn:active,
+[data-ui="keycap"] .btn-follow:active {
   transform: translateY(2px); box-shadow: 0 1px 0 0 var(--key-lip); transition-duration: 0.05s;
 }
-.key--on:active, .lab-btn--active:active, .lab-btn--primary:active, .btn-follow:active { box-shadow: 0 1px 0 0 var(--key-lip-on); }
-.lab-btn:disabled { box-shadow: 0 3px 0 0 var(--key-lip); transform: none; }
-
+[data-ui="keycap"] .key--on:active,
+[data-ui="keycap"] .lab-btn--active:active,
+[data-ui="keycap"] .lab-btn--primary:active,
+[data-ui="keycap"] .btn-follow:active { box-shadow: 0 1px 0 0 var(--key-lip-on); }
+[data-ui="keycap"] .lab-btn:disabled { box-shadow: 0 3px 0 0 var(--key-lip); transform: none; }
 /* Tabs: the sliding pill is the active cap's face */
-.key-tab.key--on { background: var(--bg-page); border-color: var(--text-primary); }
-.key-tab-pill { inset: -1px; }
-/* Theme toggle thumb */
-.key-thumb { box-shadow: 0 2px 0 0 var(--key-lip-on); }
+[data-ui="keycap"] .key--on { border-color: var(--text-primary); }
+[data-ui="keycap"] .key-tab-pill { inset: -1px; }
+[data-ui="keycap"] .key-thumb { box-shadow: 0 2px 0 0 var(--key-lip-on); }
 
 /* 17. Secrets list in the help panel */
 .shortcuts-panel { max-height: calc(100vh - 32px); overflow-y: auto; }

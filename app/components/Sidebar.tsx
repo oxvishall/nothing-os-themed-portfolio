@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useSyncExternalStore } from 'react';
 import type { PortfolioData } from '@/app/data/portfolio';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
@@ -8,6 +8,7 @@ import { trackThemeToggle, trackSocialLinkClick } from '@/lib/analytics';
 import { sfxThemeToggle, sfxClick, isSfxEnabled, setSfxEnabled } from '@/lib/sfx';
 import { Volume2, VolumeX } from 'lucide-react';
 import { applyTheme, getTheme, type ThemeMode } from '@/lib/theme';
+import { UI_STYLES, DEFAULT_UI_STYLE, applyUiStyle, getUiStyle, type UiStyle } from '@/lib/uiStyle';
 
 interface SidebarProps {
   data: PortfolioData;
@@ -34,6 +35,52 @@ function LocalTime() {
   return (
     <div className="local-time-wrapper select-none">
       <span className="font-serif text-5xl tracking-tighter text-primary">{time}</span>
+    </div>
+  );
+}
+
+// Segmented picker for the interface style (Nothing, Keycap, …)
+function UiStylePicker() {
+  // Reads <html data-ui>; the server always renders the default
+  const style = useSyncExternalStore<UiStyle>(
+    onChange => {
+      window.addEventListener('uistylechange', onChange);
+      return () => window.removeEventListener('uistylechange', onChange);
+    },
+    getUiStyle,
+    () => DEFAULT_UI_STYLE,
+  );
+
+  const n = UI_STYLES.length;
+  const index = Math.max(0, UI_STYLES.findIndex(s => s.id === style));
+
+  return (
+    <div className="mb-3">
+      <span className="block font-dot text-[9px] tracking-widest text-tertiary mb-1.5 px-1">STYLE</span>
+      <div className="flex bg-surface border border-strong rounded-full p-1 relative" role="radiogroup" aria-label="Interface style">
+        {UI_STYLES.map(s => (
+          <button
+            key={s.id}
+            role="radio"
+            aria-checked={style === s.id}
+            onClick={() => {
+              if (s.id === style) return;
+              sfxClick();
+              applyUiStyle(s.id);
+            }}
+            className={`flex-1 py-1.5 px-2 rounded-full text-[10px] font-dot tracking-widest transition-colors duration-200 z-10 ${
+              style === s.id ? 'text-background' : 'text-secondary hover:text-primary'
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+        {/* Active indicator; sized from the number of styles so new ones just work */}
+        <div
+          className="key-thumb absolute top-1 bottom-1 bg-primary rounded-full transition-[left] duration-200 ease-out"
+          style={{ width: `calc((100% - 8px) / ${n})`, left: `calc(4px + ${index} * (100% - 8px) / ${n})` }}
+        />
+      </div>
     </div>
   );
 }
@@ -100,10 +147,13 @@ function ThemeToggle() {
         />
       </div>
 
+      {/* Interface style */}
+      <UiStylePicker />
+
       {/* SFX toggle */}
       <button
         onClick={toggleSfx}
-        className="key w-full flex items-center justify-between px-3 py-2 rounded-full group"
+        className="key w-full flex items-center justify-between px-3 py-2 rounded-full border border-strong bg-surface/50 hover:bg-surface group"
         title={sfxOn ? 'Turn off sounds' : 'Turn on sounds'}
       >
         <span className="font-dot text-[10px] tracking-widest text-secondary group-hover:text-primary transition-colors">
