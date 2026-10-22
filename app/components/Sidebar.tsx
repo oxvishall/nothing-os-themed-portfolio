@@ -94,7 +94,7 @@ function ThemeToggle() {
         </button>
         {/* Active Indicator Slider */}
         <div 
-          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-primary rounded-full transition-[left] duration-200 ease-out ${
+          className={`key-thumb absolute top-1 bottom-1 w-[calc(50%-4px)] bg-primary rounded-full transition-[left] duration-200 ease-out ${
             theme === 'dark' ? 'left-[calc(50%+2px)]' : 'left-1'
           }`}
         />
@@ -103,7 +103,7 @@ function ThemeToggle() {
       {/* SFX toggle */}
       <button
         onClick={toggleSfx}
-        className="w-full flex items-center justify-between px-3 py-2 rounded-full border border-strong bg-surface/50 hover:bg-surface transition-all duration-200 group"
+        className="key w-full flex items-center justify-between px-3 py-2 rounded-full group"
         title={sfxOn ? 'Turn off sounds' : 'Turn on sounds'}
       >
         <span className="font-dot text-[10px] tracking-widest text-secondary group-hover:text-primary transition-colors">

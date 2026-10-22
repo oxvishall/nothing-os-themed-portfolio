@@ -133,21 +133,21 @@ export default function ProfileTabs({ data }: { data: any }) {
         className="sticky top-0 z-40 bg-page/90 backdrop-blur-md flex items-center justify-between border-b border-border pr-2 pt-2 -mt-px"
       >
         <nav 
-          className="profile-tabs px-4 flex gap-4 pb-4 overflow-x-auto scrollbar-hide relative" 
+          className="profile-tabs px-4 flex gap-3 pt-1 pb-4 overflow-x-auto scrollbar-hide relative" 
           role="tablist"
         >
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
-              className={`relative font-dot text-[10px] uppercase tracking-widest px-6 py-2.5 transition-colors duration-200 z-10 ${
-                active === tab.id ? 'text-background' : 'text-secondary hover:text-primary'
+              className={`key key-tab relative shrink-0 rounded-full font-dot text-[10px] uppercase tracking-widest px-6 py-2.5 z-10 ${
+                active === tab.id ? 'key--on text-background' : 'text-secondary hover:text-primary'
               }`}
             >
               {active === tab.id && (
                 <motion.div
                   layoutId="active-pill"
-                  className="absolute inset-0 bg-primary rounded-full -z-10"
+                  className="key-tab-pill absolute inset-0 bg-primary rounded-full -z-10"
                   transition={{ type: "spring", bounce: 0.15, duration: 0.35 }}
                 />
               )}
@@ -157,13 +157,13 @@ export default function ProfileTabs({ data }: { data: any }) {
         </nav>
 
         {active === 'projects' && (
-          <div className="hidden md:flex items-center gap-1 pb-4">
+          <div className="hidden md:flex items-center gap-2 pb-4">
             <button 
               onClick={() => { sfxClick(); setLayout('list'); trackLayoutToggle('list'); }}
-              className={`p-1.5 rounded-full transition-[color,background-color,transform] duration-200 ${
+              className={`key p-1.5 rounded-full ${
                 layout === 'list' 
-                  ? 'bg-primary text-background scale-110' 
-                  : 'text-secondary hover:text-primary hover:bg-surface'
+                  ? 'key--on !bg-primary text-background !border-primary' 
+                  : 'text-secondary hover:text-primary'
               }`}
               title="List View"
             >
@@ -171,10 +171,10 @@ export default function ProfileTabs({ data }: { data: any }) {
             </button>
             <button 
               onClick={() => { sfxClick(); setLayout('grid'); trackLayoutToggle('grid'); }}
-              className={`p-1.5 rounded-full transition-[color,background-color,transform] duration-200 ${
+              className={`key p-1.5 rounded-full ${
                 layout === 'grid' 
-                  ? 'bg-primary text-background scale-110' 
-                  : 'text-secondary hover:text-primary hover:bg-surface'
+                  ? 'key--on !bg-primary text-background !border-primary' 
+                  : 'text-secondary hover:text-primary'
               }`}
               title="Grid View"
             >
