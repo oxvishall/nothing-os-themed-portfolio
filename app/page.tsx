@@ -6,6 +6,7 @@ import ClientInteractions from "@/app/components/ClientInteractions";
 import BackgroundField from "@/app/components/BackgroundField";
 import KeyboardShortcuts from "@/app/components/KeyboardShortcuts";
 import FooterLogo from "@/app/components/FooterLogo";
+import HelpButton from "@/app/components/HelpButton";
 import FeedSkeleton from "@/app/components/FeedSkeleton";
 import portfolio from "@/app/data/portfolio";
 
@@ -41,6 +42,7 @@ export default function Home() {
                   {link.label}
                 </a>
               ))}
+              <HelpButton />
             </div>
             <p className="">
               Ideated, Designed & Developed by <span className="font-serif italic">Vishal</span>  

@@ -119,7 +119,7 @@ function ThemeToggle() {
         onClick={() => window.dispatchEvent(new Event('portfolio:help'))}
         className="mt-3 w-full text-center font-dot text-[9px] tracking-widest text-tertiary hover:text-primary transition-colors"
       >
-        PRESS <kbd className="kbd">?</kbd> FOR SHORTCUTS
+        PRESS <kbd className="kbd">?</kbd> FOR SHORTCUTS & SECRETS
       </button>
     </div>
   );

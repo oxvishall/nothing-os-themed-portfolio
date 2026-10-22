@@ -14,6 +14,13 @@ const SHORTCUTS: [string, string][] = [
   ['Esc', 'Close'],
 ];
 
+// Revealed in the help panel, each with a Try button
+const SECRETS = [
+  { id: 'glyph', name: 'Glyph mode', how: ['↑', '↑', '↓', '↓', '←', '→', '←', '→', 'B', 'A'], hint: 'Konami code: the whole page in the dot font' },
+  { id: 'nothing', name: 'Say nothing', how: ['N', 'O', 'T', 'H', 'I', 'N', 'G'], hint: 'Type it anywhere for a dot wave' },
+  { id: 'footer', name: 'Triple tap', how: ['×3'], hint: 'Tap the NOTHING × X footer logo three times' },
+] as const;
+
 const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
 const SECRET_WORD = 'nothing';
 
@@ -71,6 +78,18 @@ export default function KeyboardShortcuts() {
     toastTimer.current = setTimeout(() => setToast(null), 1800);
   }, []);
 
+  // The easter eggs, shared by the secret triggers and the "Try" buttons
+  const toggleGlyph = useCallback(() => {
+    const on = document.documentElement.classList.toggle('glyph-mode');
+    sfxThemeToggle();
+    dotWave(window.innerWidth / 2, window.innerHeight / 2);
+    notify(on ? 'Glyph mode on' : 'Glyph mode off');
+  }, [notify]);
+  const sayNothing = useCallback((x = window.innerWidth / 2, y = window.innerHeight / 2) => {
+    dotWave(x, y);
+    notify('Say nothing.');
+  }, [notify]);
+
   useEffect(() => {
     let konamiPos = 0;
     let typed = '';
@@ -87,10 +106,7 @@ export default function KeyboardShortcuts() {
       konamiPos = key === KONAMI[konamiPos] ? konamiPos + 1 : key === KONAMI[0] ? 1 : 0;
       if (konamiPos === KONAMI.length) {
         konamiPos = 0;
-        const on = document.documentElement.classList.toggle('glyph-mode');
-        sfxThemeToggle();
-        dotWave(window.innerWidth / 2, window.innerHeight / 2);
-        notify(on ? 'Glyph mode on' : 'Glyph mode off');
+        toggleGlyph();
         return;
       }
 
@@ -99,8 +115,7 @@ export default function KeyboardShortcuts() {
         typed = (typed + key).slice(-SECRET_WORD.length);
         if (typed === SECRET_WORD) {
           typed = '';
-          dotWave(window.innerWidth / 2, window.innerHeight / 2);
-          notify('Say nothing.');
+          sayNothing();
           return;
         }
       }
@@ -135,8 +150,7 @@ export default function KeyboardShortcuts() {
     // Secret 3 (touch friendly): triple-tap the footer logo
     const onWave = (e: Event) => {
       const { x, y } = (e as CustomEvent<{ x: number; y: number }>).detail;
-      dotWave(x, y);
-      notify('Say nothing.');
+      sayNothing(x, y);
     };
 
     window.addEventListener('keydown', onKey);
@@ -148,7 +162,7 @@ export default function KeyboardShortcuts() {
       window.removeEventListener('portfolio:wave', onWave);
       clearTimeout(toastTimer.current);
     };
-  }, [notify]);
+  }, [notify, toggleGlyph, sayNothing]);
 
   return (
     <>
@@ -165,7 +179,7 @@ export default function KeyboardShortcuts() {
             <motion.div
               role="dialog"
               aria-modal="true"
-              aria-label="Keyboard shortcuts"
+              aria-label="Shortcuts and secrets"
               className="shortcuts-panel"
               initial={{ opacity: 0, y: 6, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -182,7 +196,31 @@ export default function KeyboardShortcuts() {
                   </li>
                 ))}
               </ul>
-              <p className="shortcuts-secret">3 secrets are hidden on this page.</p>
+              <span className="sidebar-heading block mt-5">· Secrets ·</span>
+              <ul className="secrets-list">
+                {SECRETS.map(s => (
+                  <li key={s.id}>
+                    <div className="secret-text">
+                      <span className="secret-name">{s.name}</span>
+                      <span className="secret-hint">{s.hint}</span>
+                      <span className="secret-keys">
+                        {s.how.map((k, i) => <kbd key={i} className="kbd">{k}</kbd>)}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="lab-btn"
+                      onClick={() => {
+                        setHelpOpen(false);
+                        // Let the panel close first so the effect is visible
+                        setTimeout(() => (s.id === 'glyph' ? toggleGlyph() : sayNothing()), 160);
+                      }}
+                    >
+                      Try
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </motion.div>
           </motion.div>
         )}
