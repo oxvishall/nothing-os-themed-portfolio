@@ -13,19 +13,30 @@ const RIPPLE_LIFE = 1100; // ms
 const NOT_BACKGROUND =
   '.main-content, .sidebar-card, a, button, input, textarea, label, select, [role="button"], #splash, .shortcuts-backdrop';
 
+// Clicking any of these sends a smaller pulse out from the click, drawn on a
+// see-through layer above the page so it shows over content too
+const PRESSABLE = 'button, a, [role="button"], summary, label, .expand-toggle, .clickable, .cursor-pointer';
+const PULSE_SPEED = 0.5;  // px per ms
+const PULSE_BAND = 28;
+const PULSE_LIFE = 650;   // ms
+
 /**
  * Full-page dot field behind the layout. Dots swell toward the pointer and a
- * click on empty background sends out a ripple. Only nearby dots are redrawn
- * each frame; the resting grid is pre-rendered once.
+ * click on empty background sends out a ripple. Clicking a button or link
+ * sends a smaller dot pulse from that spot, over the content.
+ * Only affected dots are redrawn each frame; the resting grid is pre-rendered.
  */
 export default function BackgroundField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const overlayRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const overlay = overlayRef.current;
+    if (!canvas || !overlay) return;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const octx = overlay.getContext('2d');
+    if (!ctx || !octx) return;
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const base = document.createElement('canvas');
@@ -36,6 +47,7 @@ export default function BackgroundField() {
     let tx = -9999, ty = -9999, px = tx, py = ty;
     let targetI = 0, intensity = 0;
     const ripples: { x: number; y: number; start: number }[] = [];
+    const pulses: { x: number; y: number; start: number }[] = [];
     let frame = 0;
 
     const buildBase = () => {
@@ -64,8 +76,10 @@ export default function BackgroundField() {
       H = window.innerHeight;
       canvas.style.width = `${W}px`;
       canvas.style.height = `${H}px`;
-      canvas.width = Math.round(W * dpr);
-      canvas.height = Math.round(H * dpr);
+      canvas.width = overlay.width = Math.round(W * dpr);
+      canvas.height = overlay.height = Math.round(H * dpr);
+      overlay.style.width = `${W}px`;
+      overlay.style.height = `${H}px`;
       buildBase();
       kick();
     };
@@ -122,6 +136,40 @@ export default function BackgroundField() {
       ctx.globalAlpha = 1;
     };
 
+    // Button pulses: only dots inside each pulse's ring are drawn
+    let overlayDirty = false;
+    const renderOverlay = (now: number) => {
+      if (!pulses.length && !overlayDirty) return;
+      octx.setTransform(1, 0, 0, 1, 0, 0);
+      octx.clearRect(0, 0, overlay.width, overlay.height);
+      overlayDirty = pulses.length > 0;
+      if (!pulses.length) return;
+      octx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      octx.fillStyle = color;
+      for (const p of pulses) {
+        const age = now - p.start;
+        const t = age / PULSE_LIFE;
+        const ring = age * PULSE_SPEED;
+        const fade = (1 - t) ** 1.5;
+        const reach = ring + PULSE_BAND;
+        const sx = Math.max(STEP / 2, Math.ceil((p.x - reach - STEP / 2) / STEP) * STEP + STEP / 2);
+        const sy = Math.max(STEP / 2, Math.ceil((p.y - reach - STEP / 2) / STEP) * STEP + STEP / 2);
+        for (let x = sx; x <= Math.min(W, p.x + reach); x += STEP) {
+          for (let y = sy; y <= Math.min(H, p.y + reach); y += STEP) {
+            const d = Math.abs(Math.hypot(x - p.x, y - p.y) - ring);
+            if (d >= PULSE_BAND) continue;
+            const v = (1 - d / PULSE_BAND) * fade;
+            if (v < 0.03) continue;
+            octx.globalAlpha = v * 0.75;
+            octx.beginPath();
+            octx.arc(x, y, 1.2 + v * 2.4, 0, Math.PI * 2);
+            octx.fill();
+          }
+        }
+      }
+      octx.globalAlpha = 1;
+    };
+
     const tick = (now: number) => {
       px += (tx - px) * (reduceMotion ? 1 : 0.2);
       py += (ty - py) * (reduceMotion ? 1 : 0.2);
@@ -129,9 +177,13 @@ export default function BackgroundField() {
       for (let i = ripples.length - 1; i >= 0; i--) {
         if (now - ripples[i].start > RIPPLE_LIFE) ripples.splice(i, 1);
       }
+      for (let i = pulses.length - 1; i >= 0; i--) {
+        if (now - pulses[i].start > PULSE_LIFE) pulses.splice(i, 1);
+      }
       render(now);
+      renderOverlay(now);
       const busy =
-        ripples.length > 0 ||
+        ripples.length > 0 || pulses.length > 0 || overlayDirty ||
         Math.abs(tx - px) > 0.3 || Math.abs(ty - py) > 0.3 ||
         Math.abs(targetI - intensity) > 0.01;
       frame = busy ? requestAnimationFrame(tick) : 0;
@@ -149,7 +201,16 @@ export default function BackgroundField() {
     const onLeave = () => { targetI = 0; kick(); };
     const onDown = (e: PointerEvent) => {
       const target = e.target as Element | null;
-      if (reduceMotion || target?.closest?.(NOT_BACKGROUND)) return;
+      if (reduceMotion || !target?.closest) return;
+      const pressed = target.closest(PRESSABLE);
+      if (pressed) {
+        if (pressed.matches(':disabled') || pressed.closest('#splash')) return;
+        pulses.push({ x: e.clientX, y: e.clientY, start: performance.now() });
+        if (pulses.length > 4) pulses.shift();
+        kick();
+        return;
+      }
+      if (target.closest(NOT_BACKGROUND)) return;
       ripples.push({ x: e.clientX, y: e.clientY, start: performance.now() });
       if (ripples.length > 4) ripples.shift();
       kick();
@@ -177,11 +238,19 @@ export default function BackgroundField() {
   // Positioning is inline on purpose: if the stylesheet is missing or late,
   // the canvas must still never sit in the page flow and push content down.
   return (
-    <canvas
-      ref={canvasRef}
-      className="background-field"
-      aria-hidden="true"
-      style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        className="background-field"
+        aria-hidden="true"
+        style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}
+      />
+      {/* Above the page and sticky tabs, below the splash, dialogs and menus */}
+      <canvas
+        ref={overlayRef}
+        aria-hidden="true"
+        style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 9990, pointerEvents: 'none' }}
+      />
+    </>
   );
 }
