@@ -174,5 +174,14 @@ export default function BackgroundField() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="background-field" aria-hidden="true" />;
+  // Positioning is inline on purpose: if the stylesheet is missing or late,
+  // the canvas must still never sit in the page flow and push content down.
+  return (
+    <canvas
+      ref={canvasRef}
+      className="background-field"
+      aria-hidden="true"
+      style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}
+    />
+  );
 }

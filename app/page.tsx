@@ -18,7 +18,7 @@ export default function Home() {
       <ClientInteractions />
       <KeyboardShortcuts />
 
-      <main className="layout">
+      <main className="layout" style={{ position: 'relative', zIndex: 1 }}>
         {/* Main Content Column */}
         <div className="main-content border-x border-strong min-h-screen">
           <CoverBanner name={portfolio.name} />
