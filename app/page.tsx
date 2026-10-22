@@ -3,6 +3,7 @@ import BioSection from "@/app/components/BioSection";
 import ProfileTabs from "@/app/components/ProfileTabs";
 import Sidebar from "@/app/components/Sidebar";
 import ClientInteractions from "@/app/components/ClientInteractions";
+import BackgroundField from "@/app/components/BackgroundField";
 import KeyboardShortcuts from "@/app/components/KeyboardShortcuts";
 import FooterLogo from "@/app/components/FooterLogo";
 import FeedSkeleton from "@/app/components/FeedSkeleton";
@@ -13,6 +14,7 @@ import { Suspense } from 'react';
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center bg-background min-h-screen">
+      <BackgroundField />
       <ClientInteractions />
       <KeyboardShortcuts />
 

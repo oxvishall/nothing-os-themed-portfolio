@@ -97,6 +97,9 @@ html, body { overscroll-behavior-y: none; }
 
 /* 3. Layout */
 .layout {
+  /* Sit above the fixed background dot field */
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr;
   width: 100%;
@@ -566,3 +569,6 @@ html, body { overscroll-behavior-y: none; }
   font-style: normal !important;
   font-variation-settings: "ROND" 0 !important;
 }
+
+/* 15. Interactive background */
+.background-field { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
