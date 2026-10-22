@@ -309,16 +309,19 @@ function ProjectPost({ project, data }: { project: Project; data: any }) {
           <ExpandableText className="post-text rich-text">
             <div dangerouslySetInnerHTML={{ __html: project.description }} />
           </ExpandableText>
+          {/* Tags sit outside ExpandableText so they're always visible */}
+          {project.tags?.length > 0 && (
+            <div className="post-hashtags">
+              {project.tags.map(tag => (
+                <span key={tag} className="post-hashtag">#{tag.replace(/\s+/g, '')}</span>
+              ))}
+            </div>
+          )}
           <div className="post-media">
             <canvas ref={canvasRef} className="post-canvas" aria-hidden="true" />
             {project.image && (
               <div className="post-media-inner">
                 <img src={project.image} alt="" className="post-media-img" aria-hidden="true" loading="lazy" decoding="async" />
-                <div className="post-hashtags">
-                  {project.tags.map(tag => (
-                    <span key={tag} className="post-hashtag">#{tag.replace(/\s+/g, '')}</span>
-                  ))}
-                </div>
               </div>
             )}
           </div>

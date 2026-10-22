@@ -299,8 +299,9 @@ html, body { overscroll-behavior-y: none; }
     filter: grayscale(0); 
   }
 }
-.post-hashtags { position: absolute; bottom: 12px; left: 12px; display: flex; flex-wrap: wrap; gap: 6px; z-index: 10; }
-.post-hashtag { font-family: var(--font-dot); font-size: 10px; font-weight: 700; font-variation-settings: "ROND" 0; background: var(--bg-page); backdrop-filter: blur(6px); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border-strong); color: var(--text-primary); letter-spacing: 0.05em; }
+.post-hashtags { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 8px; }
+.post-hashtag { font-size: 14px; font-weight: 500; color: var(--text-primary); opacity: 0.75; transition: opacity 0.15s ease; }
+.post-hashtag:hover { opacity: 1; }
 .post-actions { display: flex; justify-content: space-between; max-width: 425px; margin-top: 12px; color: var(--text-secondary); }
 .post-action-group { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
 .post-action-group:hover { color: var(--text-primary); }
