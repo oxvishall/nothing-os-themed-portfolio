@@ -36,13 +36,17 @@ export default function CoverBanner({ name }: { name: string }) {
 
     const resize = () => {
       const nextDpr = Math.min(window.devicePixelRatio || 1, 2);
-      const nextW = canvas.offsetWidth;
-      const nextH = canvas.offsetHeight;
+      // Measure the banner, not the canvas: the canvas's own size depends on
+      // its pixel buffer, so measuring it would feed back into itself.
+      const nextW = header.clientWidth;
+      const nextH = header.clientHeight;
       // Only rebuild when the size really changed (guards against resize feedback loops)
       if (nextW === W && nextH === H && nextDpr === dpr) return;
       dpr = nextDpr;
       W = nextW;
       H = nextH;
+      canvas.style.width = `${W}px`;
+      canvas.style.height = `${H}px`;
       canvas.width = base.width = Math.round(W * dpr);
       canvas.height = base.height = Math.round(H * dpr);
 
@@ -112,7 +116,7 @@ export default function CoverBanner({ name }: { name: string }) {
 
     resize();
     const ro = new ResizeObserver(resize);
-    ro.observe(canvas);
+    ro.observe(header);
     header.addEventListener('pointermove', onMove, { passive: true });
     header.addEventListener('pointerdown', onMove, { passive: true });
     header.addEventListener('pointerleave', onLeave);
