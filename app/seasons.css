@@ -103,6 +103,21 @@
 .hw-hat { color: #17111d; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3)); }
 :root.dark .hw-hat { filter: drop-shadow(0 0 1px rgba(255, 179, 71, 0.9)) drop-shadow(0 0 10px rgba(242, 107, 29, 0.45)); }
 :root.dark .hw-bat { color: #b9a8c9; }
+/* Jack-o'-lantern on the banner: dark carving until the candle is lit */
+.hw-pumpkin { padding: 0; border: none; background: none; line-height: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.hw-pumpkin-body { fill: #e8661c; }
+.hw-pumpkin-rib { fill: none; stroke: #b24a0d; stroke-width: 1.2; opacity: 0.7; }
+.hw-pumpkin-stem { fill: #3b3a1f; }
+.hw-pumpkin-hole { fill: #2b1206; transition: fill 0.2s ease; }
+.hw-pumpkin.is-lit .hw-pumpkin-hole { fill: var(--hw-candle); animation: hw-candle 1.4s ease-in-out infinite; }
+.hw-pumpkin.is-lit { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)) drop-shadow(0 0 14px rgba(255, 179, 71, 0.75)); }
+.hw-pumpkin:hover > span { animation: hw-wobble 0.6s ease-in-out; }
+@keyframes hw-wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(4deg); } }
+.hw-spark {
+  position: absolute; left: 50%; top: 45%; border-radius: 50%; pointer-events: none;
+  background: var(--hw-candle); box-shadow: 0 0 6px var(--hw-glow);
+}
+
 .hw-footer-note { display: block; margin-top: 10px; font-family: var(--font-dot); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--hw-orange); }
 
 /* ── Halloween ─────────────────────────────────────────────────────────── */
@@ -152,6 +167,6 @@
 :root.dark[data-season~="halloween"] .hw-eyes:not(.hw-eyes--cover) .hw-eye { box-shadow: 0 0 14px rgba(255, 255, 255, 0.45); }
 
 @media (prefers-reduced-motion: reduce) {
-  .hw-sway, .hw-eye, .hw-flicker, .hw-bat-wings, .splash-px--glow { animation: none !important; }
+  .hw-sway, .hw-eye, .hw-flicker, .hw-bat-wings, .splash-px--glow, .hw-pumpkin-hole, .hw-pumpkin > span { animation: none !important; }
   .hw-eyes { animation: none; opacity: 0.9; }
 }

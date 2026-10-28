@@ -20,8 +20,12 @@ function stateFor(target: Element): { state: CursorState; label?: string } {
   if (target.closest(GRAB)) return { state: 'grab' };
   if (target.closest(CROSSHAIR)) return { state: 'crosshair' };
   const labelled = target.closest(LABEL);
-  if (labelled) return { state: 'label', label: labelled.getAttribute('data-cursor-label') || '' };
-  if (target.closest(INTERACTIVE)) return { state: 'pointer' };
+  const interactive = target.closest(INTERACTIVE);
+  // A button inside a labelled area (e.g. something on the banner) gets the normal pointer
+  if (labelled && !(interactive && labelled.contains(interactive) && interactive !== labelled)) {
+    return { state: 'label', label: labelled.getAttribute('data-cursor-label') || '' };
+  }
+  if (interactive) return { state: 'pointer' };
   return { state: 'default' };
 }
 

@@ -14,6 +14,8 @@ import { trackSeasonal } from '@/lib/analytics';
  *   screens) and follows the pointer; clicking them lets a ghost out
  * - now and then the banner's "lights" flicker
  * - bats fly past, the avatar wears a witch hat, the footer says hello
+ * - a jack-o'-lantern sits on the banner: hover lights the candle, a tap
+   makes it hop, throw sparks and pull a different face
  * The orange palette, cobwebs and the pumpkin loader are CSS (app/seasons.css).
  */
 export default function Halloween() {
@@ -24,6 +26,7 @@ export default function Halloween() {
       <BannerFlicker />
       <Bats />
       <WitchHat />
+      <Pumpkin />
       <FooterNote />
     </>
   );
@@ -418,4 +421,111 @@ function FooterNote() {
   }, []);
   if (!footer) return null;
   return createPortal(<span className="hw-footer-note">Happy Halloween · don&apos;t look behind you</span>, footer);
+}
+
+/* ─── Jack-o'-lantern on the banner ───────────────────────────────────────── */
+
+// Carved faces (eyes + mouth), cycled on every tap
+const FACES = [
+  { name: 'grin',
+    eyes: 'M17 27 L23 18 L29 27 Z M35 27 L41 18 L47 27 Z',
+    mouth: 'M14 34 Q32 50 50 34 L45 36 L42 33 L38 37 L34 33 L30 37 L26 33 L22 37 L19 34 Z' },
+  { name: 'spooky',
+    eyes: 'M16 21 L29 26 L22 29 Z M48 21 L35 26 L42 29 Z',
+    mouth: 'M13 35 L19 33 L22 38 L26 33 L30 39 L34 33 L38 39 L42 33 L45 38 L51 35 Q44 48 32 48 Q20 48 13 35 Z' },
+  { name: 'surprised',
+    eyes: 'M18 23 a5 5.5 0 1 0 10 0 a5 5.5 0 1 0 -10 0 Z M36 23 a5 5.5 0 1 0 10 0 a5 5.5 0 1 0 -10 0 Z',
+    mouth: 'M26 40 a6 7 0 1 0 12 0 a6 7 0 1 0 -12 0 Z' },
+];
+
+type Spark = { id: number; dx: number; dy: number; size: number };
+
+function Pumpkin() {
+  const [cover, setCover] = useState<Element | null>(null);
+  const [hover, setHover] = useState(false);
+  const [lit, setLit] = useState(false);
+  const [face, setFace] = useState(0);
+  const [hops, setHops] = useState(0);
+  const [sparks, setSparks] = useState<Spark[]>([]);
+  const litTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    const t = setTimeout(() => setCover(document.querySelector('.cover')), 0);
+    return () => { clearTimeout(t); clearTimeout(litTimer.current); };
+  }, []);
+
+  const tap = (e: React.MouseEvent) => {
+    // Don't open the banner's image viewer underneath
+    e.preventDefault();
+    e.stopPropagation();
+    const next = (face + 1) % FACES.length;
+    setFace(next);
+    setHops(h => h + 1);
+    setLit(true);
+    clearTimeout(litTimer.current);
+    litTimer.current = setTimeout(() => setLit(false), 3000);
+
+    if (!reduceMotion()) {
+      const id = Date.now();
+      const burst = Array.from({ length: 12 }, (_, i) => {
+        const a = -Math.PI / 2 + (i / 11 - 0.5) * Math.PI * 1.3;
+        const d = 34 + Math.random() * 30;
+        return { id: id + i, dx: Math.cos(a) * d, dy: Math.sin(a) * d, size: 3 + Math.random() * 3 };
+      });
+      setSparks(s => [...s, ...burst]);
+      setTimeout(() => setSparks(s => s.filter(p => !burst.includes(p))), 900);
+    }
+    sfxClick(2);
+    trackSeasonal('halloween', 'pumpkin_tap', { face: FACES[next].name });
+  };
+
+  if (!cover) return null;
+  const glowing = hover || lit;
+  const f = FACES[face];
+
+  return createPortal(
+    <button
+      type="button"
+      className={`hw-pumpkin ${glowing ? 'is-lit' : ''}`}
+      aria-label="Jack-o'-lantern"
+      onClick={tap}
+      onPointerDown={e => e.stopPropagation()}
+      onPointerEnter={e => { if (e.pointerType === 'mouse') setHover(true); }}
+      onPointerLeave={() => setHover(false)}
+      style={{ position: 'absolute', right: 18, bottom: 6, zIndex: 6 }}
+    >
+      <motion.span
+        key={hops}
+        style={{ display: 'block', transformOrigin: '50% 100%' }}
+        initial={false}
+        animate={hops && !reduceMotion()
+          ? { y: [0, -24, 0, -7, 0], scaleX: [1, 0.92, 1.1, 0.97, 1], scaleY: [1, 1.1, 0.88, 1.03, 1], rotate: [0, -6, 4, -2, 0] }
+          : { y: 0 }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+      >
+        <svg width="72" height="64" viewBox="0 0 64 56" aria-hidden>
+          {/* stem */}
+          <path d="M30 9 C29 5 30 2 33 0 C35 1 35 2 34 3 C33 5 33 7 34 10 Z" className="hw-pumpkin-stem" />
+          {/* body with ribs */}
+          <ellipse cx="32" cy="32" rx="30" ry="22" className="hw-pumpkin-body" />
+          <ellipse cx="32" cy="32" rx="19" ry="22" className="hw-pumpkin-rib" />
+          <ellipse cx="32" cy="32" rx="8" ry="22" className="hw-pumpkin-rib" />
+          {/* carved face */}
+          <path d={f.eyes} className="hw-pumpkin-hole" />
+          <path d={f.mouth} className="hw-pumpkin-hole" />
+        </svg>
+        {sparks.map(p => (
+          <motion.i
+            key={p.id}
+            className="hw-spark"
+            style={{ width: p.size, height: p.size }}
+            initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+            animate={{ x: p.dx, y: [0, p.dy, p.dy + 18], opacity: [1, 1, 0], scale: [1, 1, 0.4] }}
+            transition={{ duration: 0.85, ease: 'easeOut' }}
+          />
+        ))}
+      </motion.span>
+    </button>,
+    cover,
+  );
 }
