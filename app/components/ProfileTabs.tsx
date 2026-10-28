@@ -51,6 +51,9 @@ export default function ProfileTabs({ data }: { data: any }) {
         console.error("Critical fetch error:", err);
       } finally {
         setLoading(false);
+        // Lets the splash loader finish (ClientInteractions waits for this)
+        (window as Window & { __portfolioReady?: boolean }).__portfolioReady = true;
+        window.dispatchEvent(new Event('portfolio:ready'));
       }
     };
     

@@ -6,7 +6,10 @@ import { GLYPHS } from '@/lib/dotGlyphs';
 import { trackPageView, trackSplashDismissed } from '@/lib/analytics';
 
 const SPLASH_KEY = 'splash_seen';
-const DURATION = 1000; // ms the counter takes to reach 100
+const MIN_SHOW = 1000;   // never flash the loader for less than this (ms)
+const MAX_WAIT = 12000;  // give up waiting for the API after this (ms)
+const FINISH = 350;      // the last stretch to 100 once the data is in (ms)
+
 
 
 const initials = portfolio.name
@@ -33,18 +36,31 @@ export default function ClientInteractions() {
     }
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const duration = reduceMotion ? 300 : DURATION;
 
     body.style.overflow = 'hidden';
     body.style.touchAction = 'none';
 
-    // Drive the counter directly on the DOM node: no re-render per frame
+    // The counter creeps toward 90 while the projects load, then runs to 100
+    // once they're in. Driven on the DOM node: no re-render per frame.
     const start = performance.now();
+    let readyAt = 0;
+    let finished = false;
+    const setCount = (v: number) => {
+      if (counterRef.current) counterRef.current.textContent = String(Math.round(v)).padStart(3, '0');
+    };
     let frame = requestAnimationFrame(function step(now) {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - (1 - t) ** 3;
-      if (counterRef.current) counterRef.current.textContent = String(Math.round(eased * 100)).padStart(3, '0');
-      if (t < 1) frame = requestAnimationFrame(step);
+      const waited = now - start;
+      let value: number;
+      if (!readyAt) {
+        value = 90 * (1 - Math.exp(-waited / 900));
+      } else {
+        const from = 90 * (1 - Math.exp(-(readyAt - start) / 900));
+        const t = Math.min(1, (now - readyAt) / (reduceMotion ? 1 : FINISH));
+        value = from + (100 - from) * (1 - (1 - t) ** 3);
+        if (t >= 1) { setCount(100); finish(); return; }
+      }
+      setCount(value);
+      frame = requestAnimationFrame(step);
     });
 
     const unlock = () => {
@@ -52,17 +68,32 @@ export default function ClientInteractions() {
       body.style.touchAction = '';
     };
 
-    const timer = setTimeout(() => {
+    function finish() {
+      if (finished) return;
+      finished = true;
       setShowSplash(false);
       unlock();
       try { sessionStorage.setItem(SPLASH_KEY, '1'); } catch {}
       trackSplashDismissed();
       trackPageView('home');
-    }, duration + 150);
+    }
+
+    // Data ready → wait out the minimum time, then run the last stretch
+    const markReady = () => {
+      if (readyAt) return;
+      const wait = Math.max(0, MIN_SHOW - (performance.now() - start));
+      setTimeout(() => { readyAt = performance.now(); }, wait);
+    };
+    const w = window as Window & { __portfolioReady?: boolean };
+    if (w.__portfolioReady) markReady();
+    window.addEventListener('portfolio:ready', markReady);
+    const giveUp = setTimeout(markReady, MAX_WAIT);
+    const timer = giveUp;
 
     return () => {
       cancelAnimationFrame(frame);
       clearTimeout(timer);
+      window.removeEventListener('portfolio:ready', markReady);
       unlock();
     };
   }, []);
