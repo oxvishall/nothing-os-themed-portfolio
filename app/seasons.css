@@ -88,12 +88,12 @@
 }
 [data-season~="halloween"] .splash-pumpkin .splash-px { width: 9px; height: 9px; }
 [data-season~="halloween"] .splash-pumpkin .splash-px--off { opacity: 0; }
-[data-season~="halloween"] .splash-pumpkin .splash-px--on { background: var(--hw-orange); }
+/* Quiet loader: the pumpkin is faint ink, only the carved face holds candlelight */
+[data-season~="halloween"] .splash-pumpkin .splash-px--on { background: color-mix(in srgb, var(--text-primary) 22%, transparent); }
 [data-season~="halloween"] .splash-pumpkin .splash-px--glow {
-  background: var(--hw-candle); box-shadow: 0 0 8px var(--hw-candle), 0 0 16px var(--hw-glow);
+  background: var(--hw-candle); box-shadow: 0 0 6px color-mix(in srgb, var(--hw-glow) 70%, transparent);
   animation: splash-dot-on 0.25s ease-out forwards, hw-candle 1.6s ease-in-out 0.6s infinite;
 }
-[data-season~="halloween"] .splash-counter { color: var(--hw-orange); }
 @keyframes hw-candle { 0%, 100% { opacity: 1; } 40% { opacity: 0.55; } 55% { opacity: 0.9; } 70% { opacity: 0.6; } }
 
 /* Flying bats and the witch hat (app/components/seasons/Halloween.tsx) */
