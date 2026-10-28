@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./seasons.css";
 import CustomCursor from "@/app/components/CustomCursor";
+import { ACTIVE_SEASONS, SEASONS } from "@/lib/seasons";
 
 export const metadata: Metadata = {
   title: "Vishal Aakash | Full-Stack Developer & Systems Engineer",
@@ -116,6 +117,16 @@ export default function RootLayout({
                 } catch (e) {
                   document.documentElement.setAttribute('data-ui', 'nothing');
                 }
+                try {
+                  // Seasonal themes (lib/seasons.ts), with the ?season= preview
+                  var seasons = ${JSON.stringify(ACTIVE_SEASONS)};
+                  var known = ${JSON.stringify(Object.keys(SEASONS))};
+                  var param = new URLSearchParams(location.search).get('season');
+                  if (param !== null) {
+                    seasons = param === 'none' ? [] : param.split(',').filter(function (s) { return known.indexOf(s.trim()) > -1; });
+                  }
+                  if (seasons.length) document.documentElement.setAttribute('data-season', seasons.join(' '));
+                } catch (e) {}
                 try {
                   // Only show the splash once per browser session
                   if (sessionStorage.getItem('splash_seen')) {

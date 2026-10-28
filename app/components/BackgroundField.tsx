@@ -41,7 +41,9 @@ export default function BackgroundField() {
     let frame = 0;
 
     const buildBase = () => {
-      color = getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim() || '#0f0f0f';
+      // Seasons can recolour the dots with --field-dot (app/seasons.css)
+      const css = getComputedStyle(document.documentElement);
+      color = css.getPropertyValue('--field-dot').trim() || css.getPropertyValue('--text-primary').trim() || '#0f0f0f';
       base.width = canvas.width;
       base.height = canvas.height;
       const b = base.getContext('2d');
@@ -166,7 +168,7 @@ export default function BackgroundField() {
     document.documentElement.addEventListener('mouseleave', onLeave);
     // Rebuild colors when the theme changes
     const mo = new MutationObserver(() => { buildBase(); kick(); });
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-season'] });
 
     return () => {
       cancelAnimationFrame(frame);

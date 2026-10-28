@@ -13,6 +13,8 @@ import { trackSeasonal } from '@/lib/analytics';
  * - a pair of eyes watches from the empty margin (or the banner on small
  *   screens) and follows the pointer; clicking them lets a ghost out
  * - now and then the banner's "lights" flicker
+ * - bats fly past, the avatar wears a witch hat, the footer says hello
+ * The orange palette, cobwebs and the pumpkin loader are CSS (app/seasons.css).
  */
 export default function Halloween() {
   return (
@@ -20,6 +22,9 @@ export default function Halloween() {
       <Spider />
       <WatchingEyes />
       <BannerFlicker />
+      <Bats />
+      <WitchHat />
+      <FooterNote />
     </>
   );
 }
@@ -290,4 +295,127 @@ function BannerFlicker() {
     return () => clearTimeout(timer);
   }, []);
   return null;
+}
+
+/* ─── Bats ────────────────────────────────────────────────────────────────── */
+
+type Flight = { id: number; fromLeft: boolean; top: number; size: number; delay: number; duration: number };
+
+function Bats() {
+  const [flights, setFlights] = useState<Flight[]>([]);
+
+  useEffect(() => {
+    if (reduceMotion()) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const launch = () => {
+      const fromLeft = Math.random() < 0.5;
+      const top = window.innerHeight * (0.1 + Math.random() * 0.5);
+      const n = 1 + Math.floor(Math.random() * 3);
+      const batch = Array.from({ length: n }, (_, i) => ({
+        id: Date.now() + i,
+        fromLeft,
+        top: top + (Math.random() - 0.5) * 80,
+        size: 18 + Math.random() * 14,
+        delay: i * 0.35,
+        duration: 5 + Math.random() * 3,
+      }));
+      setFlights(f => [...f, ...batch]);
+      setTimeout(() => setFlights(f => f.filter(b => !batch.includes(b))), 9500);
+      timer = setTimeout(launch, 9000 + Math.random() * 12000);
+    };
+    timer = setTimeout(launch, 3500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      {flights.map(b => {
+        const w = typeof window !== 'undefined' ? window.innerWidth : 1200;
+        const start = b.fromLeft ? -60 : w + 60;
+        const end = b.fromLeft ? w + 60 : -60;
+        return (
+          <motion.div
+            key={b.id}
+            className="hw-bat"
+            aria-hidden
+            style={{ position: 'fixed', left: 0, top: b.top, zIndex: 3, pointerEvents: 'none', scaleX: b.fromLeft ? 1 : -1 }}
+            initial={{ x: start, y: 0 }}
+            animate={{ x: end, y: [0, -30, 10, -20, 0] }}
+            transition={{ duration: b.duration, delay: b.delay, ease: 'linear' }}
+          >
+            <BatSvg size={b.size} />
+          </motion.div>
+        );
+      })}
+    </>
+  );
+}
+
+function BatSvg({ size }: { size: number }) {
+  return (
+    <svg width={size * 2} height={size} viewBox="0 0 40 20" fill="currentColor">
+      <g className="hw-bat-wings">
+        <path d="M20 9 C15 2 8 1 0 5 C4 6 6 8 6 11 C9 9 11 10 12 13 C14 10 17 10 20 12 Z" />
+        <path d="M20 9 C25 2 32 1 40 5 C36 6 34 8 34 11 C31 9 29 10 28 13 C26 10 23 10 20 12 Z" />
+      </g>
+      <ellipse cx="20" cy="11" rx="2.6" ry="4" />
+      <path d="M18 7.5 L18.6 5 L19.6 7 Z M22 7.5 L21.4 5 L20.4 7 Z" />
+    </svg>
+  );
+}
+
+/* ─── Witch hat on the avatar ─────────────────────────────────────────────── */
+
+function WitchHat() {
+  const [host, setHost] = useState<{ el: Element; left: number; top: number } | null>(null);
+
+  useEffect(() => {
+    const place = () => {
+      const wrap = document.querySelector('.avatar-wrap');
+      const avatar = wrap?.querySelector<HTMLElement>('.avatar');
+      if (!wrap || !avatar) return;
+      setHost({ el: wrap, left: avatar.offsetLeft + avatar.offsetWidth * 0.18, top: avatar.offsetTop - 40 });
+    };
+    const t = setTimeout(place, 0);
+    window.addEventListener('resize', place);
+    return () => { clearTimeout(t); window.removeEventListener('resize', place); };
+  }, []);
+
+  if (!host) return null;
+  return createPortal(
+    <motion.div
+      className="hw-hat"
+      aria-hidden
+      style={{ position: 'absolute', left: host.left, top: host.top, zIndex: 11, rotate: -14, pointerEvents: 'auto' }}
+      initial={{ y: -30, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 260, damping: 14, delay: 0.6 }}
+      whileHover={{ rotate: -4, y: -4 }}
+      onTap={() => { sfxClick(2); trackSeasonal('halloween', 'hat_tap'); }}
+      whileTap={{ rotate: 340, y: -24, transition: { duration: 0.5 } }}
+    >
+      <svg width="64" height="54" viewBox="0 0 64 54">
+        {/* cone with a bent tip */}
+        <path d="M18 42 C22 30 26 16 34 6 C38 2 44 2 46 6 C41 6 38 9 37 14 C38 24 41 33 46 42 Z" fill="currentColor" />
+        {/* orange band and buckle */}
+        <path d="M19.5 37 C28 39 37 39 44.5 37 L45.6 41 C37 43 27 43 18.6 41 Z" fill="var(--hw-orange)" />
+        <rect x="29" y="36.4" width="6" height="5.6" rx="1" fill="none" stroke="var(--hw-candle)" strokeWidth="1.2" />
+        {/* brim */}
+        <ellipse cx="32" cy="45" rx="30" ry="6.5" fill="currentColor" />
+      </svg>
+    </motion.div>,
+    host.el,
+  );
+}
+
+/* ─── Footer note ─────────────────────────────────────────────────────────── */
+
+function FooterNote() {
+  const [footer, setFooter] = useState<Element | null>(null);
+  useEffect(() => {
+    const t = setTimeout(() => setFooter(document.querySelector('.mobile-footer')), 0);
+    return () => clearTimeout(t);
+  }, []);
+  if (!footer) return null;
+  return createPortal(<span className="hw-footer-note">Happy Halloween · don&apos;t look behind you</span>, footer);
 }

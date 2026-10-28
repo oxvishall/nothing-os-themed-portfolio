@@ -4,6 +4,107 @@
  * of this applies when a season is off. Works with every interface style.
  */
 
+/* ── Halloween: palette ─────────────────────────────────────────────────
+   Seasonal exception to the monochrome rule: pumpkin orange accents, and a
+   purple-black night in dark mode. Only while the season is on. */
+:root[data-season~="halloween"] {
+  --hw-orange: #f26b1d;
+  --hw-glow: #ffb347;
+  --hw-candle: #ffd23f;
+  --hw-web: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M0 0L118.0 0.0M0 0L112.2 36.5M0 0L95.5 69.4M0 0L69.4 95.5M0 0L36.5 112.2M0 0L0.0 118.0M22.0 0.0Q17.8 2.8 20.9 6.8M20.9 6.8Q16.1 8.2 17.8 12.9M17.8 12.9Q12.8 12.8 12.9 17.8M12.9 17.8Q8.2 16.1 6.8 20.9M6.8 20.9Q2.8 17.8 0.0 22.0M44.0 0.0Q35.6 5.6 41.8 13.6M41.8 13.6Q32.1 16.4 35.6 25.9M35.6 25.9Q25.5 25.5 25.9 35.6M25.9 35.6Q16.4 32.1 13.6 41.8M13.6 41.8Q5.6 35.6 0.0 44.0M68.0 0.0Q55.1 8.7 64.7 21.0M64.7 21.0Q49.7 25.3 55.0 40.0M55.0 40.0Q39.4 39.4 40.0 55.0M40.0 55.0Q25.3 49.7 21.0 64.7M21.0 64.7Q8.7 55.1 0.0 68.0M94.0 0.0Q76.1 12.1 89.4 29.0M89.4 29.0Q68.7 35.0 76.0 55.3M76.0 55.3Q54.5 54.5 55.3 76.0M55.3 76.0Q35.0 68.7 29.0 89.4M29.0 89.4Q12.1 76.1 0.0 94.0' fill='none' stroke='rgba%2815%2C15%2C15%2C0.28%29' stroke-width='0.9'/%3E%3C/svg%3E");
+  --hw-web-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M0 0L118.0 0.0M0 0L112.2 36.5M0 0L95.5 69.4M0 0L69.4 95.5M0 0L36.5 112.2M0 0L0.0 118.0M22.0 0.0Q17.8 2.8 20.9 6.8M20.9 6.8Q16.1 8.2 17.8 12.9M17.8 12.9Q12.8 12.8 12.9 17.8M12.9 17.8Q8.2 16.1 6.8 20.9M6.8 20.9Q2.8 17.8 0.0 22.0M44.0 0.0Q35.6 5.6 41.8 13.6M41.8 13.6Q32.1 16.4 35.6 25.9M35.6 25.9Q25.5 25.5 25.9 35.6M25.9 35.6Q16.4 32.1 13.6 41.8M13.6 41.8Q5.6 35.6 0.0 44.0M68.0 0.0Q55.1 8.7 64.7 21.0M64.7 21.0Q49.7 25.3 55.0 40.0M55.0 40.0Q39.4 39.4 40.0 55.0M40.0 55.0Q25.3 49.7 21.0 64.7M21.0 64.7Q8.7 55.1 0.0 68.0M94.0 0.0Q76.1 12.1 89.4 29.0M89.4 29.0Q68.7 35.0 76.0 55.3M76.0 55.3Q54.5 54.5 55.3 76.0M55.3 76.0Q35.0 68.7 29.0 89.4M29.0 89.4Q12.1 76.1 0.0 94.0' fill='none' stroke='rgba%28255%2C255%2C255%2C0.5%29' stroke-width='0.9'/%3E%3C/svg%3E");
+  --field-dot: #f26b1d;
+  --bg-page: #fffaf4;
+  --bg-surface: #fbf1e6;
+  --bg-elevated: #f6e5d3;
+  --border: rgba(110, 50, 10, 0.12);
+  --border-strong: rgba(110, 50, 10, 0.22);
+}
+:root.dark[data-season~="halloween"] {
+  --hw-orange: #ff7a1a;
+  --hw-web: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M0 0L118.0 0.0M0 0L112.2 36.5M0 0L95.5 69.4M0 0L69.4 95.5M0 0L36.5 112.2M0 0L0.0 118.0M22.0 0.0Q17.8 2.8 20.9 6.8M20.9 6.8Q16.1 8.2 17.8 12.9M17.8 12.9Q12.8 12.8 12.9 17.8M12.9 17.8Q8.2 16.1 6.8 20.9M6.8 20.9Q2.8 17.8 0.0 22.0M44.0 0.0Q35.6 5.6 41.8 13.6M41.8 13.6Q32.1 16.4 35.6 25.9M35.6 25.9Q25.5 25.5 25.9 35.6M25.9 35.6Q16.4 32.1 13.6 41.8M13.6 41.8Q5.6 35.6 0.0 44.0M68.0 0.0Q55.1 8.7 64.7 21.0M64.7 21.0Q49.7 25.3 55.0 40.0M55.0 40.0Q39.4 39.4 40.0 55.0M40.0 55.0Q25.3 49.7 21.0 64.7M21.0 64.7Q8.7 55.1 0.0 68.0M94.0 0.0Q76.1 12.1 89.4 29.0M89.4 29.0Q68.7 35.0 76.0 55.3M76.0 55.3Q54.5 54.5 55.3 76.0M55.3 76.0Q35.0 68.7 29.0 89.4M29.0 89.4Q12.1 76.1 0.0 94.0' fill='none' stroke='rgba%28255%2C255%2C255%2C0.5%29' stroke-width='0.9'/%3E%3C/svg%3E");
+  --field-dot: #ff7a1a;
+  --bg-page: #0b0810;
+  --bg-surface: #15101c;
+  --bg-elevated: #1f1828;
+  --text-primary: #f4ebe1;
+  --text-secondary: #a597b0;
+  --text-tertiary: #685c74;
+  --border: rgba(255, 140, 60, 0.1);
+  --border-strong: rgba(255, 140, 60, 0.2);
+}
+[data-season~="halloween"] ::selection { background-color: var(--hw-orange); color: #fff; }
+
+/* Accents: active tab, toggles, buttons, links */
+[data-season~="halloween"] .key-tab-pill,
+[data-season~="halloween"] .key-thumb,
+[data-season~="halloween"] .key--on {
+  background-color: var(--hw-orange) !important; border-color: var(--hw-orange) !important;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--hw-orange) 45%, transparent);
+}
+[data-season~="halloween"] .key-tab.key--on { background-color: transparent !important; box-shadow: none; color: #fff !important; }
+[data-season~="halloween"] .btn-follow,
+[data-season~="halloween"] .lab-btn--active,
+[data-season~="halloween"] .lab-btn--primary {
+  background: var(--hw-orange); border-color: var(--hw-orange); color: #fff;
+}
+[data-season~="halloween"] .post-hashtag,
+[data-season~="halloween"] .expand-toggle { color: var(--hw-orange); opacity: 1; }
+[data-season~="halloween"] .sidebar-link:hover,
+[data-season~="halloween"] .footer-link:hover { color: var(--hw-orange); }
+[data-season~="halloween"] .toast { background: var(--hw-orange); color: #fff; box-shadow: 0 6px 24px color-mix(in srgb, var(--hw-orange) 40%, transparent); }
+[data-season~="halloween"] .avatar { border-color: var(--hw-orange); box-shadow: 0 0 0 3px color-mix(in srgb, var(--hw-orange) 25%, transparent), 0 0 24px color-mix(in srgb, var(--hw-orange) 35%, transparent); }
+
+/* Cursor: a glowing ember instead of the inverted dot */
+[data-season~="halloween"] #cursor { mix-blend-mode: normal; }
+[data-season~="halloween"] #cursor .cursor-shape {
+  background-color: var(--hw-orange); border-color: var(--hw-orange);
+  box-shadow: 0 0 12px var(--hw-glow);
+}
+[data-season~="halloween"] #cursor[data-state="grab"] .cursor-shape,
+[data-season~="halloween"] #cursor[data-state="disabled"] .cursor-shape { background-color: transparent; }
+[data-season~="halloween"] #cursor .cursor-shape::before,
+[data-season~="halloween"] #cursor .cursor-shape::after { background: var(--hw-orange); }
+
+/* Cobwebs in the corners of the banner and the sidebar cards */
+[data-season~="halloween"] .cover::after {
+  content: ""; position: absolute; top: 0; left: 0; width: 140px; height: 140px; z-index: 2;
+  background: var(--hw-web-light) no-repeat 0 0 / contain; pointer-events: none;
+}
+[data-season~="halloween"] .sidebar-card { position: relative; }
+[data-season~="halloween"] .sidebar-card::after {
+  content: ""; position: absolute; top: 0; right: 0; width: 64px; height: 64px;
+  background: var(--hw-web) no-repeat 0 0 / contain; transform: scaleX(-1);
+  pointer-events: none; opacity: 0.9; border-top-right-radius: inherit;
+}
+
+/* Loader: the jack-o'-lantern replaces the monogram */
+.splash-pumpkin, .splash-label-halloween { display: none; }
+[data-season~="halloween"] .splash-monogram,
+[data-season~="halloween"] .splash-label-default { display: none; }
+[data-season~="halloween"] .splash-label-halloween { display: inline; }
+[data-season~="halloween"] .splash-pumpkin {
+  display: grid; grid-template-columns: repeat(13, 9px); grid-auto-rows: 9px; gap: 4px;
+}
+[data-season~="halloween"] .splash-pumpkin .splash-px { width: 9px; height: 9px; }
+[data-season~="halloween"] .splash-pumpkin .splash-px--off { opacity: 0; }
+[data-season~="halloween"] .splash-pumpkin .splash-px--on { background: var(--hw-orange); }
+[data-season~="halloween"] .splash-pumpkin .splash-px--glow {
+  background: var(--hw-candle); box-shadow: 0 0 8px var(--hw-candle), 0 0 16px var(--hw-glow);
+  animation: splash-dot-on 0.25s ease-out forwards, hw-candle 1.6s ease-in-out 0.6s infinite;
+}
+[data-season~="halloween"] .splash-counter { color: var(--hw-orange); }
+@keyframes hw-candle { 0%, 100% { opacity: 1; } 40% { opacity: 0.55; } 55% { opacity: 0.9; } 70% { opacity: 0.6; } }
+
+/* Flying bats and the witch hat (app/components/seasons/Halloween.tsx) */
+.hw-bat { color: var(--text-primary); }
+.hw-bat-wings { transform-origin: 50% 60%; animation: hw-flap 0.22s ease-in-out infinite alternate; }
+@keyframes hw-flap { from { transform: scaleY(1); } to { transform: scaleY(0.35); } }
+.hw-hat { color: #17111d; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3)); }
+:root.dark .hw-hat { filter: drop-shadow(0 0 1px rgba(255, 179, 71, 0.9)) drop-shadow(0 0 10px rgba(242, 107, 29, 0.45)); }
+:root.dark .hw-bat { color: #b9a8c9; }
+.hw-footer-note { display: block; margin-top: 10px; font-family: var(--font-dot); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--hw-orange); }
+
 /* ── Halloween ─────────────────────────────────────────────────────────── */
 
 /* Spider on its silk thread */
@@ -51,6 +152,6 @@
 :root.dark[data-season~="halloween"] .hw-eyes:not(.hw-eyes--cover) .hw-eye { box-shadow: 0 0 14px rgba(255, 255, 255, 0.45); }
 
 @media (prefers-reduced-motion: reduce) {
-  .hw-sway, .hw-eye, .hw-flicker { animation: none !important; }
+  .hw-sway, .hw-eye, .hw-flicker, .hw-bat-wings, .splash-px--glow { animation: none !important; }
   .hw-eyes { animation: none; opacity: 0.9; }
 }

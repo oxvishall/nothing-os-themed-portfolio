@@ -10,6 +10,20 @@ const MIN_SHOW = 1000;   // never flash the loader for less than this (ms)
 const MAX_WAIT = 12000;  // give up waiting for the API after this (ms)
 const FINISH = 350;      // the last stretch to 100 once the data is in (ms)
 
+// Halloween loader: a dot-matrix jack-o'-lantern. X = pumpkin, o = candle light
+const PUMPKIN = [
+  '......XX.....',
+  '.....XX......',
+  '..XXXXXXXXX..',
+  '.XXXXXXXXXXX.',
+  'XXXooXXXooXXX',
+  'XXooooXooooXX',
+  'XXXXXXXXXXXXX',
+  'XXoXoXoXoXoXX',
+  'XXXoXoXoXoXXX',
+  '.XXXXXXXXXXX.',
+  '..XXXXXXXXX..',
+];
 
 
 const initials = portfolio.name
@@ -101,6 +115,16 @@ export default function ClientInteractions() {
   return (
     <div id="splash" className={showSplash ? '' : 'splash--hidden'} aria-hidden="true">
       <div className="splash-inner">
+        {/* Halloween: shown instead of the monogram via html[data-season] (app/seasons.css) */}
+        <div className="splash-pumpkin" aria-hidden>
+          {PUMPKIN.join('').split('').map((c, i) => (
+            <span
+              key={i}
+              className={c === 'X' ? 'splash-px splash-px--on' : c === 'o' ? 'splash-px splash-px--on splash-px--glow' : 'splash-px splash-px--off'}
+              style={c !== '.' ? { animationDelay: `${Math.round(scatter(i) * 600)}ms` } : undefined}
+            />
+          ))}
+        </div>
         <div className="splash-monogram">
           {initials.map((letter, li) => (
             <div key={li} className="splash-glyph">
@@ -115,7 +139,10 @@ export default function ClientInteractions() {
           ))}
         </div>
         <div className="splash-meta">
-          <span className="splash-label">{portfolio.name}</span>
+          <span className="splash-label">
+            <span className="splash-label-default">{portfolio.name}</span>
+            <span className="splash-label-halloween">Summoning spirits…</span>
+          </span>
           <span className="splash-counter">
             <span ref={counterRef}>000</span>
           </span>

@@ -170,3 +170,9 @@ Initial class set in an inline `<script>` in `layout.tsx` (before first paint) t
 3. Glyph cursor — SVG cursor shaped like Nothing glyph dot
 4. Print stylesheet — `@media print` resume layout
 5. URL routing — `?tab=projects` deep-link support via `useSearchParams`
+
+---
+
+## 12. Seasonal Themes
+
+Seasonal decorations (Halloween, Christmas, Diwali, New Year, Pongal…) layer on top of the interface and are switched with `ACTIVE_SEASONS` in `lib/seasons.ts` (several can run together; `?season=a,b` or `?season=none` previews). While a season is on it may break the monochrome rule with its own palette (e.g. Halloween orange), scoped under `html[data-season~="<id>"]` in `app/seasons.css`. Each season's layer is `app/components/seasons/<Name>.tsx`, registered in `SeasonalThemes.tsx`. With no season active the site must look exactly as normal.
