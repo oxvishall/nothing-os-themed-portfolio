@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./seasons.css";
 import CustomCursor from "@/app/components/CustomCursor";
 
 export const metadata: Metadata = {

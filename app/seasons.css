@@ -1,0 +1,5 @@
+/*
+ * Seasonal themes (lib/seasons.ts). Each season's rules live under
+ * html[data-season~="<id>"], so several seasons can run together and none
+ * of this applies when a season is off. Works with every interface style.
+ */

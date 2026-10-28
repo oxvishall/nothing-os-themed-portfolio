@@ -181,11 +181,16 @@ export default function KeyboardShortcuts() {
 
     window.addEventListener('keydown', onKey);
     window.addEventListener('portfolio:help', onHelp);
+    // Other components can show a toast too
+    const onToast = (e: Event) => notify((e as CustomEvent<string>).detail);
+
     window.addEventListener('portfolio:wave', onWave);
+    window.addEventListener('portfolio:toast', onToast);
     return () => {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('portfolio:help', onHelp);
       window.removeEventListener('portfolio:wave', onWave);
+      window.removeEventListener('portfolio:toast', onToast);
       clearTimeout(toastTimer.current);
     };
   }, [notify, toggleGlyph, sayNothing]);

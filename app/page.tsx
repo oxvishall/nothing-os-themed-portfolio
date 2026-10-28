@@ -8,6 +8,7 @@ import KeyboardShortcuts from "@/app/components/KeyboardShortcuts";
 import FooterLogo from "@/app/components/FooterLogo";
 import HelpButton from "@/app/components/HelpButton";
 import FeedSkeleton from "@/app/components/FeedSkeleton";
+import SeasonalThemes from "@/app/components/seasons/SeasonalThemes";
 import portfolio from "@/app/data/portfolio";
 
 import { Suspense } from 'react';
@@ -18,6 +19,7 @@ export default function Home() {
       <BackgroundField />
       <ClientInteractions />
       <KeyboardShortcuts />
+      <SeasonalThemes />
 
       <main className="layout" style={{ position: 'relative', zIndex: 1 }}>
         {/* Main Content Column */}

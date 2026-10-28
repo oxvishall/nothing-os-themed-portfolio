@@ -112,6 +112,13 @@ export function trackShortcut(action: 'tab' | 'theme' | 'sounds' | 'top', detail
   track('keyboard_shortcut', { action, ...(detail ? { detail } : {}) });
 }
 
+// ─── Seasonal themes ───────────────────────────────────────────────────────
+
+/** Called when a visitor interacts with a seasonal theme (e.g. finds the Halloween ghost). */
+export function trackSeasonal(season: string, action: string, params?: Record<string, string | number>) {
+  track('seasonal_interaction', { season, action, ...params });
+}
+
 // ─── Interface ─────────────────────────────────────────────────────────────
 
 /** Called when the interface style (Nothing, Keycap…) changes. */
