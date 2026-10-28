@@ -181,3 +181,35 @@ export function sfxTick() {
     // Audio safe fallback
   }
 }
+
+// ─── Seasonal: Halloween "boo" (a breathy, wobbling ghost wail) ─────────────
+export function sfxBoo() {
+  haptic('tap');
+  const ac = getCtx();
+  if (!ac) return;
+  try {
+    const t = ac.currentTime;
+    const out = masterOut(ac);
+    const osc = ac.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(520, t);
+    osc.frequency.exponentialRampToValueAtTime(170, t + 0.9);
+    // Vibrato makes it "wooo"
+    const lfo = ac.createOscillator();
+    const lfoGain = ac.createGain();
+    lfo.frequency.value = 7;
+    lfoGain.gain.value = 18;
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+    const gain = ac.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.16, t + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 1);
+    osc.connect(gain);
+    gain.connect(out);
+    osc.start(t); lfo.start(t);
+    osc.stop(t + 1.05); lfo.stop(t + 1.05);
+  } catch {
+    // Audio safe fallback
+  }
+}

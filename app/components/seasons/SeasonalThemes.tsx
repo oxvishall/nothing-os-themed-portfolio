@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useSyncExternalStore, type ComponentType } from 'react';
+import dynamic from 'next/dynamic';
 import { resolveSeasons, type SeasonId } from '@/lib/seasons';
 
 // Each season's layer is its own chunk, so inactive seasons never load
-const LAYERS: Partial<Record<SeasonId, ComponentType>> = {};
+const LAYERS: Partial<Record<SeasonId, ComponentType>> = {
+  halloween: dynamic(() => import('./Halloween'), { ssr: false }),
+};
 
 // Read once on the client; the server renders no seasons
 const subscribe = () => () => {};
