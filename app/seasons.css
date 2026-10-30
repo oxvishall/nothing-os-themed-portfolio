@@ -33,27 +33,31 @@
   --border: rgba(255, 140, 60, 0.1);
   --border-strong: rgba(255, 140, 60, 0.2);
 }
-[data-season~="halloween"] ::selection { background-color: var(--hw-orange); color: #fff; }
 
-/* Accents: active tab, toggles, buttons, links */
-[data-season~="halloween"] .key-tab-pill,
-[data-season~="halloween"] .key-thumb,
-[data-season~="halloween"] .key--on {
-  background-color: var(--hw-orange) !important; border-color: var(--hw-orange) !important;
-  box-shadow: 0 0 14px color-mix(in srgb, var(--hw-orange) 45%, transparent);
+/* Controls stay monochrome: orange is only for the Halloween objects.
+   Instead, buttons and tabs flicker like a dying bulb on hover, and a small
+   ghost peeks over the tab you switch to. */
+@media (hover: hover) {
+  [data-season~="halloween"] .key:hover,
+  [data-season~="halloween"] .lab-btn:hover,
+  [data-season~="halloween"] .btn-follow:hover { animation: hw-haunt 0.55s steps(1, end); }
 }
-[data-season~="halloween"] .key-tab.key--on { background-color: transparent !important; box-shadow: none; color: #fff !important; }
-[data-season~="halloween"] .btn-follow,
-[data-season~="halloween"] .lab-btn--active,
-[data-season~="halloween"] .lab-btn--primary {
-  background: var(--hw-orange); border-color: var(--hw-orange); color: #fff;
+@keyframes hw-haunt { 0% { opacity: 1; } 15% { opacity: 0.45; } 25% { opacity: 1; } 45% { opacity: 0.7; } 55% { opacity: 1; } }
+
+/* Room above the tabs for the ghost (the tab row scrolls sideways, which clips vertically) */
+[data-season~="halloween"] .profile-tabs { padding-top: 18px; margin-top: -14px; }
+[data-season~="halloween"] .key-tab.key--on::before {
+  content: ""; position: absolute; left: 50%; top: -4px; width: 20px; height: 22px; margin-left: -10px;
+  background: var(--text-primary); -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 22'%3E%3Cpath fill-rule='evenodd' d='M10 1C5 1 2 5 2 10v11l3-2 2.5 2 2.5-2 2.5 2 2.5-2 3 2V10c0-5-3-9-8-9ZM5.4 10a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0ZM11.4 10a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0Z'/%3E%3C/svg%3E") no-repeat center / contain; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 22'%3E%3Cpath fill-rule='evenodd' d='M10 1C5 1 2 5 2 10v11l3-2 2.5 2 2.5-2 2.5 2 2.5-2 3 2V10c0-5-3-9-8-9ZM5.4 10a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0ZM11.4 10a1.6 1.6 0 1 0 3.2 0a1.6 1.6 0 1 0-3.2 0Z'/%3E%3C/svg%3E") no-repeat center / contain;
+  pointer-events: none; z-index: -11; opacity: 0;
+  animation: hw-peek 1.5s cubic-bezier(0.3, 0.7, 0.3, 1) 0.15s;
 }
-[data-season~="halloween"] .post-hashtag,
-[data-season~="halloween"] .expand-toggle { color: var(--hw-orange); opacity: 1; }
-[data-season~="halloween"] .sidebar-link:hover,
-[data-season~="halloween"] .footer-link:hover { color: var(--hw-orange); }
-[data-season~="halloween"] .toast { background: var(--hw-orange); color: #fff; box-shadow: 0 6px 24px color-mix(in srgb, var(--hw-orange) 40%, transparent); }
-[data-season~="halloween"] .avatar { border-color: var(--hw-orange); box-shadow: 0 0 0 3px color-mix(in srgb, var(--hw-orange) 25%, transparent), 0 0 24px color-mix(in srgb, var(--hw-orange) 35%, transparent); }
+@keyframes hw-peek {
+  0% { opacity: 0; transform: translateY(8px); }
+  25% { opacity: 1; transform: translateY(-14px) rotate(-6deg); }
+  60% { opacity: 1; transform: translateY(-14px) rotate(5deg); }
+  100% { opacity: 0; transform: translateY(6px); }
+}
 
 /* Cursor: a glowing ember instead of the inverted dot */
 [data-season~="halloween"] #cursor { mix-blend-mode: normal; }
@@ -118,7 +122,7 @@
   background: var(--hw-candle); box-shadow: 0 0 6px var(--hw-glow);
 }
 
-.hw-footer-note { display: block; margin-top: 10px; font-family: var(--font-dot); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--hw-orange); }
+.hw-footer-note { display: block; margin-top: 10px; font-family: var(--font-dot); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-tertiary); }
 
 /* ── Halloween ─────────────────────────────────────────────────────────── */
 
@@ -168,5 +172,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hw-sway, .hw-eye, .hw-flicker, .hw-bat-wings, .splash-px--glow, .hw-pumpkin-hole, .hw-pumpkin > span { animation: none !important; }
+  [data-season~="halloween"] .key:hover, [data-season~="halloween"] .lab-btn:hover, [data-season~="halloween"] .btn-follow:hover { animation: none; }
+  [data-season~="halloween"] .key-tab.key--on::before { display: none; }
   .hw-eyes { animation: none; opacity: 0.9; }
 }
